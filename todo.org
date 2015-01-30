@@ -1,0 +1,30 @@
+* Lecturas
+** FINALIZADO Days of War, Nights of Love
+** FINALIZADO Matematica, estas ahi?
+** FINALIZADO The Linux Command Line
+** FINALIZADO Siddharta
+** FINALIZADO Programming Ruby (parts 1 & 2)
+** EN-CURS0 The Ruby Programming Language
+** FINALIZADO Eloquent Ruby
+** NO-INICIADO Rubygems tutorial
+** NO-INICIADO RailsGuides
+** NO-INICIADO Ruby on Rails Tutorial (3rd ed)
+** NO-INICIADO POODR
+** NO-INICIADO Debian Administrator's Handbook
+** NO-INICIADO Como funcionan las cosas?
+** NO-INICIADO Prime numbers
+
+esta linea redefine las palabras claves de TODO en este archivo.
+(el TODO de arriba queda asi por como estaba antes, pero ya no es una
+palabra clave)
+#+TODO: REPORT(r) BUG(b) KNOWNCAUSE(k) | FIXED(f)
+#+TODO: NO-INICIADO EN-CURS0 | FINALIZADO
+
+
+* Cursos
+** FINALIZADO Clojure for the Brave and True
+** FINALIZADO Ruby Monk
+** FINALIZADO Ruby Koans
+** NO-INICIADO Introduction to Psychology (YALE)
+** EN-CURS0 Psychology Crash Course
+** EN-CURS0 Art of Problem Solving
