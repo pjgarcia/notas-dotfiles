@@ -754,9 +754,6 @@ git push origin master
     Otra cosa que vi es que a la hora de hacer el ~git push origin
     <branch>~ no es necesario estar en una rama en particular. Puede
     hacerse desde master o desde esa nuevo branch.
-
-
-
     
 * TMUX
 - tmux new -s session_name :: creates a new tmux session named session_name
