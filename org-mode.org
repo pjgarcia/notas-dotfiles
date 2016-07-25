@@ -1,0 +1,236 @@
+* ORG-MODE (referencia a [[http:/orgmode.org/guide/index.html][Org Compact manual]])				:org:
+** 2. Document Structure					  :structure:
+*** 2.4 Motion
+    + C-c C-n/p :: next/previous heading
+    + C-c C-f/b :: next/previous same level heading
+*** 2.5 Structure editing
+    + M-RET :: insert new heading/item with the same level as the current
+    + M-S-RET :: insert a new TODO heading
+    + M-left/rigth :: promote/demote current heading by one level
+    + M-up/down :: move up/down current level
+    + M-S-left/right :: promote/demote subtree
+    + M-S-up/down :: move up/down current subtree
+*** 2.6 Sparse Trees
+    + C-c / :: sparse tree (es un arbol donde se resalta lo indicado y el resto se colapsa) UTIL!
+    + C-c C-c :: para eliminar la seleccion
+*** 2.7 Plain Lists
+    + Unordered :: '+', '-' or '*'
+    + Ordered :: '1)' or '1.'
+    + Description :: use '::' to separate term from description
+    + algunos :: ver los keys de 2.5
+    + M-S-RET :: create a CHECKBOX :)
+    + C-c C-c :: check a checkbox
+    + C-c - :: change the bullets
+*** 2.8 Footnotes
+    + C-c C-x f :: footnote action command. A footnote of Org-mode[fn:1]. Jump to the definition or reference.
+		   Otherwise, create a footnote.
+    + C-c C-c :: Jump between definition and reference.
+		 
+** 3. Tables							     :tables:
+
+   | Name   | Address | Age | Phone |
+   |--------+---------+-----+-------|
+   | Gabi   | Uzpa    |  23 |  4321 |
+   | Pedro  | 25 de M |  25 |  1234 |
+   |--------+---------+-----+-------|
+   | Pupipu | Bolivar |  99 |  5555 |
+
+   + For spreadsheet-like calculations, see 'calc' package.
+   + To create, simply use '|' and TABs. Type '|-' for the separator line.
+   + C-c | :: create a table on the active region (if exists) or an empty one.
+   + M-left/right :: move the current column left/right
+   + M-S-left :: kill the current column
+   + M-S-right :: insert a column to the left of current column
+   + M-up/down :: move the current row up/down
+   + M-S-up :: kill the current row
+   + M-S-down :: insert a row above the current row
+   + C-c - :: insert a dotted line below current row
+   + C-c ^ :: sort the rows
+
+** 4. Hyperlinks						      :links:
+   The links can be to [[http:www.wikipedia.org][a site]], or to an internal section. [[target][this]] link
+   points to a target which looks like <<target>>.
+   The target is found searching in the current file.
+   [[~/.bashrc][This]] link points to the .bashrc file.
+   + [[link] [description]] (without in-between space) :: displays as 'description' and links to 'link'
+   + C-c C-l :: if cursor is on an existing link, edits the link and description. Otherwise inserts a new one
+   + C-c l (not bound by default, use org-store-link) :: store a link *to* the *current* location. 
+	When inserting a new link, a menu will provide navigation to the stored values.
+   + C-c C-o :: open link at point
+   + C-c & :: jump back to a recorded position (recorded following a link or by *C-c %*)
+
+** 5. TODO Items						       :todo:
+*** Organize Party [33%]
+**** TODO Call people [1/2] 
+***** TODO Call Sarah
+***** DONE Call Peter
+      CLOSED: [2016-06-28 Tue 22:33]
+      - State "DONE"       from "TODO"       [2016-06-28 Tue 22:33]
+**** IN-PROGRESS Buy food
+     - State "IN-PROGRESS" from "TODO"       [2016-06-28 Tue 22:40]
+**** DONE Talk to neighbour
+     CLOSED: [2016-06-28 Tue 22:40]
+     - State "DONE"       from "TODO"       [2016-06-28 Tue 22:40]
+
+*** 5.1 Using TODO states
+   + S-right/left :: select the following/preceding TODO state
+   + C-c C-t :: cycle between states
+   + C-c / t (ver antes) :: view TODO items in a sparse tree
+   + S-M-RET :: insert a new TODO item
+*** 5.2 Multi-state workflows
+   + global :: (setq org-todo-keywords
+	       '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")
+	       (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")))
+   + That second sequence shows shortcuts for a given state (you will be prompted when C-c C-t)
+   + local :: ~#+TODO: TODO(t) | DONE(d)~ (C-c C-c to make Org know the changes)
+*** 5.3 Progress Loging
+**** Closing items
+    + timestamp :: (setq org-log-done 'time)
+    + timestamp + comment :: (setq org-log-done 'note)
+**** Tracking TODO state changes
+     Org mode expects configuration on a per-keyword basis, with the '@' (note) and '!' (timestamp) markers.
+     For example:
+     #+TODO: TODO(t) IN-PROGRESS(p!) WAIT(w@/!) | DONE(d!) CANCELLED(c@)
+*** 5.4 Priorities
+    TODO items can have priority. A > B > C
+    + C-c , :: change TODO priority
+    + S-up/down :: increase/decrease priority
+*** 5.5 Breaking tasks down into subtasks
+    When you have a tree of subtasks, insert '[%]' or '[/]' to have the percentage or fraction of progress.
+    These cookies will be updated when the state of a child changes or with 'C-c C-c' on the cookie.
+*** 5.6 Checkboxes
+**** TODO Organize Party [1/2]
+     - [-] call people [1/2]
+       - [ ] call Peter
+       - [X] call Sarah
+     - [X] order food
+     Every item can be made into a checkbox by prepending '[ ]'.
+     + C-c C-c :: toggle checkbox state
+     + M-S-RET :: insert a new item with a checkbox
+
+** 6. Tags							       :tags:
+*** 6.1 Tags inheritance					      :untag:
+    An excellent way to implement labels and contexts for cross-relating information.
+    To assign a tag to a headline, symply follow it with :<tag>:
+    Headings inherit the tags from his parents, hyerarchically.
+    To activate in-buffer (file-level) tags, see the first lines example.
+*** 6.2 Setting tags						     :pirulo:
+    + M-TAB :: at the end of a headline, and after typing a colon (:), offers completion on tags
+    + C-c C-q :: enter new tags for the current headline. Tags will be aligned to [[*Help%20commands][org-tags-column]].
+    + C-c C-c :: when the cursor is in a headline, works like C-c C-q
+    Org will support tag insertion based on a /list of tags/, which is constructed dynamically,
+    containing all tags currently used in the buffer. To globally specify it, use *org-tag-alist*.
+    To define the default tags for a given file use: #+TAGS: laptop car @work @home.
+    NOTE: the #+FILETAGS "tags the file", so the tags used in the file will be enclosed (parent) by the "filetags".
+    + standard minibuffer completion :: the default mode when inserting tags
+    + fast tag selection :: to select and deselect tags with just a single key press. Enable it by assigning
+	 unique letters for yor commonly used tags.
+	 (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("@laptop" . ?l)))
+	 #+TAGS: @work(w) @home(h) @laptop(l)
+*** 6.3 Tag groups
+    When you search for a group tag, it will return matches for all members of the group. In an agenda view,
+    filtering by a group tag will display headlines tagged with at least one of the group members.
+    By setting #+TAGS: { @read : @read_book @read_ebook } you specify that '@read' is a /group tag/ for a set 
+    of 3 tags: '@read', '@read_book' & '@read_ebook'
+*** 6.4 Tag searches
+    + C-c \ :: create a sparse tree with all headlines matching a tags search.
+    + C-c / m :: idem previous point
+    These commands prompt for a match string wich allows basic Boolean logic like 
+    '+boss+urgent-project1', to find entries with both tags 'boss' and 'urgent', but not 'project1'.
+    'Kathy|Sally' find entries tagged with 'Kathy' or 'Sally'.
+
+** 7. Properties						 :properties:
+   Key-value pairs associated with an entry. 
+   + ':Xyz_ALL:' :: specify a list of *allowed values* to the ':Xyz:' property. This is inherited. 
+		    so if you set it in a level-1 entry, it will apply to the entire tree.
+		    Likewise, use *org-global-properties* to globally set defaults, or 
+		    file-wide with #+PROPERTY: NDisks_ALL 1 2 3 4
+*** Example 1							    :example:
+    :PROPERTIES:
+    :Title: Goldberg Variations
+    :Composer: J.S. Bach
+    :Publisher: Deutsche Grammophon
+    :NDisks:   1
+    :END:
+** 8. Dates and Times						:dates:times:
+*** 8.2 Creating timestamps
+    + C-c . :: prompts for a new timestamp. If cursor on existing timestamp, modifies it.
+	       Two consecutive timestamps produces a range.
+    + C-c ! :: like C-c . but insert an *inactive* timestamp that will not cause a new entry on the agenda.
+    + S-left/right :: changes the date at cursor's date by one day
+    + S-up/down :: change the timestamp's item under the cursor (the year, month, day, hour or minute)
+		   When on a range, changing the "start" ts will preserve the time block, moving it.
+		   To shorten/enlarge the time block, change the "end" timestamp.
+*** 8.3 Deadlines and scheduling
+    + C-c C-d :: insert a 'DEADLINE' keyword along with a timestamp.
+    + C-c C-s :: same as above, with 'SCHEDULED'. Meaning: you are /planning to start working/ on that task in
+		 the given date.
+*** 8.4 Clocking work time
+    Org mode allows you to clock the time you spend on specific tasks in a project
+    + C-c C-x C-i :: starts the clock on the current item (clock-in).
+		     Inserts the CLOCK keyword together with a timestamp.
+    + C-c C-x C-o :: stop the clock (clock-out). Inserts a timestamp in the same location where the 
+		     clock was started, and computes the resulting time.
+    + C-c C-x C-q :: cancel the current clock, useful if started by mistake or started working on 
+		     another task.
+*** Examples 
+    DEADLINE: <2016-07-12 Tue> a deadline to finish the task on the given date
+     + <2016-07-04 Mon>--<2016-07-11 Mon> :: a range
+     + [2016-07-04 Mon] :: an *inactive* timestamp (does not create an agenda entry)
+**** TODO verificar el pago del sueldo
+     DEADLINE: <2016-07-11 Mon +1m>
+**** escribir los comandos de 8.4 Clocking work time		
+     CLOCK: [2016-07-11 Mon 01:23]--[2016-07-11 Mon 01:30] =>  0:07
+** 9. Capture - Refile - Archive			:capture:refile:arch:
+   An important part of any organization system is the ability to quickly capture
+   new ideas and tasks, and to associate reference material with them
+*** 9.1 Capture
+    + C-c c :: start a capture process
+    + C-c C-c :: once you are done with the capture buffer, return to the window before 
+		 the capture process.
+    + C-c C-w :: finalize by moving the entry to a refile location
+    + C-c C-k :: abort the capture process and return to the previous state
+**** Capture templates
+    You can use templates to generate different types of capture notes,
+    and to store them in different places.
+*** 9.2 Refile and copy
+    When reviewing the captured data, you may want to refile or copy some of the
+    entries into a different list, for example into a project.
+    + C-c M-x :: copy the entry or region at point. The original note will not be deleted
+    + C-c C-w :: refile the entry or region at point
+*** 9.3 Archiving
+    When a project represented by a (sub)tree is finished, you may want to move
+    the tree out of the way and to stop it from contributing to the agenda. Archiving 
+    is important to keep your working files compact and global searches fast.
+    The most common archiving action is to move a project tree to another file, the 
+    archive file.
+    + C-c C-x C-a :: archive the current entry using *org-archive-default-command*
+    + C-c C-x C-s or C-c $ :: archive the (sub)tree starting at position to the
+	 location given by *org-archive-location*
+    The default archive location is a file in the same dir as the current file, with the 
+    name derived by appending "_archive" to the current file name. See
+    *org-archive-location* for information on how to change this.
+    There is an in-buffer option for setting this variable: #+ARCHIVE: %s_done::
+** 10. Agenda Views
+   It is a special buffer to properly see TODO items, time-stamped items, and 
+   tagged headlines that, by the way org works, can be scattered throughout a
+   file or even a number of files.
+*** 10.1 Agenda files
+    + C-c [ / ] :: add/remove current file to the list of agenda files
+    + C-, :: cycle through agenda file list, visiting one file after the other.
+*** 10.2 The agenda dispatcher
+    The views are created through a dispatcher, wich should be bound to a
+    global key, for example *C-c a*. After pressing that, an additional 
+    letter is required to execute a command:
+    + a :: calendar-like agenda
+    + t / T :: a list of all TODO items
+    + m / M :: a list of headings matching a TAGS expression
+    + L :: timeline view of the current buffer
+    + s :: a list of entries selected by a boolean expression of keywords
+	   and/or regex that must or must not occur in the entry.
+*** 10.3 The built-in agenda views
+**** The weekly agenda view
+     The purpose is to act like a page of a paper agenda, showing all the tasks
+     for the current week or day.
+     + C-c a a :: copile an agenda for the current week from a list of org files.
+**** 

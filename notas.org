@@ -1,4 +1,115 @@
-* COMANDOS GNU/LINUX 						   :comandos:
+#+TODO: TODO(t) IN-PROGRESS(p) WAIT(w) | DONE(d) CANCELLED(c)
+#+FILETAGS: :notas:emacs:
+
+* Programs (description and documentation)
+** Seen and documented
+   + [[*tmux][tmux]] :: terminal multiplexer
+   + [[*git][git]] :: version control
+   + [[*Emacs][Emacs]] :: text editor and several modes for special tasks ;)
+   + [[*mupdf][mupdf]] :: document viewer (alternative to Evince)
+   + [[*entr][entr]] :: run command when a file changes
+   + [[*rsync][rsync]] :: remote syncronization between file systems
+** To see or document
+   + midnight commander :: file manager
+   + cmus :: C music player
+   + ssh :: secure shell
+   + curl :: url transfer
+   + wget :: the non-interactive network downloader
+   + bash :: shell programming environment
+   + ledger :: command line accounting
+   + mutt or nmh :: mail manager
+
+* mupdf								  :mupdf:pdf:
+   + q :: quit application
+   + i :: invert colors
+   + f :: fullscreen mode
+   + W/H :: fit page width/heigth to window
+   + +/- :: zoom in/out
+   + [ / ] :: rotate page couter-clockwise/clockwise
+   + </> :: go 10 pages backward/forward
+   + ,/. :: go 1 page backward/forward
+   + b/[space] :: smart move one screenful backward/forward
+   + m :: save current page to history
+   + t/T :: go back/forward in navigation history
+   + [number]g :: go to page number
+   + G :: go to last page
+   + //? :: start searching forward/backward
+   + n/N :: continue searching forward/backward
+
+* entr							    :entr:filechange:
+  + echo notas.org | entr echo "cambio!" :: when notas.org changes, echo "cambio!"
+  + find src | entr make :: rebuild project when sources change
+  + ls *.py | entr -c ./test.py :: 
+
+* Emacs								     :editor:
+** TODO Ver [[http://ehneilsen.net/notebook/orgExamples/org-examples.html][Ejemplos de Org]]
+** GENERAL
+*** Help commands
+    + C-h v <variable> :: describe a variable
+    + C-h f <function> :: describe a function
+
+** [[file:org-mode.org::*ORG-MODE%20(referencia%20a%20%5B%5Bhttp:/orgmode.org/guide/index.html%5D%5BOrg%20Compact%20manual%5D%5D)][ORG]] 									:org:
+
+** PAREDIT							    :paredit:
+   + Split (M-S) :: separa en 2 sexps la sexp actual
+   + Join (M-J) :: junta las 2 sexps linderas en una
+   + Splicing o empalmado (M-Up, M-Down o M-s) :: empalma las sub-sexp de la sexp en el cursor, en la sexp 
+       	envolvente, eliminando los sub-sexp de la izq, der, o ninguno, respectivamente
+   + Slurp forward(C-)) :: la sexp actual es expandida trayendo el proximo sexp de afuera (de la derecha)
+   + Barf forward(C-}) :: la sexp actual es achicada sacando el ultmo sexp hacia la derecha
+  
+* tmux							      :tmux:terminal:
+  Los clientes (terminales) se conectan a las sessions. Pueden ser mas de una conectadas al mismo session.
+  Cada session tiene una o mas windows, y cada window tiene uno o mas panes (sub-terminales). 
+  Los windows pueden estar linkeados con mas de una session (pueden ser compartidos entre sessions).
+
+  - tmux new[-session] -s session_name [-d] :: creates a new tmux session named session_name, detached if -d option.
+  - tmux attach[-session] -t session_name :: attaches to an existing tmux session named session_name
+  - tmux detach (prefix + d) :: detach the currently attached session 
+  - tmux switch -t session_name :: switches to an existing session named session_name
+  - tmux list-sessions :: lists existing tmux sessions
+  - tmux list-clients :: lista los clientes (terminales) conectados a alguna session
+** Some tmux bindings
+  - C-b d :: desconecta la sesion actual
+  - C-b : :: abre la consola para poner comandos dentro de tmux
+  - C-b , :: rename window
+  - C-b $ :: rename session
+** Helpful tmux commands
+  - tmux list-keys :: list out every bound key and the tmux command it runs
+  - tmux list-commands :: lists out every tmux command and its arguments
+  - tmux info :: lists out every session, window, pane, its pid, etc. 
+  - tmux source-file ~/.tmux.conf :: reloads the current tmux configuration (based on a default tmux config)
+
+* rsync								      :rsync:
+  Se usa para copiar archivos localmente, o entre la maquina local y otro host.
+  Actualiza los archivos locales o remotos (el que corresponda) mediante el 
+  calculo de las diferencias entre ellos.
+** Local
+   - rsync [options] SRC DEST :: copia SRC a DEST
+** Access via remote shell
+   - Pull :: rsync [options] [user@]host:src... [dest]
+   - Push :: rsync [options] SRC... [user@]host:dest
+
+* git
+  + git stash [save] :: stashea los cambios, deja el wd limpio, como el ultimo commit.
+  + git stash apply :: aplica los cambios mas recientes en la pila de stash
+  + git stash show -p stash@{0} :: muestra los cambios en el stash especificado, por default el ultimo
+  + git reset --hard (HEAD~n | <sha1-commit-id>) :: delete de los commits *locales* hasta el HEAD - n (no inclusivo)
+       Si se pone un *sha*, borra todos los commits hijos de ese.
+  + git commit --amend -m <nuevo mensaje> :: para arreglar el mensaje del ultimo commit local
+  + git fetch <remote-repo> :: obtiene cambios desde el repo remoto
+  + git branch --track <branchname> <start-point> :: crea un branch local basado en el remoto, para trabajarlo
+  + git checkout --track -b refactored origin/refactored :: idem item anterior, pero tambien checkoutea ese nuevo branch
+** MERGEAR A MASTER Y DELETE DE BRANCH DEVELOP
+   + git push origin deveop-pedro :: pusheo mis ultimos cambios
+   + git checkout master :: cambio a master
+   + git pull origin master :: obtengo los ultimos cambios de master
+   + git merge develop-pedro :: mergeo deveop-pedro a master
+   + git branch -D develop-pedro :: borro el branch develop-pedro localmente. No importa si no esta mergeada
+   + git push origin :develop-pedro :: borra el branch en el repo remoto
+
+
+* [[file:notas-linux.org][COMANDOS GNU/LINUX]]						   :comandos:
 ** Información del sistema  
    + arch :: mostrar la arquitectura de la máquina (1).
    + uname -m :: mostrar la arquitectura de la máquina (2).
@@ -477,3 +588,12 @@
    + clear :: limpiar la pantalla.
    + uncomando > archivodesalida.txt 2>&1 :: ejecuta un comando y redirige la salida a un archivo, combinando en este tanto STDOUT como STDERR.
    + uncomando | tee archivodesalida.txt :: ejecuta un comando, muestra la salida en la pantalla y simultáneamente la escribe a un archivo.
+
+
+* Footnotes
+[fn:1] The link 
+
+
+
+
+

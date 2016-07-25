@@ -70,3 +70,10 @@ compress () {
 	*)         echo "Filetype not recognized" ;;
     esac
 }
+
+###########
+# ALIASES #
+###########
+alias ..="cd .."
+alias ll="ls -l"
+alias la="ls -a"
