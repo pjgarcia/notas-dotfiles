@@ -100,6 +100,9 @@
   + git fetch <remote-repo> :: obtiene cambios desde el repo remoto
   + git branch --track <branchname> <start-point> :: crea un branch local basado en el remoto, para trabajarlo
   + git checkout --track -b refactored origin/refactored :: idem item anterior, pero tambien checkoutea ese nuevo branch
+  + git apply <patch> :: aplica el <patch> que resulta de un DIFF anterior.
+       Si previamente se almacena el DIFF entre dos puntos del arbol de Git y se los quiere aplicar en otro lugar/momento, esa es la manera.
+	 
 ** MERGEAR A MASTER Y DELETE DE BRANCH DEVELOP
    + git push origin deveop-pedro :: pusheo mis ultimos cambios
    + git checkout master :: cambio a master
