@@ -1,0 +1,33 @@
+* 0x200 Programming
+  + objdump :: informacion acerca de archivos binarios
+  + objdump -D -M intel a.out :: disassembly (-D) con formato Intel (-M intel)
+  + gdb -q ./a.out :: debugger para ver el estado de la memoria y los registros al momento de ejecucion. No imprime
+		      mensajes introductorios ni la licencia (-q o -quiet)
+    + help <command> :: ayuda sobre el comando
+    + break main :: pone un breakpoint en el label "main"
+    + info registers :: imprime informacion sobre los registros en el momento actual de ejecucion
+    + info register eip (short i r eip) :: informacion particularmente sobre el EIP
+    + set disassembly-flavor intel :: cambia el formato de AT&T a Intel
+    + list :: si fue compilado con *-g*, muestra el codigo fuente del programa
+    + disassemble main :: desensambla la funcion deseada y la muestra
+    + x/FORMAT ADRESS :: para *examinar* la memoria.
+	 FORMAT tiene que ser uno de t(binario), o(octal), u(decimal sin signo) o x(hexa). Tambien puede llevar un numero
+	 en el comienzo indicando cuantos units leer. Y el tamanio del unit a leer es indicado por una letra al final,
+	 cuyos valores pueden ser b(byte), h(half word), w(word default), g(giant).
+	 Por ejemplo, puede quedar asi: x, 2x, 4xb, etc.
+	 FORMAT tambien puede tomar valores como i(instruccion), a(address), c(char), s(string).
+	 ADRESS es una expresion para la direccion de memoria a examinar. $eip o 0x8048384 por ejemplo.
+    + run
+    + quit
+  + EAX :: accumulator register
+  + ECX :: counter register
+  + EDX :: data register
+  + EBX :: base register
+  + ESP :: stack pointer
+  + EBP :: base pointer
+  + ESI EDI :: source and destination index: used to point to the source and dest when data needs to be read from or written to
+  + EIP :: instruction pointer register
+  + EFLAGS :: bit flags for comparisons and memory segmentation
+
+  + bc -ql :: basic calculator
+
