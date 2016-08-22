@@ -17,7 +17,8 @@
 	 Por ejemplo, puede quedar asi: x, 2x, 4xb, etc.
 	 FORMAT tambien puede tomar valores como i(instruccion), a(address), c(char), s(string).
 	 ADRESS es una expresion para la direccion de memoria a examinar. $eip o 0x8048384 por ejemplo.
-    + run
+    + print $ebp - 4 :: se usa para matematica simple, y guarda el resultado en una variable, para usarlo luego.
+    + run :: corre el programa, parando en los breakpoints (si es que los hay)
     + quit
   + EAX :: accumulator register
   + ECX :: counter register
