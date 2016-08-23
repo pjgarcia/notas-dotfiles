@@ -84,6 +84,9 @@
   Se usa para copiar archivos localmente, o entre la maquina local y otro host.
   Actualiza los archivos locales o remotos (el que corresponda) mediante el 
   calculo de las diferencias entre ellos.
+  La notacion es como la de ~cp~:
+  + rsync A/* B :: sincroniza los archivos dentro de A en B. De haber especificado solo "A", en lugar de "A/*",
+		   se hubiese creado la carpeta A dentro de B.
 ** Local
    - rsync [options] SRC DEST :: copia SRC a DEST
 ** Access via remote shell
