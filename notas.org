@@ -1,7 +1,7 @@
 #+TODO: TODO(t) IN-PROGRESS(p) WAIT(w) | DONE(d) CANCELLED(c)
 #+FILETAGS: :notas:emacs:
 
-* Programs (description and documentation)
+* Programs index (description and documentation)
 ** Seen and documented
    + [[*tmux][tmux]] :: terminal multiplexer
    + [[*git][git]] :: version control
@@ -9,6 +9,7 @@
    + [[*mupdf][mupdf]] :: document viewer (alternative to Evince)
    + [[*entr][entr]] :: run command when a file changes
    + [[*rsync][rsync]] :: remote syncronization between file systems
+   + gnucash :: personal finance & accounting
 ** To see or document
    + midnight commander :: file manager
    + cmus :: C music player
@@ -92,7 +93,6 @@
 ** Access via remote shell
    - Pull :: rsync [options] [user@]host:src... [dest]
    - Push :: rsync [options] SRC... [user@]host:dest
-
 * git
   + git stash [save] :: stashea los cambios, deja el wd limpio, como el ultimo commit.
   + git stash apply :: aplica los cambios mas recientes en la pila de stash
@@ -115,6 +115,18 @@
    + git merge develop-pedro :: mergeo deveop-pedro a master
    + git branch -D develop-pedro :: borro el branch develop-pedro localmente. No importa si no esta mergeada
    + git push origin :develop-pedro :: borra el branch en el repo remoto
+
+* gnucash					     :gnucash:ledger:finance:
+** ejemplos de situaciones
+   + cobro de sueldo :: es un credito en INCOME y un debito en ASSETS. La plata se mueve desde la cuenta 
+	que genera ingresos hacia la de los bienes. Genera un incremento en mis bienes.
+   + compra de algo con DEBITO :: es un credito en ASSETS y un debito en EXPENSES. La plata sale de mis bienes
+	                       y se va a la cuenta de gastos. La cuenta de ASSETS es la del banco de la TD.
+   + compra con tarjeta de CREDITO :: credito en LIABILITIES:CreditCard y debito en EXPENSES. Saco plata de 
+	la cuenta de la Tarjeta de Credito y la uso para pagar la compra. (luego, al pagarle al banco en el cierre,
+	le pago esa plata que saque)
+   + pagar la tarjeta de credito :: credito en ASSETS:BANCO y debito en LIABILITIES:CreditCard.
+   + extraccion por cajero :: es un credito en ASSETS:BANCO y debito en ASSETS:CASH.
 
 
 * [[file:notas-linux.org][COMANDOS GNU/LINUX]]						   :comandos:
