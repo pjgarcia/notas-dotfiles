@@ -35,11 +35,65 @@
 
   + bc -ql :: basic calculator
 
-  + generalmente, al hacer un llamado a una funcion (call), se reserva un espacio de 0xc en el stack, mas la 
-    cantidad de parametros. Por ejemplo, con uno solo, quedaria en 0xc + 0x4 = 0x10. Una vez que se retorna
-    de la funcion, se retorna el *stack pointer* a la posicion anterior a eso. (add sp,0x10 en el
-    caso anterior)
-
   + C variable global :: se declara igual a las demas, pero fuera de cualquier funcion
+
   + C variable estatica :: es local a la funcion en la que se declara, pero se comparte entre todos los 
        llamados a la misma
+  
+** 0x270 Memory Segmentation
+   La memoria de un programa (compilado) esta dividida en 5 segmentos: text, data, bss, heap & stack
+   + text segment :: tambien llamado /code segment/, es donde se guarda el codigo.
+		     Tiene un tamanio fijo, ya que nunca nada cambia aqui, y /no/ es writeable.
+		     El ser no-writeable permite seguridad y que se utilize para cada instancia de
+		     el programa.
+   + data & bss segments :: almacena las variables globales y estaticas. *data* tiene las variables
+	inicializadas, mientras que *bss* tiene las /no/ inicializadas. Tiene tamanio fijo y es writeable.
+   + heap segment :: segmento de memoria que el programador puede controlar directamente. /No/ tiene tamanio
+		     fijo, ya que el programador puede almacenar y liberar bloques de memoria. El crecimiento
+		     del heap es /graficamente/ hacia abajo, hacia posiciones de memoria mas grandes.
+   + stack segment :: segmento para guardar las variables locales y el contexto de las funciones. Ya que
+		      el contexto y el EIP deben cambiar cuando se llama a una funcion, se utiliza el stack
+		      para recordar (este conjunto se llama *stack frame*):
+     - las variables pasadas como argumentos
+     - las variables locales de la funcion
+     - SFP :: el *saved frame pointer* se usa para reestablecer el *EBP* a su anterior estado
+     - return address :: puntero para poner el *EIP* en la posicion correspondiente al retornar
+     El *EBP* (tambien llamado frame pointer) es un puntero usado para referenciar las variables locales 
+     dentro del stack frame actual
+     El stack no tiene tamanio fijo, y crece /graficamente/ hacia arriba, hacia las
+     posiciones mas bajas de la memoria.
+		      
+   Al hacer un llamado a una funcion, el stack frame se compone con lo siguiente: 
+   1) primero se pushean los argumentos a la funcion
+   2) luego (en el call) se pushea la direccion de retorno
+   3) se pushea el EBP, con lo que se lo almacena para luego recuperarlo cuando se debe retornar a ese contexto
+   4) se apunta el EBP al actual SP, para tomar la pos. de las var locales en relacion a este punto
+   5) se crea el espacio para almacenar las variables locales de la funcion
+
+      
+   		
+** 0x280 Building on Basics
+   Hay dos maneras principales para acceder a archivos desde C:
+   + File Descriptors :: conjunto de funciones de *bajo nivel* de I/O
+   + Filestreams :: buffered I/O construida sobre las otras funciones de bajo nivel
+* 0x300 Exploitation
+  La idea en [[file:~/workspace/hacking-taoe/0x300_Exploitation/exploit_notesearch.c::#include%20<stdio.h][exploit_notesearch.c]] es crear un buffer que tenga una serie de NOP's, las instrucciones 
+  (shellcode) que queremos que se ejecuten, y un bloque de "return adresses" (RA).
+  Ese buffer se appendea a un string del tipo "./notesearch ..." y se lo ejecuta con la funcion *system*.
+
+  Una vez ejecutado el programa ./notesearch (vulnerable a buffer overflow en donde recibe el parametro a 
+  buscar entre las notas del usuario), el overflow hace que se sobreescriba el stack (donde estan las
+  variables locales) con el comando armado en *exploit_notesearch*. La idea es, en primer lugar, lograr 
+  sobreescribir el return address con la deseada por nosotros. Como el lugar exacto del return address 
+  dentro del stack frame puede variar por algunos bytes, se pone un bloque mediano con ese RA. 
+
+  Como calculamos que RA ponerle? Considerando que las variables locales de *notesearch* estan por encima
+  de las del main() de *exploit_notesearch* en el stack (posiciones de memoria mas bajas), podemos utilizar 
+  la posicion de una variable de este ultimo y restarle X cantidad de bytes por la informacion anterior.
+  Aqui se debe jugar con ese valor, pero teniendo en cuenta que queremos saltar a alguna parte de ese bloque
+  de NOP's (para que la ejecucion termine cayendo al codigo inyectado) y que el stack frame de *notesearch*
+  esta en posiciones mas bajas del stack.
+  
+  
+
+    
