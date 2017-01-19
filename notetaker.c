@@ -3,6 +3,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "hacking.h"
 
 void usage(char *prog_name, char *filename) {
@@ -31,7 +32,7 @@ int int main(int argc, char *argv[])
   printf("[DEBUG] datafile  @ %p: \'%s\'\n", datafile, datafile);
 
   fd = open(datafile, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
-  if (fs == -1)
+  if (fd == -1)
     fatal("in main() while opening file");
   printf("[DEBUG] file descriptor is %d\n", fd);
 

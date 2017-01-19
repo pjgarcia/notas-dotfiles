@@ -1,17 +1,19 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "hacking.h"
 
-#define FILENAME "/var/notes";
+#define FILENAME "/var/notes"
 
 int print_notes(int, int, char *);
 int find_user_note(int, int);
 int search_note(char *, char *);
 void fatal(char *);
 
-int int main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   int userid, printing=1, fd;
   char searchstring[100];
@@ -47,12 +49,12 @@ int print_notes(int fd, int uid, char *searchstring) {
   note_buffer[note_length] = 0;
 
   if(search_note(note_buffer, searchstring))
-    printf(note_buffer);
+    printf("%s", note_buffer);
 
   return 1;
 }
 
-int fund_user_note(int fd, int user_uid) {
+int find_user_note(int fd, int user_uid) {
   int note_uid = -1;
   unsigned char byte;
   int length;
@@ -71,7 +73,7 @@ int fund_user_note(int fd, int user_uid) {
     }
   }
 
-  lseek(fd, length * -1, SEEK_CURR);
+  lseek(fd, length * -1, SEEK_CUR);
 
   printf("[DEBUG] found a %d byte note for user id %d\n", length, note_uid);
   return length;
