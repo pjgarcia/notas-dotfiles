@@ -134,3 +134,8 @@
 
    La proxima interrupcion ~int $0x80~ se hace con el valor 0xb en EAX, por lo que se ejecuta la funcion
    *execve* (ejecutar programa).
+
+   Para que el shellcode (que se aloja en el stack) pueda ejecutarse, el programa debe compilarse sin algunas 
+   medidas de seguridad, esto es:
+   + -fno-stack-protector
+   + -z execstack
