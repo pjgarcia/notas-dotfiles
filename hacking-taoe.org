@@ -84,10 +84,17 @@
   Una vez ejecutado el programa ./notesearch (vulnerable a buffer overflow en donde recibe el parametro a 
   buscar entre las notas del usuario), el overflow hace que se sobreescriba el stack (donde estan las
   variables locales) con el comando armado en *exploit_notesearch*. La idea es, en primer lugar, lograr 
-  sobreescribir el return address con la deseada por nosotros. Como el lugar exacto del return address 
-  dentro del stack frame puede variar por algunos bytes, se pone un bloque mediano con ese RA. 
+  sobreescribir el return address (RA) del main con la deseada por nosotros. Como el lugar exacto del RA
+  dentro del stack frame puede variar por algunos bytes, se pone un bloque mediano con ese RA repetido 
+  para que alugno de todos ellos pise al verdadero.
 
-  Como calculamos que RA ponerle? Considerando que las variables locales de *notesearch* estan por encima
+  Luego de pisar el RA, cuando la funcion *main* termine de ejecutar y quiera retornar al lugar de donde
+  fue llamada, el RA alterado va a hacer que salte hacia donde nosotros queremos. Esto es, el bloque de NOP's
+  (no operation) que anteceden al shellcode. El objetivo de estos NOPs es crear un margen "grande" a donde 
+  puede apuntar el RA, ya que no se puede saber con exactitud en que lugar del stack se va a ubicar el shellcode.
+  El resultado es que la ejecucion pase por los NOP's y termine cayendo en el shellcode.
+
+  Como estimamos que RA ponerle? Considerando que las variables locales de *notesearch* estan por encima
   de las del main() de *exploit_notesearch* en el stack (posiciones de memoria mas bajas), podemos utilizar 
   la posicion de una variable de este ultimo y restarle X cantidad de bytes por la informacion anterior.
   Aqui se debe jugar con ese valor, pero teniendo en cuenta que queremos saltar a alguna parte de ese bloque
