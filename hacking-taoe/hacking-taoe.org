@@ -134,15 +134,21 @@
   21:   cd 80                   int    $0x80
 #+END_SRC
    
-   La instruccion ~int $0x80 (syscall)~ es una interrupcion especial al kernel. Expresa que el programa le esta
-   pidiendo una accion especial al kernel. El interrupt 0x80 toma de EAX el llamado a realizar. En este caso,
-   resulta ~eax = 0xa4 (164)~, que, viendo en [[/usr/include/i386-linux-gnu/asm/unistd_32.h][unistd_32.h]], significa que se va a ejecutar la funcion 
-   *setresuid* (existe una funcion wrapper en C, de ese nombre).
+   La instruccion ~int $0x80 (syscall)~ es una interrupcion especial al kernel. Expresa que el programa le 
+   esta pidiendo una accion especial al kernel. El interrupt 0x80 toma de EAX el llamado a realizar. 
+   En este caso, resulta ~eax = 0xa4 (164)~, que, viendo en [[/usr/include/i386-linux-gnu/asm/unistd_32.h][unistd_32.h]], significa que se va a ejecutar la 
+   funcion *setresuid* (existe una funcion wrapper en C, de ese nombre).
+   
+   Esa funcion va a poner en 0 el usuario "real", "efectivo" y "saved set" (saved set-user-ID) del programa, 
+   por lo que va a ejecutarse como ROOT (UID=0).
 
-   La proxima interrupcion ~int $0x80~ se hace con el valor 0xb en EAX, por lo que se ejecuta la funcion
-   *execve* (ejecutar programa).
+   La proxima interrupcion ~int $0x80~ se hace con el valor *0xb en EAX*, por lo que se ejecuta la funcion
+   *execve* (ejecutar programa). En EBX se pone un puntero al string "/bin//sh" (multiples slashes equivalen 
+   a uno solo, segun unix), para que forme el primer argumento de *execve* (const char* filename). En ECX
+   (argumento char const* argv[]) se pone un puntero a EBX, porque la convencion es que al programa 
+   llamado se le pase el nombre completo de si mismo como primer argumento.
 
    Para que el shellcode (que se aloja en el stack) pueda ejecutarse, el programa debe compilarse sin algunas 
-   medidas de seguridad, esto es:
+   medidas de seguridad, esto es, con los flags:
    + -fno-stack-protector
    + -z execstack
