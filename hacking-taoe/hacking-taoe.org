@@ -152,3 +152,8 @@
    medidas de seguridad, esto es, con los flags:
    + -fno-stack-protector
    + -z execstack
+
+   Otra medida de seguridad importante implementada en el kernel es ASLR (address space layout randomization)
+   Esto hace que los programas se carguen en memoria con distintas direcciones cada vez. 
+   + desactivarlo :: ~echo "0" | [sudo] dd of=/proc/sys/kernel/randomize_va_space~
+   + activarlo :: ~echo "2" | [sudo] dd of=/proc/sys/kernel/randomize_va_space~
