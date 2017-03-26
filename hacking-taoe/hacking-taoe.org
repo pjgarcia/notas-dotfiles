@@ -77,30 +77,31 @@
    + File Descriptors :: conjunto de funciones de *bajo nivel* de I/O
    + Filestreams :: buffered I/O construida sobre las otras funciones de bajo nivel
 * 0x300 Exploitation
-  La idea en [[file:~/workspace/hacking-taoe/0x300_Exploitation/exploit_notesearch.c::#include%20<stdio.h][exploit_notesearch.c]] es crear un buffer que tenga una serie de NOP's, las instrucciones 
-  (shellcode) que queremos que se ejecuten, y un bloque de "return adresses" (RA).
-  Ese buffer se appendea a un string del tipo "./notesearch ..." y se lo ejecuta con la funcion *system*.
+** SHELLCODE desde el stack
+   La idea en [[file:~/workspace/hacking-taoe/0x300_Exploitation/exploit_notesearch.c::#include%20<stdio.h][exploit_notesearch.c]] es crear un buffer que tenga una serie de NOP's, las instrucciones 
+   (shellcode) que queremos que se ejecuten, y un bloque de "return adresses" (RA).
+   Ese buffer se appendea a un string del tipo "./notesearch ..." y se lo ejecuta con la funcion *system*.
 
-  Una vez ejecutado el programa ./notesearch (vulnerable a buffer overflow en donde recibe el parametro a 
-  buscar entre las notas del usuario), el overflow hace que se sobreescriba el stack (donde estan las
-  variables locales) con el comando armado en *exploit_notesearch*. La idea es, en primer lugar, lograr 
-  sobreescribir el return address (RA) del main con la deseada por nosotros. Como el lugar exacto del RA
-  dentro del stack frame puede variar por algunos bytes, se pone un bloque mediano con ese RA repetido 
-  para que alugno de todos ellos pise al verdadero.
+   Una vez ejecutado el programa ./notesearch (vulnerable a buffer overflow en donde recibe el parametro a 
+   buscar entre las notas del usuario), el overflow hace que se sobreescriba el stack (donde estan las
+   variables locales) con el comando armado en *exploit_notesearch*. La idea es, en primer lugar, lograr 
+   sobreescribir el return address (RA) del main con la deseada por nosotros. Como el lugar exacto del RA
+   dentro del stack frame puede variar por algunos bytes, se pone un bloque mediano con ese RA repetido 
+   para que alugno de todos ellos pise al verdadero.
 
-  Luego de pisar el RA, cuando la funcion *main* termine de ejecutar y quiera retornar al lugar de donde
-  fue llamada, el RA alterado va a hacer que salte hacia donde nosotros queremos. Esto es, el bloque de NOP's
-  (no operation) que anteceden al shellcode. El objetivo de estos NOPs es crear un margen "grande" a donde 
-  puede apuntar el RA, ya que no se puede saber con exactitud en que lugar del stack se va a ubicar el shellcode.
-  El resultado es que la ejecucion pase por los NOP's y termine cayendo en el shellcode.
+   Luego de pisar el RA, cuando la funcion *main* termine de ejecutar y quiera retornar al lugar de donde
+   fue llamada, el RA alterado va a hacer que salte hacia donde nosotros queremos. Esto es, el bloque de NOP's
+   (no operation) que anteceden al shellcode. El objetivo de estos NOPs es crear un margen "grande" a donde 
+   puede apuntar el RA, ya que no se puede saber con exactitud en que lugar del stack se va a ubicar el shellcode.
+   El resultado es que la ejecucion pase por los NOP's y termine cayendo en el shellcode.
 
-  Como estimamos que RA ponerle? Considerando que las variables locales de *notesearch* estan por encima
-  de las del main() de *exploit_notesearch* en el stack (posiciones de memoria mas bajas), podemos utilizar 
-  la posicion de una variable de este ultimo y restarle X cantidad de bytes por la informacion anterior.
-  Aqui se debe jugar con ese valor, pero teniendo en cuenta que queremos saltar a alguna parte de ese bloque
-  de NOP's (para que la ejecucion termine cayendo al codigo inyectado) y que el stack frame de *notesearch*
-  esta en posiciones mas bajas del stack.
-  
+   Como estimamos que RA ponerle? Considerando que las variables locales de *notesearch* estan por encima
+   de las del main() de *exploit_notesearch* en el stack (posiciones de memoria mas bajas), podemos utilizar 
+   la posicion de una variable de este ultimo y restarle X cantidad de bytes por la informacion anterior.
+   Aqui se debe jugar con ese valor, pero teniendo en cuenta que queremos saltar a alguna parte de ese bloque
+   de NOP's (para que la ejecucion termine cayendo al codigo inyectado) y que el stack frame de *notesearch*
+   esta en posiciones mas bajas del stack.
+   
 ** Para probar el shellcode
    Escribir el binario con un editor hexa (mc o Emacs con hexl-mode sirven). Ahi vamos escribiendo los
    valores en hexadecimal, que luego pueden ser pasados por un programa como *objdump* para ver que
@@ -157,3 +158,43 @@
    Esto hace que los programas se carguen en memoria con distintas direcciones cada vez. 
    + desactivarlo :: ~echo "0" | [sudo] dd of=/proc/sys/kernel/randomize_va_space~
    + activarlo :: ~echo "2" | [sudo] dd of=/proc/sys/kernel/randomize_va_space~
+
+** Utilizando el ENVIRONMENT
+   Otra manera (mas facil) de lograr ejecutar shellcode inyectado en la memoria es a travez de 
+   las variables de ambiente. Cuando se crea una, por ejemplo desde bash con ~VAR=asdf~, sucede que esa
+   variable va a formar parte del "ambiente" de un programa, y va a aparecer en el stack.
+
+   Funciones como ~getenv(char *varname)~ se utilizan para obtener la direccion en el stack de una 
+   variable de ambiente. Esa direccion se puede utilizar para, con un buffer overflow, pisar el return
+   address de la funcion u otro caso para dirigir el flujo (alterado) del programa a donde se desee. 
+   La variable de ambiente podemos formarla de nuevo con una tira de NOPs y el SHELLCODE. Pero, a 
+   diferencia de los buffers dentro de un programa, las variables de ambiente pueden ser mucho mas grandes, 
+   y por lo tanto el RA alterado no esta obligado a ser tan preciso. De todos modos, siertos factores 
+   permiten incluso eliminar la necesidad del NOP sled:
+   + Sin ASLR (address space layout randomization) la direccion donde empieza el environment de un proceso
+   es antes (dirs menores) de 0xbffffffc.
+   + El nombre del ejecutable influye en la direccion de la variable. Esto sugiere que antes, en el stack, 
+     tenemos el nombre del ejecutable y luego el ambiente.
+
+   El programa "exploit_notesearch_env.c" muestra un exploit confiable. El objetivo es preparar la ejecucion
+   del programa "notesearch.c" (vulnerable a buffer overflow) con el ambiente modificado, para que /solo/
+   contenga el shellcode. Con la info anterior se puede preparar la direccion con la que sobreescribir el
+   RA de "notesearch", ya que sabemos donde arranca el ENVIRONMENT, cual es la longitud del nombre del 
+   ejecutable, la longitud del SHELLCODE, y que va a ser el unico valor del environment.
+** Overflows en otros segmentos de la memoria (BSS, Heap)
+   El programa "game_of_choice.c" es vulnerable a buffer overflow. La estructura que representa al jugador
+   esta alojada en el BSS Segment y tiene un char[] (nombre del jugador) previo a un *function (actual juego).
+   Un overflow cargando el nombre del jugador permite sobreescribir el puntero al juego actual. Eso hace que
+   se dirigir la ejecucion a un punto clave del programa.
+
+   Para ver los simbolos de un binario se puede utilizar el comando ~nm~. Usandolo podemos ver, por ejemplo,
+   la direccion de la funcion "jackpot" y luego dirigir la ejecucion alli, para obtener creditos gratis.
+
+** Format Strings
+   
+
+   
+
+   
+     
+
