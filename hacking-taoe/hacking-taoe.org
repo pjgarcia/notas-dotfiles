@@ -191,7 +191,36 @@
    la direccion de la funcion "jackpot" y luego dirigir la ejecucion alli, para obtener creditos gratis.
 
 ** Format Strings
+   Si bien el exploit de Format Strings no es comun, puede ocurrir que un programa este mal desarrollado
+   y presente lo siguiente:
    
+   ~printf(argv[1]);~
+   
+   Aqui el usuario puede generar un format string que lea o escriba posiciones de memoria arbitrariamente.
+   Sucede que si el primer argumento a ~printf~ (el format string) es, por ejemplo, "Hola %x", la funcion
+   va a interpretar que tiene un argumento extra para llenar el lugar del parametro "%x" y va a leer la 
+   posicion del stack donde deberia estar el argumento. Poniendo multiples "%x" (u otro formato) vamos a
+   leer posiciones consecutivas del stack, cada vez mas altas. Considerar que al momento 
+   del llamado a ~printf~ es ella quien esta en el tope del stack. Si el string es almacenado en una variable
+   local, eventualmente vamos a poder leerlo.
+
+   Un argumento como "AAAA%x%x%x%s" se puede utilizar para leer posiciones arbitrarias de memoria. 
+   ~printf~ va a leer posiciones de memoria del stack (por cada %x) y eventualmente vamos a llegar a leer
+   los mismisimos valores del string que le pasamos. Por ello, si colocamos el valor de una direccion de 
+   memoria (en donde estan las "AAAA") y lo usamos justo con el formato "%s", ~printf~ va a utilizar ese
+   "puntero" y va a imprimir el valor de la posicion de memoria apuntada.
+
+   Ademas de %d, %u, %x y %s existen otros formatos, entre los que se encuentra %n. Este es especial en el
+   sentido que escribe en lugar de leer. Cuando aparece en un format string, y como argumento extra a 
+   ~printf~ se le pasa la direccion de una variable, la funcion va a almacenar alli la cantidad de bytes 
+   escritos hasta el momento en el que "%n" aparece. 
+   Utilizando la tecnica anterior (combinar una direccion de memoria y el %s para leer memoria) pero esta 
+   vez con %n, podemos hacer que ~printf~ escriba en la memoria que le indiquemos. El unico problema es que
+   el valor a escribir esta determinado por la cantidad de bytes escritos por la funcion hasta ese momento,
+   y poder poner valores muy grandes es imposible (porque deberiamos escribir mucho antes del %n).
+   Una solucion es hacerlo en multiples escrituras, donde cada una se hace con la posicion de memoria 
+   aumentada en 1 (o mas, por si usamos wrap-around), para que el ultimo byte de los 4 se conserve.
+
 
    
 
