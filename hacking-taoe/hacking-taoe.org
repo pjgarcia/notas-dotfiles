@@ -264,7 +264,7 @@
 	
    Para ver esta explicacion en mas detalle ver [[https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis/][The 101 of ELF Binaries]].
 
-*** Ejemplo
+*** Ejemplo 1
     Los siguientes pasos muestran como utilizar un programa vulnerable para ejecutar shellcode:
     1) objdump -h fmt_vuln | grep '.fini_array'  
     2) ./getenvaddr SHELLCODE ./fmt_vuln
@@ -281,5 +281,11 @@
 
     En el punto *5* ejecutamos el progama con un argumento preparado para aprovechar el printf vulnerable.
 
+*** Ejemplo 2
+    1) objdump -R fmt_vuln | grep exit
+    2) ./getenvaddr SHELLCODE ./fmt_vuln
     
-       
+    Este ejemplo utiliza dos secciones (PLT y GOT) del binario encargadas de la ubicacion de las 
+    "shared libraries". En el punto *1* conseguimos la posicion de un puntero a la funcion *exit()*, con
+    el objetivo de sobreescribirlo y asi, cuando se quiera ejecutar dicha funcion (que es provista por 
+    una shared library), en su lugar se va a ejecutar el SHELLCODE.
