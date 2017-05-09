@@ -289,3 +289,6 @@
     "shared libraries". En el punto *1* conseguimos la posicion de un puntero a la funcion *exit()*, con
     el objetivo de sobreescribirlo y asi, cuando se quiera ejecutar dicha funcion (que es provista por 
     una shared library), en su lugar se va a ejecutar el SHELLCODE.
+* 0x400 Networking
+  Programs can become much more powerful when they have the ability to communicate with each other
+  via a network.
