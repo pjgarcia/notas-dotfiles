@@ -31,9 +31,17 @@ void decode_ethernet(const u_char *header_start) {
 }
 
 int main(int argc, char *argv[]) {
-  int packet_socket, recv_length;
+  int packet_socket, recv_length, i;
   char buffer[200];
   struct sockaddr_ll *address;
+  socklen_t *addrlen;
+
+  if ((address = (struct sockaddr_ll *) malloc(sizeof(struct sockaddr_ll))) == NULL) {
+    printf("%s\n", "error on malloc");
+    exit(1);
+  }
+
+  *addrlen = sizeof(struct sockaddr_ll);
   
 
   if ((packet_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ARP))) == -1) {
@@ -41,19 +49,28 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  if ((recv_length = recv(packet_socket, buffer, 199, 0)) == -1) {
+  if ((recv_length = recvfrom(packet_socket, buffer, 199, 0,(struct sockaddr *)address, addrlen)) == -1) {
     printf("error: %d", errno);
     exit(1);
   } else {
     printf("ARP packet... captured? Len: %d\n", recv_length);
-    address = (struct sockaddr_ll *)buffer;
 
     decode_ethernet(buffer);
     
-    printf("%hX\n", address->sll_family);
-    printf("%hX\n", address->sll_protocol);
-    printf("%u\n", address->sll_ifindex);
-    printf("%hX\n", address->sll_hatype);
+    printf("ssl_family: \t0x%hX\n", address->sll_family);
+    printf("ssl_protocol\t0x%hX\n", ntohs(address->sll_protocol));
+    printf("ssl_ifindex:\t  %u\n", address->sll_ifindex);
+    printf("ssl_hatype: \t0x%hX\n", address->sll_hatype);
+    printf("ssl_halen:  \t0x%hhX\n", address->sll_halen);
+    printf("ssl_addr:   \t");
+
+    for (i = 0; i < address->sll_halen; i++) {
+      if (i > 0) {
+	printf(":");
+      }
+      printf("%hhX", address->sll_addr[i]);
+    }
+    printf("\n");
   }
 
   exit(0);
