@@ -4,3 +4,6 @@ hacked-notesearch: hacked-notesearch.c
 
 main-of: main-of.c
 	gcc -o main-of main-of.c -g -fno-stack-protector -z execstack -m32
+
+my-arpspoof: my-arpspoof.c
+	gcc -o my-arpspoof my-arpspoof.c

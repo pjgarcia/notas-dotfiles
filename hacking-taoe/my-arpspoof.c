@@ -125,6 +125,87 @@ int main(int argc, char *argv[]) {
  }
  printf("\n");
 
+ exit(0);
+}
 
-  exit(0);
+// sha = sender's hardware addres, spa = sender's protocol address
+// tha = target's hardware addres, tpa = target's protocol address
+int arp_reply(char *sha, char* spa, char *tha, char *tpa) {
+  int packet_socket;
+  ssize_t sent_length;
+  char buffer[100];
+  struct sockaddr_ll *address;
+  socklen_t addrlen;
+
+  if ((address = (struct sockaddr_ll *) malloc(sizeof(struct sockaddr_ll))) == NULL) {
+    printf("%s\n", "error on malloc");
+    exit(1);
+  }
+  
+  addrlen = sizeof(struct sockaddr_ll);
+
+  if ((packet_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ARP))) == -1) {
+    printf("error creating socket: %s", strerror(errno));
+    exit(1);
+  }
+
+  build_ether(buffer, tha, sha);
+  build_arp(buffer + ETH_HLEN, tha, tpa, sha, spa);
+
+  if ((sent_length = sendto(packet_socket, buffer, 199, 0,(struct sockaddr *)address, &addrlen)) == -1) {
+    printf("error: %d", errno);
+    exit(1);
+  }
+   
+}
+
+void build_ether(char *buffer, char *tha, char *sha) {
+  int i;
+  struct ethhdr *ether_header = (struct ethhdr *) buffer;
+  char ether_addr_part[3] = {0, 0, '\n'};
+  
+  for (i = 0; i < ETH_ALEN; i++) {
+    // copy target address part into header structure
+    strncpy(ether_addr_part, tha + (i * 3), 2);
+    ether_header->h_dest[i] = atoi(ether_addr_part);
+    // copy sender address part into header structure
+    strncpy(ether_addr_part, sha + (i * 3), 2);
+    ether_header->h_source[i] = atoi(ether_addr_part);
+  }
+
+  ether_header->h_proto = htons(ETH_P_ARP);
+}
+
+void build_arp(char *buffer, char *tha, char *tpa, char *sha, char *spa) {
+  struct my_arphdr *arp_header = (struct my_arphdr *) buffer;
+  int i;
+
+  char ether_addr_part[3] = {0, 0, '\n'};
+  char ip_addr_part[3] = {0, 0, '\n'};
+
+  arp_header->ar_hrd = htons(ARPHRD_ETHER);
+  arp_header->ar_pro = ;
+  arp_header->ar_hln = 6;
+  arp_header->ar_pln = 4;
+  arp_header->ar_op = htons(ARPOP_REPLY);
+  
+  for (i = 0; i < ETH_ALEN; i++) {
+    // copy target address part into header structure
+    strncpy(ether_addr_part, tha + (i * 3), 2);
+    arp_header->ar_tha[i] = atoi(ether_addr_part);
+    // copy sender address part into header structure
+    strncpy(ether_addr_part, sha + (i * 3), 2);
+    arp_header->ar_sha[i] = atoi(ether_addr_part);
+  }
+
+  // the same for IP
+  for (i = 0; i < 4; i++) {
+    // TODO: ver si existe una funcion para pasar las ips a un nro
+    strncpy(ether_addr_part, tpa + (i * 3), 2);
+    arp_header->ar_tip[i] = atoi(ether_addr_part);
+
+    strncpy(ether_addr_part, sha + (i * 3), 2);
+    arp_header->ar_sip[i] = atoi(ether_addr_part);
+  }  
+  
 }
