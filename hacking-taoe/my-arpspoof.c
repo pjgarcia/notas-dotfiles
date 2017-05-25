@@ -206,13 +206,22 @@ void capture_arp(int packet_socket) {
 int main(int argc, char *argv[]) {
   int packet_socket;
 
+  if (argc < 2) {
+    printf("Usage: %s [--capture|reply]\n", argv[0]);
+    exit(0);
+  }
+
   if ((packet_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ARP))) == -1) {
     printf("error creating socket: %s\n", strerror(errno));
     exit(1);
   }
-
-  capture_arp(packet_socket);
-
+  
+  if (strcmp("--capture", argv[1]) == 0) {
+    capture_arp(packet_socket);    
+  } else if (strcmp("--reply", argv[1]) == 0) {
+    return 0;
+  }
+  
   exit(0);
 }
 
