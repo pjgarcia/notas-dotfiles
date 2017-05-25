@@ -6,23 +6,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <linux/if_arp.h> // for struct arphdr
+#include <linux/if_arp.h> // for constants
+
 
 #include <errno.h>
 
 struct my_arphdr {
-	__be16		ar_hrd;		/* format of hardware address	*/
-	__be16		ar_pro;		/* format of protocol address	*/
-	unsigned char	ar_hln;		/* length of hardware address	*/
-	unsigned char	ar_pln;		/* length of protocol address	*/
-	__be16		ar_op;		/* ARP opcode (command)		*/
-	 /*
-	  *	 Ethernet looks like this : This bit is variable sized however...
-	  */
-	unsigned char		ar_sha[ETH_ALEN];	/* sender hardware address	*/
-	unsigned char		ar_sip[4];		/* sender IP address		*/
-	unsigned char		ar_tha[ETH_ALEN];	/* target hardware address	*/
-	unsigned char		ar_tip[4];		/* target IP address		*/
+  __be16		ar_hrd;		/* format of hardware address	*/
+  __be16		ar_pro;		/* format of protocol address	*/
+  unsigned char	ar_hln;		/* length of hardware address	*/
+  unsigned char	ar_pln;		/* length of protocol address	*/
+  __be16		ar_op;		/* ARP opcode (command)		*/
+  /*
+   *	 Ethernet looks like this : This bit is variable sized however...
+   */
+  unsigned char		ar_sha[ETH_ALEN];	/* sender hardware address	*/
+  unsigned char		ar_sip[4];		/* sender IP address		*/
+  unsigned char		ar_tha[ETH_ALEN];	/* target hardware address	*/
+  unsigned char		ar_tip[4];		/* target IP address		*/
 };
 
 
@@ -82,50 +83,52 @@ void decode_ethernet(const u_char *header_start) {
   printf("\tType: %hu ]\n", ethernet_header->ether_type);
 }
 
-int main(int argc, char *argv[]) {
-  int packet_socket, recv_length, i;
-  char buffer[200];
-  struct sockaddr_ll *address;
-  socklen_t addrlen;
+void build_ether(char *buffer, char *tha, char *sha) {
+  int i;
+  struct ethhdr *ether_header = (struct ethhdr *) buffer;
+  char ether_addr_part[3] = {0, 0, '\n'};
+  
+  for (i = 0; i < ETH_ALEN; i++) {
+    // copy target address part into header structure
+    strncpy(ether_addr_part, tha + (i * 3), 2);
+    ether_header->h_dest[i] = atoi(ether_addr_part);
+    // copy sender address part into header structure
+    strncpy(ether_addr_part, sha + (i * 3), 2);
+    ether_header->h_source[i] = atoi(ether_addr_part);
+  }
 
-  if ((address = (struct sockaddr_ll *) malloc(sizeof(struct sockaddr_ll))) == NULL) {
-    printf("%s\n", "error on malloc");
-    exit(1);
+  ether_header->h_proto = htons(ETH_P_ARP);
+}
+
+void build_arp(char *buffer, char *tha, char *tpa, char *sha, char *spa) {
+  struct my_arphdr *arp_header = (struct my_arphdr *) buffer;
+  int i;
+
+  char ether_addr_part[3] = {0, 0, '\n'};
+  char ip_addr_part[3] = {0, 0, '\n'};
+
+  struct in_addr sender_ip;
+  struct in_addr target_ip;
+
+  unsigned char sender_ip_mask[4];
+ 
+  arp_header->ar_hrd = htons(ARPHRD_ETHER);
+  // arp_header->ar_pro = ;
+  arp_header->ar_hln = 6;
+  arp_header->ar_pln = 4;
+  arp_header->ar_op = htons(ARPOP_REPLY);
+  
+  for (i = 0; i < ETH_ALEN; i++) {
+    // copy target address part into header structure
+    strncpy(ether_addr_part, tha + (i * 3), 2);
+    arp_header->ar_tha[i] = atoi(ether_addr_part);
+    // copy sender address part into header structure
+    strncpy(ether_addr_part, sha + (i * 3), 2);
+    arp_header->ar_sha[i] = atoi(ether_addr_part);
   }
   
-  addrlen = sizeof(struct sockaddr_ll);
-
-  if ((packet_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ARP))) == -1) {
-    printf("error creating socket: %s", strerror(errno));
-    exit(1);
-  }
-
-  if ((recv_length = recvfrom(packet_socket, buffer, 199, 0,(struct sockaddr *)address, &addrlen)) == -1) {
-    printf("error: %d", errno);
-    exit(1);
-  }
-   
- printf("ARP packet... captured. Length: %d\n\n", recv_length);
-
- decode_ethernet(buffer);
- decode_arp(buffer + ETH_HLEN);
-    
- printf("\nssl_family: \t0x%hX\n", address->sll_family);
- printf("ssl_protocol\t0x%hX\n", ntohs(address->sll_protocol));
- printf("ssl_ifindex:\t  %u\n", address->sll_ifindex);
- printf("ssl_hatype: \t0x%hX\n", address->sll_hatype);
- printf("ssl_halen:  \t0x%hhX\n", address->sll_halen);
- printf("ssl_addr:   \t");
-
- for (i = 0; i < address->sll_halen; i++) {
-   if (i > 0) {
-     printf(":");
-   }
-   printf("%02hhX", address->sll_addr[i]);
- }
- printf("\n");
-
- exit(0);
+  inet_aton(spa, (struct in_addr *) &arp_header->ar_sip);
+  inet_aton(tpa, (struct in_addr *) &arp_header->ar_tip);
 }
 
 // sha = sender's hardware addres, spa = sender's protocol address
@@ -152,60 +155,65 @@ int arp_reply(char *sha, char* spa, char *tha, char *tpa) {
   build_ether(buffer, tha, sha);
   build_arp(buffer + ETH_HLEN, tha, tpa, sha, spa);
 
-  if ((sent_length = sendto(packet_socket, buffer, 199, 0,(struct sockaddr *)address, &addrlen)) == -1) {
+  //if ((sent_length = sendto(packet_socket, buffer, 199, 0,(struct sockaddr *)address, &addrlen)) == -1) {
+  if ((sent_length = send(packet_socket, buffer, 199, 0)) == -1) {
     printf("error: %d", errno);
     exit(1);
   }
    
 }
 
-void build_ether(char *buffer, char *tha, char *sha) {
-  int i;
-  struct ethhdr *ether_header = (struct ethhdr *) buffer;
-  char ether_addr_part[3] = {0, 0, '\n'};
-  
-  for (i = 0; i < ETH_ALEN; i++) {
-    // copy target address part into header structure
-    strncpy(ether_addr_part, tha + (i * 3), 2);
-    ether_header->h_dest[i] = atoi(ether_addr_part);
-    // copy sender address part into header structure
-    strncpy(ether_addr_part, sha + (i * 3), 2);
-    ether_header->h_source[i] = atoi(ether_addr_part);
+void capture_arp(int packet_socket) {
+  int recv_length, i;
+  char buffer[200];
+  struct sockaddr_ll *address;
+  socklen_t addrlen;
+ 
+  if ((address = (struct sockaddr_ll *) malloc(sizeof(struct sockaddr_ll))) == NULL) {
+    printf("%s\n", "error on malloc");
+    exit(1);
   }
+  
+  addrlen = sizeof(struct sockaddr_ll);
 
-  ether_header->h_proto = htons(ETH_P_ARP);
+  if ((recv_length = recvfrom(packet_socket, buffer, 199, 0,(struct sockaddr *)address, &addrlen)) == -1) {
+    printf("error: %d", errno);
+    exit(1);
+  }
+   
+  printf("ARP packet... captured. Length: %d\n\n", recv_length);
+
+  decode_ethernet(buffer);
+  decode_arp(buffer + ETH_HLEN);
+    
+  printf("\nssl_family: \t0x%hX\n", address->sll_family);
+  printf("ssl_protocol\t0x%hX\n", ntohs(address->sll_protocol));
+  printf("ssl_ifindex:\t  %u\n", address->sll_ifindex);
+  printf("ssl_hatype: \t0x%hX\n", address->sll_hatype);
+  printf("ssl_halen:  \t0x%hhX\n", address->sll_halen);
+  printf("ssl_addr:   \t");
+
+  for (i = 0; i < address->sll_halen; i++) {
+    if (i > 0) {
+      printf(":");
+    }
+    printf("%02hhX", address->sll_addr[i]);
+  }
+  printf("\n");
+
 }
 
-void build_arp(char *buffer, char *tha, char *tpa, char *sha, char *spa) {
-  struct my_arphdr *arp_header = (struct my_arphdr *) buffer;
-  int i;
+int main(int argc, char *argv[]) {
+  int packet_socket;
 
-  char ether_addr_part[3] = {0, 0, '\n'};
-  char ip_addr_part[3] = {0, 0, '\n'};
-
-  arp_header->ar_hrd = htons(ARPHRD_ETHER);
-  arp_header->ar_pro = ;
-  arp_header->ar_hln = 6;
-  arp_header->ar_pln = 4;
-  arp_header->ar_op = htons(ARPOP_REPLY);
-  
-  for (i = 0; i < ETH_ALEN; i++) {
-    // copy target address part into header structure
-    strncpy(ether_addr_part, tha + (i * 3), 2);
-    arp_header->ar_tha[i] = atoi(ether_addr_part);
-    // copy sender address part into header structure
-    strncpy(ether_addr_part, sha + (i * 3), 2);
-    arp_header->ar_sha[i] = atoi(ether_addr_part);
+  if ((packet_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ARP))) == -1) {
+    printf("error creating socket: %s\n", strerror(errno));
+    exit(1);
   }
 
-  // the same for IP
-  for (i = 0; i < 4; i++) {
-    // TODO: ver si existe una funcion para pasar las ips a un nro
-    strncpy(ether_addr_part, tpa + (i * 3), 2);
-    arp_header->ar_tip[i] = atoi(ether_addr_part);
+  capture_arp(packet_socket);
 
-    strncpy(ether_addr_part, sha + (i * 3), 2);
-    arp_header->ar_sip[i] = atoi(ether_addr_part);
-  }  
-  
+  exit(0);
 }
+
+
