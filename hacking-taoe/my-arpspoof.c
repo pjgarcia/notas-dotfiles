@@ -144,6 +144,14 @@ int arp_reply(char *sha, char* spa, char *tha, char *tpa) {
     printf("%s\n", "error on malloc");
     exit(1);
   }
+
+  address->sll_family = AF_PACKET;
+  address->sll_protocol = ;
+  address->sll_ifindex = ;
+  address->sll_hatype = ;
+  address->sll_pkttype = ;
+  address->sll_halen = ;
+  address->sll_addr = ;
   
   addrlen = sizeof(struct sockaddr_ll);
 
@@ -155,8 +163,8 @@ int arp_reply(char *sha, char* spa, char *tha, char *tpa) {
   build_ether(buffer, tha, sha);
   build_arp(buffer + ETH_HLEN, tha, tpa, sha, spa);
 
-  //if ((sent_length = sendto(packet_socket, buffer, 199, 0,(struct sockaddr *)address, &addrlen)) == -1) {
-  if ((sent_length = send(packet_socket, buffer, 199, 0)) == -1) {
+  if ((sent_length = sendto(packet_socket, buffer, 199, 0,(struct sockaddr *)address, addrlen)) == -1) {
+  //if ((sent_length = send(packet_socket, buffer, 199, 0)) == -1) {
     printf("error: %d", errno);
     exit(1);
   }
@@ -208,6 +216,7 @@ int main(int argc, char *argv[]) {
 
   if (argc < 2) {
     printf("Usage: %s [--capture|reply]\n", argv[0]);
+    printf("                   --reply <sender_hw_addr> <sender_ip_addr> <target_hw_addr> <target_ip_addr>\n");
     exit(0);
   }
 
@@ -219,7 +228,7 @@ int main(int argc, char *argv[]) {
   if (strcmp("--capture", argv[1]) == 0) {
     capture_arp(packet_socket);    
   } else if (strcmp("--reply", argv[1]) == 0) {
-    return 0;
+    
   }
   
   exit(0);
