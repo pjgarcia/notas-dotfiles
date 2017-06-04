@@ -42,6 +42,8 @@ struct tcp_hdr {
 
 void decode_ip(const u_char *);
 u_int decode_tcp(const u_char *);
+void build_tcp_syn(char *buffer);
+short compute_tcp_checksum(char *buffer);
 
 int main(int argc, char *argv[]) {
   int raw_socket; // raw IP socket
@@ -55,7 +57,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  if ((address = (struct sockaddr_in *) malloc(sizeof(struck sockaddr_in))) == NULL) {
+  if ((address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in))) == NULL) {
     printf("Error on malloc\n");
     exit(1);
   }
@@ -71,9 +73,9 @@ int main(int argc, char *argv[]) {
 
   address->sin_family = AF_INET;
   address->sin_port = IPPROTO_TCP;
-  address->sin_addr = inet_aton(argv[1]);
+  address->sin_addr = (struct in_addr) inet_aton(argv[1]);
   
-  if ((sendto(packet_socket, packet, 99, 0, address, addrlen)) == -1) {
+  if ((sendto(raw_socket, packet, sizeof(struct tcp_hdr), 0, (struct sockaddr *)address, addrlen)) == -1) {
     printf("Error sending data: %s\n", strerror(errno));
     exit(1);
   }
@@ -92,7 +94,7 @@ void build_tcp_syn(char *buffer) {
   header->tcp_flags = TCP_SYN;
   header->tcp_window = htons(100);
   header->tcp_checksum = 0;
-  header->urgent = 0;
+  header->tcp_urgent = 0;
 
   header->tcp_checksum = compute_tcp_checksum(buffer);
 }

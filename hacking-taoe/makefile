@@ -7,3 +7,6 @@ main-of: main-of.c
 
 my-arpspoof: my-arpspoof.c
 	gcc -o my-arpspoof my-arpspoof.c
+
+syn-flooder: syn-flooder.c
+	gcc -o syn-flooder syn-flooder.c
