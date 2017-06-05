@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 
   address->sin_family = AF_INET;
   address->sin_port = IPPROTO_TCP;
-  address->sin_addr = (struct in_addr) inet_aton(argv[1]);
+  (address->sin_addr).s_addr = inet_aton(argv[1]);
   
   if ((sendto(raw_socket, packet, sizeof(struct tcp_hdr), 0, (struct sockaddr *)address, addrlen)) == -1) {
     printf("Error sending data: %s\n", strerror(errno));
@@ -85,8 +85,8 @@ int main(int argc, char *argv[]) {
 void build_tcp_syn(char *buffer) {
   struct tcp_hdr *header = (struct tcp_hdr *) buffer;
 
-  header->tcp_src_port = htons(8080);
-  header->tcp_dest_port = htons(8080);
+  header->tcp_src_port = htons(7890);
+  header->tcp_dest_port = htons(7890);
   header->tcp_seq = htonl(1);
   header->tcp_ack = 0;
   header->reserved = 0;
