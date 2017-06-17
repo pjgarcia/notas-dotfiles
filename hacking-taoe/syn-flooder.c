@@ -18,7 +18,7 @@ struct tcp_hdr {
   unsigned char tcp_flags;    // TCP flags (and 2 bits from reserved space)
 #define TCP_FIN  0x01
 #define TCP_SYN  0x02
-#define TCP_RST  0x03
+#define TCP_RST  0x04
 #define TCP_PUSH 0x08
 #define TCP_ACK  0x10
 #define TCP_URG  0x20  
@@ -74,7 +74,7 @@ void send_tcp_syn(int socket, struct sockaddr_in *target_address, int target_por
   int i;
   
   build_tcp_syn(packet, target_port);
-  // decode_tcp(packet);
+  decode_tcp(packet);
   
   if ((sendto(socket, packet, sizeof(struct tcp_hdr), 0, (struct sockaddr *)target_address, sizeof(struct sockaddr_in))) == -1) {
     printf("Error sending data: %s\n", strerror(errno));
@@ -102,7 +102,7 @@ void build_tcp_syn(char *buffer, int port) {
   // for every execution.
   header->tcp_src_port = htons(random());
   header->tcp_dest_port = htons(port);
-  header->tcp_seq = htonl(1);
+  header->tcp_seq = htonl(random());
   header->tcp_ack = 0;
   header->reserved = 0;
   header->tcp_offset = 5;
@@ -119,13 +119,13 @@ short compute_tcp_checksum(char *buffer) {
   int i;
   unsigned short checksum = 0;
   unsigned short *short_ptr = (unsigned short *)buffer;
-  unsigned short short_holder = 0;
 
   // itero por los 10 conjuntos de 16 bits que conforman el
   // header TCP para calcular el checksum
   for (i = 0; i < 10; i++) {
-    short_holder = htons(*buffer);
-    checksum += short_holder;
+    *short_ptr = (unsigned shor *)buffer;
+    buffer += 16;
+    checksum += *short_ptr;
   }
 
   return checksum;
