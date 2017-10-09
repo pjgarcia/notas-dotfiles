@@ -292,3 +292,20 @@
 * 0x400 Networking
   Programs can become much more powerful when they have the ability to communicate with each other
   via a network.
+* 0x600 Countermeasures
+  (gdb) i r esp ebx ebp
+  esp            0xbffff340       0xbffff340
+  ebx            0xb7fc0000       -1208221696
+  ebp            0xbffff388       0xbffff388
+  (gdb) cont
+  Continuing.
+  
+  Program received signal SIGTRAP, Trace/breakpoint trap.
+  0xbffff2b3 in ?? ()
+  (gdb) i r esp ebx ebp
+  esp            0xbffff340       0xbffff340
+  ebx            0x6      6
+  ebp            0xbffff25c       0xbffff25c
+  
+  (gdb) print /x 0xbffff388 - 0xbffff25c
+  $2 = 0x12c
