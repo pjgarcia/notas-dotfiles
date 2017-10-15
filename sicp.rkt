@@ -283,3 +283,40 @@
 	  ((even? b) (iter (double a) (halve b) c))
 	  (else (iter a (- b 1) (+ c a)))))
   (iter a b 0))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.19 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (fib-t n)
+  (define (fib-iter a b p q count)
+    (cond ((= count 0) b)
+	  ((even? count)
+	   (fib-iter a
+		     b
+		     (+ (square q) (square p)) ;; p'
+		     (+ (* 2 p q) (square q)) ;; q'
+		     (/ count 2)))
+	  (else (fib-iter (+ (* b q) (* a q) (* a p))
+			  (+ (* b p) (* a q))
+			  p
+			  q
+			  (- count 1)))))		     
+  (fib-iter 1 0 0 1 n))
+
+(define (fib n)
+  (if (< n 2)
+      n
+      (+ (fib (- n 1)) (fib (- n 2)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.20 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd (/ a b) (remainder a b))))
+;; applicative-order 
+(gcd 206 40)
+
