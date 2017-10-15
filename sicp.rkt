@@ -316,7 +316,70 @@
 (define (gcd a b)
   (if (= b 0)
       a
-      (gcd (/ a b) (remainder a b))))
+      (gcd b (remainder a b))))
+
 ;; applicative-order 
 (gcd 206 40)
+(gcd 40 6)
+(gcd 6 4)
+(gcd 4 2)
+(gcd 2 0)
+2
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.21 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+	((divides? test-divisor n) test-divisor)
+	(else (find-divisor n (+ test-divisor 1)))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+;; (smallest-divisor 199) => 199
+;; (smallest-divisor 1999) => 1999
+;; (smallest-divisor 19999) => 7
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.22 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (timed-prime-test n)
+  (start-prime-test n (current-milliseconds)))
+
+(define (start-prime-test n start-time)
+  (cond ((prime? n)
+	 (report-prime (- (current-milliseconds) start-time)
+		       n))))
+
+(define (report-prime elapsed-time n)
+  (newline)
+  (display n)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (prime? n)
+  (= (smallest-divisor n) n))
+
+(define (search-for-primes start end)
+  (cond ((even? start) (search-for-primes (+ start 1) end))
+	((not (> start end))
+	 (timed-prime-test start)
+	 (search-for-primes (+ start 2) end))))
+;; first 3 primes from:
+;; a) 10^9: 2 seconds
+;; b) 10^12: 60 seconds
+;; c) 10^13: 185 seconds
+
+;; (b) should take:
+(* (sqrt 100) 2) ;; 20 seconds <== does not...
+(* (sqrt 10) 60) ;; 189 seconds <== satisfies the prediction
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.23 ;;
+;;;;;;;;;;;;;;;;;;;
