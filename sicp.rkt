@@ -364,7 +364,7 @@
   (display elapsed-time))
 
 (define (prime? n)
-  (= (smallest-divisor n) n))
+  (= (smallest-divisor-next n) n))
 
 (define (search-for-primes start end)
   (cond ((even? start) (search-for-primes (+ start 1) end))
@@ -382,4 +382,27 @@
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 1.23 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (smallest-divisor-next n)
+  (define (next n)
+    (if (= n 2)
+	3
+	(+ n 2)))
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+	  ((divides? test-divisor n) test-divisor)
+	  (else (find-divisor n (next test-divisor)))))  
+  (find-divisor n 2))
+
+;; (search-for-primes (expt 10 13) (+ (expt 10 13) 100))
+;; 10000000000037 *** 68
+;; 10000000000051 *** 62
+
+;; for the primes around (expt 10 13) the time consumption drops from ~180 to ~65
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.24 ;;
 ;;;;;;;;;;;;;;;;;;;
