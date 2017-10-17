@@ -353,7 +353,7 @@
   (start-prime-test n (current-milliseconds)))
 
 (define (start-prime-test n start-time)
-  (cond ((prime? n)
+  (cond ((fast-prime? n)
 	 (report-prime (- (current-milliseconds) start-time)
 		       n))))
 
@@ -363,6 +363,7 @@
   (display " *** ")
   (display elapsed-time))
 
+;; O(sqrt(n))
 (define (prime? n)
   (= (smallest-divisor-next n) n))
 
@@ -406,3 +407,56 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 1.24 ;;
 ;;;;;;;;;;;;;;;;;;;
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+	((even? exp)
+	 (remainder (square (expmod base (/ exp 2) m))
+		    m))
+	(else
+	 (remainder (* base (expmod base (- exp 1) m))
+		    m))))
+
+;; O(log n)
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (min 4294967087 (- n 1))))))
+
+(define (fast-prime? n)
+  (define (iter times)
+    (cond ((= times 0) #t)
+	  ((fermat-test n) (iter (- times 1)))
+	  (else #f)))
+  (iter 100))
+	 
+;; since: 10^19 = 10^3 * 10^16
+;; log(10^19) = log(10^3 * 10^16)
+;; log(10^19) = log(10^3) + log(10^16)
+
+;; therefore, for an input 10^3 times larger than before,
+;; the algorithm should take log(10^3)=3 more. (not times!)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.25 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; This procedure will not serve as well as our expmod because,
+;; when used with big exp, the dividend will become exponentially
+;; large. Our expmod uses properties of modular exponentiation
+;; to work with numbers not much larger than m (not > m than m when squaring)
+;; Very large numbers imposes an overhead in the lisp evaluator.
+
+;; (define (square n)
+;;   (display "square ")(display n)(newline)
+;;   (* n n))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.26 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; In the original expmod, when we double the size of the input (exponent)
+;; the algorightm only needs one more step to compute te result.
+;; Meanwhile, the transformed expmod needs to double the steps:
+;; steps(n) = 2 * steps(n/2)
+;; Therefore, the new methods behaves like O(n)
