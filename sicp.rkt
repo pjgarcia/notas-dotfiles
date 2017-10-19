@@ -460,3 +460,47 @@
 ;; Meanwhile, the transformed expmod needs to double the steps:
 ;; steps(n) = 2 * steps(n/2)
 ;; Therefore, the new methods behaves like O(n)
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.28 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (miller-rabint-test n)
+
+  (define (mr-expmod a n m)
+    (define (even-part x)
+      (if (and (=  1 (remainder (square x) m))
+	       (not (= 1 x))
+	       (not (= (- m 1) x)))
+	  0
+	  (remainder (square x) m)))
+    (cond ((= n 0) 1)
+	  ((even? n)
+	   (even-part (mr-expmod a (/ n 2) m)))
+	  (else
+	   (remainder (* a (mr-expmod a (- n 1) m))
+		      m))))
+  
+  (define (iter i)
+    (cond ((> i (/ n 2)) #t)
+	  ((= 0 (mr-expmod i (- n 1) n)) #f)
+	  (else (iter (+ i 1)))))
+  (iter 1))
+    
+
+
+	  
+(define (mr-expmod a n m)
+  (define (even-part x)
+    (if (and (=  1 (remainder (square x) m))
+	     (not (= 1 x))
+	     (not (= (- m 1) x)))
+	0
+	(remainder (square x) m)))
+  (cond ((= n 0) 1)
+	((even? n)
+	 (even-part (mr-expmod a (/ n 2) m)))
+	(else
+	 (remainder (* a (mr-expmod a (- n 1) m))
+		    m))))
