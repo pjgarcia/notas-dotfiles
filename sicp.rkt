@@ -461,6 +461,18 @@
 ;; steps(n) = 2 * steps(n/2)
 ;; Therefore, the new methods behaves like O(n)
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.27 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (congruent-mod-n-lessers n)
+  (define (congruent-mod-n a n)
+    (= (expmod a n n) a))
+  (define (iter a)
+    (cond ((= a n) #t)
+	  ((congruent-mod-n a n) (iter (+ a 1)))
+	  (else #f)))
+  (iter 1))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 1.28 ;;
