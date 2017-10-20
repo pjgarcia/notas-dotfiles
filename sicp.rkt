@@ -534,9 +534,6 @@
   (* (sum f (+ a (/ dx 2.0)) add-dx b)
      dx))
 
-(define (inc n)
-  (+ n 1))
-
 (define (identity n) n)
 
 ;;;;;;;;;;;;;;;;;;;
@@ -544,5 +541,11 @@
 ;;;;;;;;;;;;;;;;;;;
 
 (define (simpson-integral f a b n)
-  (* (/ (/ (- b a) n) 3)
-     (sum )))
+  (define h (/ (- b a) n))
+  (define (term k)
+    (* (f (+ a (* k h)))
+       (cond ((or (= k 0) (= k n)) 1)
+	     ((even? k) 2)
+	     (else 4))))
+  (* (/ h 3)
+     (sum term 0 inc n)))
