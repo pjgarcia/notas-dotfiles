@@ -493,6 +493,7 @@
 	  (else
 	   (remainder (* a (mr-expmod a (- n 1) m))
 		      m))))
+
   
   (define (iter i)
     (cond ((> i (/ n 2)) #t)
@@ -516,3 +517,32 @@
 	(else
 	 (remainder (* a (mr-expmod a (- n 1) m))
 		    m))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Section 1.3 functions ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (sum term a next b)
+  (if (> a b)
+      0
+      (+ (term a)
+	 (sum term (next a) next b))))
+
+(define (integral f a b dx)
+  (define (add-dx x) (+ x dx))
+  (* (sum f (+ a (/ dx 2.0)) add-dx b)
+     dx))
+
+(define (inc n)
+  (+ n 1))
+
+(define (identity n) n)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.29 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (simpson-integral f a b n)
+  (* (/ (/ (- b a) n) 3)
+     (sum )))
