@@ -549,3 +549,103 @@
 	     (else 4))))
   (* (/ h 3)
      (sum term 0 inc n)))
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.30 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; Linear recursive version of sum
+;; (define (sum term a next b)
+;;   (if (> a b)
+;;       0
+;;       (+ (term a)
+;; 	 (sum term (next a) next b))))
+
+(define (sum-i term a next b)
+  (define (iter a result)
+    (if (> a b)
+	result
+	(iter (next a) (+ result (term a)))))
+  (iter a 0))
+    
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.31 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (product term a next b)
+  (if (> a b)
+      1
+      (* (term a) (product term (next a) next b))))
+
+(define (fact-product n)
+  (product identity 1 inc n))
+
+(define (product-i term a next b)
+  (define (iter a result)
+    (if (> a b)
+	result
+	(iter (next a) (* result (term a)))))
+  (iter a 1))
+
+(define (wallis-pi n)
+  (define (term k)
+    (/ (* (* 2.0 k)
+	  (* 2.0 (+ k 1)))
+       (square (+ 1 (* k 2.0)))))
+  (product-i term 1.0 inc n))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.32 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (accumulate combiner null-value term a next b)
+  (if (> a b)
+      null-value
+      (combiner
+       (term a)
+       (accumulate combiner null-value term (next a) next b))))
+
+(define (new-sum term a next b)
+  (accumulate + 0 term a next b))
+
+(define (new-product term a next b)
+  (accumulate * 1 term a next b))
+
+(define (accumulate-i combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+	result
+	(iter (next a) (combiner result (term a)))))
+  (iter a null-value))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.33 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (filtered-accum combiner null-value term a next b filter)
+  (cond ((> a b) null-value)
+	((filter a)
+	 (combiner (term a)
+		   (filtered-accum combiner null-value term (next a) next b filter)))
+	(else
+	 (filtered-accum combiner null-value term (next a) next b filter))))
+
+;; racket@sicp.rkt> (filtered-accum + 0 square 2 inc 6 prime?)
+;; 38
+
+(define (relative-prime i)
+  (= (gcd 10 i) 1))
+
+;; racket@sicp.rkt> (filtered-accum * 1 identity 1 inc 9 relative-prime)
+;; 189
+
+(define (filtered-accum-i combiner null-value term a next b filter)
+  (define (iter a result)
+    (if (> a b)
+	result
+	(iter (next a) (combiner (if (filter a) (term a) null-value) result))))
+  (iter a null-value))
+				 
+	
