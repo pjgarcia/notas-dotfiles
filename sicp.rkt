@@ -648,4 +648,97 @@
 	(iter (next a) (combiner (if (filter a) (term a) null-value) result))))
   (iter a null-value))
 				 
-	
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.34 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;;(define (f g) (g 2))
+
+;; (f square) => 4
+;; (f (lambda (z) (* z (+ z 1)))) => 6
+
+;; (f f)
+;; (f 2)
+;; (2 2) => error!
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.35 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (fixed-point f first-guess)
+  (define tolerance 0.00001)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+	  guess
+	  (try next))))
+  (try first-guess))
+
+;; phi es P.F. de f(x) = 1 + 1/x si:
+;; (= (f phi)
+;;    (+ 1 (/ 1 phi))
+;;    phi)
+;; reemplazando phi por su valor
+;; (= (/ (+ 1 (sqrt 5)) 2)
+;;    (+ 1 (/ 1
+;; 	   (/ (+ 1 (sqrt 5)) 2))))
+;; multiplicando por 2 y restando 2 
+;; (= (+ (- 1) (sqrt 5))
+;;    (/ 4 (+ 1 (sqrt 5))))
+;; multiplicando por 1 + sqrt(5)
+;; (= 4 4)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.36 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; HACER
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.37 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (cont-frac n d k)
+  (define (recur i)
+    (if (> i k)
+	0
+	(/ (n i)
+	   (+ (d i) (recur (+ i 1))))))
+  (recur 1))
+
+;; k = 11 gives at least 4 decimal accurate places
+
+(define (cont-frac-i n d k)
+  (define (iter i accum)
+    (if (= i 0)
+	accum
+	(iter (- i 1)
+	      (/ (n i)
+		 (+ (d i) accum)))))
+  (iter k 0))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.38 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (d i)
+  (let ((part (remainder i 3)))
+    (if (or (= part 0) (= part 1))
+	1
+	(* 2 (+ 1 (quotient i 3))))))
+    
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.39 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (tan-cf x k)
+  (define (n i)
+    (if (= i 1)
+	x
+	(- 0 (square x))))
+  (define (d i)
+    (- (* 2 i) 1))
+  (cont-frac n d k))
