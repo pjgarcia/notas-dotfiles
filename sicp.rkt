@@ -695,7 +695,31 @@
 ;; Exercise 1.36 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-;; HACER
+(define (fixed-point-print f first-guess)
+  (define tolerance 0.00001)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess step)
+    (let ((next (f guess)))
+      (display step) (display " ")
+      (display next)
+      (newline)
+      (if (close-enough? guess next)
+	  guess
+	  (try next (+ step 1)))))
+  (try first-guess 1))
+
+;; (fixed-point-print 
+;;  (lambda (x) (average x (/ (log 1000) (log x))))
+;;  2)
+
+;; toma 34 iteraciones
+
+;; (fixed-point-print
+;;  (lambda (x) (/ (log 1000) (log x)))
+;;  2)
+
+;; toma 9 iteraciones
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 1.37 ;;
@@ -742,3 +766,96 @@
   (define (d i)
     (- (* 2 i) 1))
   (cont-frac n d k))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 1.3.4 Procedures as Returned Values ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+(define (sqrt x)
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+	       1.0))
+
+;; compare the previous definition of sqrt with
+;; the next
+;; the former makes explicit the three ideas of
+;; fixed-point search, average damping, and the
+;; function y -> x/y
+;; the general idea of the process becomes clearer
+;; as we use those abstractions
+
+(define (sqrt-iter guess x)
+  (if (good-enough? guess x)
+      guess
+      (sqrt-iter (improve guess x)
+		 x)))
+
+(define (improve guess x)
+  (average guess (/ x guess)))
+
+(define (sqrt x)
+  (sqrt-iter 1.0 x))
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Newton's Method ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+;; if dx is a small number
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+
+(define dx 0.00001)
+
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x)
+	    ((deriv g) x)))))
+
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define (sqrt x)
+  (newtons-method (lambda (y) (- (square y) x)) 1.0))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Abstraction and first-class procedures ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (fixed-point-of-transform g transform guess)
+  (fixed-point (transform g) guess))
+
+(define (sqrt x)
+  (fixed-point-of-transform
+   (lambda (y) (/ x y))
+   average-damp
+   1.0))
+
+(define (sqrt x)
+  (fixed-point-of-transform
+   (lambda (y) (- (square y) x))
+   newton-transform
+   1.0))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.40 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (cubic a b c)
+  (lambda (x) (+ (cube x)
+		 (* a (square x))
+		 (* b x)
+		 c)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.41 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (double f)
+  (lambda (x) (f (f x))))
+
+(((double (double double)) inc) 5) ;; 21
