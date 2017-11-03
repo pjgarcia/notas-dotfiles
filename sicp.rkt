@@ -774,9 +774,9 @@
 (define (average-damp f)
   (lambda (x) (average x (f x))))
 
-(define (sqrt x)
-  (fixed-point (average-damp (lambda (y) (/ x y)))
-	       1.0))
+;; (define (sqrt x)
+;;   (fixed-point (average-damp (lambda (y) (/ x y)))
+;; 	       1.0))
 
 ;; compare the previous definition of sqrt with
 ;; the next
@@ -786,17 +786,17 @@
 ;; the general idea of the process becomes clearer
 ;; as we use those abstractions
 
-(define (sqrt-iter guess x)
-  (if (good-enough? guess x)
-      guess
-      (sqrt-iter (improve guess x)
-		 x)))
+;; (define (sqrt-iter guess x)
+;;   (if (good-enough? guess x)
+;;       guess
+;;       (sqrt-iter (improve guess x)
+;; 		 x)))
 
-(define (improve guess x)
-  (average guess (/ x guess)))
+;; (define (improve guess x)
+;;   (average guess (/ x guess)))
 
-(define (sqrt x)
-  (sqrt-iter 1.0 x))
+;; (define (sqrt x)
+;;   (sqrt-iter 1.0 x))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -819,8 +819,8 @@
 (define (newtons-method g guess)
   (fixed-point (newton-transform g) guess))
 
-(define (sqrt x)
-  (newtons-method (lambda (y) (- (square y) x)) 1.0))
+;; (define (sqrt x)
+;;   (newtons-method (lambda (y) (- (square y) x)) 1.0))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Abstraction and first-class procedures ;;
@@ -829,17 +829,17 @@
 (define (fixed-point-of-transform g transform guess)
   (fixed-point (transform g) guess))
 
-(define (sqrt x)
-  (fixed-point-of-transform
-   (lambda (y) (/ x y))
-   average-damp
-   1.0))
+;; (define (sqrt x)
+;;   (fixed-point-of-transform
+;;    (lambda (y) (/ x y))
+;;    average-damp
+;;    1.0))
 
-(define (sqrt x)
-  (fixed-point-of-transform
-   (lambda (y) (- (square y) x))
-   newton-transform
-   1.0))
+;; (define (sqrt x)
+;;   (fixed-point-of-transform
+;;    (lambda (y) (- (square y) x))
+;;    newton-transform
+;;    1.0))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 1.40 ;;
@@ -855,7 +855,58 @@
 ;; Exercise 1.41 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (double f)
+(define (double-f f)
   (lambda (x) (f (f x))))
 
-(((double (double double)) inc) 5) ;; 21
+(((double-f (double-f double-f)) inc) 5) ;; 21
+
+;; ((double (double (double (double inc)))) 5)
+;; ((inc1 (inc2 ... (inc 16)...)) 5)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.42 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.43 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (repeated f n)
+  (cond ((= n 1) f)
+	((even? n) (repeated (double-f f) (/ n 2)))
+	(else (compose f (repeated f (- n 1))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.44 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (smooth f)
+  (lambda (x) (/ (+ (f (- x dx))
+		    (f x)
+		    (f (+ x dx)))
+		 3)))
+
+(define (repeated-smooth f n)
+  ((repeated smooth n) f))
+  
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.45 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (nth-root n x)
+  (define (log2 x)
+    (/ (log x)
+       (log 2)))
+  (fixed-point-of-transform
+   (lambda (y)
+     (/ x (expt y (- n 1))))
+   (repeated average-damp (floor (log2 n)))
+   1.0))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 1.46 ;;
+;;;;;;;;;;;;;;;;;;;
