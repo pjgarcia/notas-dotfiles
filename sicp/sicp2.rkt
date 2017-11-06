@@ -42,3 +42,43 @@
   (display (denom x))
   (newline))
   
+;;;;;;;;;;;;;;;;;;
+;; Exercise 2.2 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (make-segment point-a point-b)
+  (cons point-a point-b))
+
+(define (start-segment segment)
+  (car segment))
+
+(define (end-segment segment)
+  (cdr segment))
+
+(define (make-point x y)
+  (cons x y))
+
+(define (x-point point)
+  (car point))
+
+(define (y-point point)
+  (cdr point))
+
+(define (average x y)
+  (/ (+ x y) 2))
+
+(define (midpoint-segment segment)
+  (let ((start (start-segment segment))
+	(end (end-segment segment)))
+    (make-point (average (x-point end)
+			 (x-point start))
+		(average (y-point end)
+			 (x-point start)))))
+
+(define (print-point p)
+  (display "(")
+  (display (x-point p))
+  (display ",")
+  (display (y-point p))
+  (display ")")
+  (newline))
