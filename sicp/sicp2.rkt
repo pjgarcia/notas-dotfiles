@@ -82,3 +82,52 @@
   (display (y-point p))
   (display ")")
   (newline))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 2.3 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (make-rect base height)
+  (cons base height))
+
+(define (base-rect rect)
+  (car rect))
+
+(define (height-rect rect)
+  (cdr rect))
+
+(define (perimeter-rect rect)
+  (+ (* 2 (base-rect rect))
+     (* 2 (height-rect rect))))
+
+(define (area-rect rect)
+  (* (base-rect rect)
+     (height-rect rect)))
+
+
+;; second definition of make-rect, base-rect & height-rect
+
+;; (define (square x)
+;;   (* x x))
+
+;; (define (make-rect seg-a seg-b seg-c seg-d)
+;;   (cons (cons seg-a seg-b)
+;; 	(cons seg-c seg-d)))
+
+;; (define (module-segment segment)
+;;   (let ((distance-x (x-point (start-segment segment)))
+;; 	(distance-y (y-point (start-segment segment)))
+;; 	(end-seg (end-segment segment)))
+;;     (let ((translated (make-segment (make-point 0 0)
+;; 				    (make-point (- (x-point end-seg) distance-x)
+;; 						(- (y-point end-seg) distance-y)))))
+;;       (sqrt (+ (square (y-point (end-segment translated)))
+;; 	       (square (x-point (end-segment translated))))))))
+
+;; (define (base-rect rect)
+;;   (let ((base-seg (car (car rect))))
+;;     (module-segment base-seg)))
+
+;; (define (height-rect rect)
+;;   (let ((height-seg (cdr (car rect))))
+;;     (module-segment height-seg)))
