@@ -131,3 +131,108 @@
 ;; (define (height-rect rect)
 ;;   (let ((height-seg (cdr (car rect))))
 ;;     (module-segment height-seg)))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 2.5 ;;
+;;;;;;;;;;;;;;;;;;
+
+;; (define (cons a b)
+;;   (* (expt 2 a)
+;;      (expt 3 b)))
+
+;; (define (logn n x)
+;;   (/ (log x)
+;;      (log n)))
+
+;; (define (car x)
+;;   (if (= 0 (remainder x 3))
+;;       (car (/ x 3))
+;;       (logn 2 x)))
+
+;; (define (cdr x)
+;;   (if (= 0 (remainder x 2))
+;;       (cdr (/ x 2))
+;;       (logn 3 x)))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 2.6 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (inc x)
+  (+ x 1))
+
+(define zero (lambda (f) (lambda (x) x)))
+
+(define (add-1 n)
+  (lambda (f) (lambda (x) (f ((n f) x)))))
+
+(define one (lambda (f) (lambda (x) (f x))))
+(define two (lambda (f) (lambda (x) (f (f x)))))
+
+(define (add n m)
+  (lambda (f) (lambda (x) ((n f) ((m f) x)))))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 2.7 ;;
+;;;;;;;;;;;;;;;;;;
+  
+(define (add-interval x y)
+  (make-interval (+ (lower-bound x) (lower-bound y))
+		 (+ (upper-bound x) (upper-bound y))))
+
+(define (mul-interval x y)
+  (let ((p1 (* (lower-bound x) (lower-bound y)))
+	(p2 (* (lower-bound x) (upper-bound y)))
+	(p3 (* (upper-bound x) (lower-bound y)))
+	(p4 (* (upper-bound x) (upper-bound y))))
+    (make-interval (min p1 p2 p3 p4)
+		   (max p1 p2 p3 p4))))
+
+(define (div-interval x y)
+  (mul-interval x
+		(make-interval (/ 1.0 (upper-bound y))
+			       (/ 1.0 (lower-bound y)))))
+
+(define (make-interval x y)
+  (cons x y))
+
+(define (lower-bound x)
+  (car x))
+
+(define (upper-bound x)
+  (cdr x))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 2.8 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (sub-interval x y)
+  (make-interval (- (lower-bound x) (upper-bound y))
+		 (- (upper-bound x) (lower-bound y))))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 2.9 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (width-interval x)
+  (/ (abs (- (lower-bound x) (upper-bound x)))
+     2))
+
+
+;; racket@sicp2.rkt> (define a (make-interval 3 5))
+;; racket@sicp2.rkt> (define b (make-interval -5 7))
+;; racket@sicp2.rkt> (= (width-interval (add-interval a b)) (+ (width-interval a) (width-interval b)))
+;; #t
+;; racket@sicp2.rkt> (= (width-interval (sub-interval a b)) (+ (width-interval a) (width-interval b)))
+;; #t
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.10 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (div-interval x y)
+  (if (and (< (lower-bound y) 0) (> (upper-bound y) 0))
+      (error "Cant divide by an interval that spans zero.")
+      (mul-interval x 
+		    (make-interval (/ 1.0 (upper-bound y))
+				   (/ 1.0 (lower-bound y))))))
