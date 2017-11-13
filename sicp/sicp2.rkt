@@ -206,10 +206,13 @@
 ;; Exercise 2.8 ;;
 ;;;;;;;;;;;;;;;;;;
 
-(define (sub-interval x y)
-  (make-interval (- (lower-bound x) (upper-bound y))
-		 (- (upper-bound x) (lower-bound y))))
+;; (define (sub-interval x y)
+;;   (make-interval (- (lower-bound x) (upper-bound y))
+;; 		 (- (upper-bound x) (lower-bound y))))
 
+(define (sub-interval x y)
+  (add-interval x (make-interval (- (upper-bound y))
+				 (- (lower-bound y)))))
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.9 ;;
 ;;;;;;;;;;;;;;;;;;
@@ -230,9 +233,107 @@
 ;; Exercise 2.10 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (div-interval x y)
-  (if (and (< (lower-bound y) 0) (> (upper-bound y) 0))
-      (error "Cant divide by an interval that spans zero.")
-      (mul-interval x 
-		    (make-interval (/ 1.0 (upper-bound y))
-				   (/ 1.0 (lower-bound y))))))
+;; (define (div-interval x y)
+;;   (if (and (< (lower-bound y) 0) (> (upper-bound y) 0))
+;;       (error "Cant divide by an interval that spans zero.")
+;;       (mul-interval x 
+;; 		    (make-interval (/ 1.0 (upper-bound y))
+;; 				   (/ 1.0 (lower-bound y))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.11 ;;
+;;;;;;;;;;;;;;;;;;;
+
+
+;; racket@sicp2.rkt> (define both-pos-int (make-interval 2 4))
+;; racket@sicp2.rkt> (define pos-pos-int (make-interval 2 4))
+;; racket@sicp2.rkt> (define neg-pos-int (make-interval -2 4))
+;; racket@sicp2.rkt> (define neg-neg-int (make-interval -4 -2))
+;; racket@sicp2.rkt> (mul-interval pos-pos-int pos-pos-int)
+;; '(4 . 16)
+;; racket@sicp2.rkt> (mul-interval pos-pos-int neg-pos-int)
+;; '(-8 . 16)
+;; racket@sicp2.rkt> (mul-interval pos-pos-int neg-neg-int) 
+;; '(-16 . -4)
+;; racket@sicp2.rkt> (mul-interval neg-pos-int pos-pos-int)
+;; '(-8 . 16)
+;; racket@sicp2.rkt> (mul-interval neg-pos-int neg-pos-int)
+;; '(-8 . 16)
+;; racket@sicp2.rkt> (mul-interval neg-pos-int neg-neg-int)
+;; '(-16 . 8)
+;; racket@sicp2.rkt> (mul-interval neg-neg-int pos-pos-int)
+;; '(-16 . -4)
+;; racket@sicp2.rkt> (mul-interval neg-neg-int neg-pos-int)
+;; '(-16 . 8)
+;; racket@sicp2.rkt> (mul-interval neg-neg-int neg-neg-int)
+;; '(4 . 16)
+
+(define (mul-interval x y)
+  (let ((a (lower-bound x))
+	(b (upper-bound x))
+	(c (lower-bound y))
+	(d (upper-bound y)))
+    (cond
+     ((and (and (positive? a) (positive? b)) (and (positive? c) (positive? d)))
+      (make-interval (* a c) (* b d)))
+     ((and (and (positive? a) (positive? b)) (and (negative? c) (positive? d)))
+      (make-interval (* b c) (* b d)))
+     ((and (and (positive? a) (positive? b)) (and (negative? c) (negative? d)))
+      (make-interval (* b c) (* a d)))
+     ((and (and (negative? a) (positive? b)) (and (positive? c) (positive? d)))
+      (make-interval (* a d) (* b d)))
+     ((and (and (negative? a) (positive? b)) (and (negative? c) (positive? d)))
+      (let ((p (* a c))
+	    (q (* a d))
+	    (r (* b c))
+	    (s (* b d)))
+	(make-interval (min p q r s) (max p q r s))))
+     ((and (and (negative? a) (positive? b)) (and (negative? c) (negative? d)))
+      (make-interval (* b c) (* a c)))
+     ((and (and (negative? a) (negative? b)) (and (positive? c) (positive? d)))
+      (make-interval (* a d) (* b c)))
+     ((and (and (negative? a) (negative? b)) (and (negative? c) (positive? d)))
+      (make-interval (* a d) (* a c)))
+     ((and (and (negative? a) (negative? b)) (and (negative? c) (negative? d)))
+      (make-interval (* b d) (* a c))))))
+
+
+;; some extra definitions from the book (page 95)
+
+(define (make-center-width c w)
+  (make-interval (- c w) (+ c w)))
+
+(define (center i)
+  (average (lower-bound i) (upper-bound i)))
+
+(define (width i)
+  (/ (- (upper-bound i) (lower-bound i)) 2))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.12 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-center-percent c p)
+  (let ((width (abs (* c (/ p 100)))))
+    (make-center-width c width)))
+
+(define (percent i)
+  (abs (/ (* 100 (width i))
+	  (center i))))
+
+
+;; some extra definitions from the book (page 96)
+
+(define (par1 r1 r2)
+  (div-interval (mul-interval r1 r2)
+		(add-interval r1 r2)))
+
+(define (par2 r1 r2)
+  (let ((one (make-interval 1 1)))
+    (div-interval one
+		  (add-interval (div-interval one r1)
+				(div-interval one r2)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FALTAN 13, 14, 15 & 16 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
