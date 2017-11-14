@@ -133,6 +133,19 @@
 ;;     (module-segment height-seg)))
 
 ;;;;;;;;;;;;;;;;;;
+;; Exercise 2.4 ;;
+;;;;;;;;;;;;;;;;;;
+
+;; (define (cons x y)
+;;   (lambda (m) (m x y)))
+
+;; (define (car x)
+;;   (x (lambda (n d) n)))
+
+;; (define (cdr x)
+;;   (x (lambda (n d) d)))
+
+;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.5 ;;
 ;;;;;;;;;;;;;;;;;;
 
@@ -268,34 +281,34 @@
 ;; racket@sicp2.rkt> (mul-interval neg-neg-int neg-neg-int)
 ;; '(4 . 16)
 
-(define (mul-interval x y)
-  (let ((a (lower-bound x))
-	(b (upper-bound x))
-	(c (lower-bound y))
-	(d (upper-bound y)))
-    (cond
-     ((and (and (positive? a) (positive? b)) (and (positive? c) (positive? d)))
-      (make-interval (* a c) (* b d)))
-     ((and (and (positive? a) (positive? b)) (and (negative? c) (positive? d)))
-      (make-interval (* b c) (* b d)))
-     ((and (and (positive? a) (positive? b)) (and (negative? c) (negative? d)))
-      (make-interval (* b c) (* a d)))
-     ((and (and (negative? a) (positive? b)) (and (positive? c) (positive? d)))
-      (make-interval (* a d) (* b d)))
-     ((and (and (negative? a) (positive? b)) (and (negative? c) (positive? d)))
-      (let ((p (* a c))
-	    (q (* a d))
-	    (r (* b c))
-	    (s (* b d)))
-	(make-interval (min p q r s) (max p q r s))))
-     ((and (and (negative? a) (positive? b)) (and (negative? c) (negative? d)))
-      (make-interval (* b c) (* a c)))
-     ((and (and (negative? a) (negative? b)) (and (positive? c) (positive? d)))
-      (make-interval (* a d) (* b c)))
-     ((and (and (negative? a) (negative? b)) (and (negative? c) (positive? d)))
-      (make-interval (* a d) (* a c)))
-     ((and (and (negative? a) (negative? b)) (and (negative? c) (negative? d)))
-      (make-interval (* b d) (* a c))))))
+;; (define (mul-interval x y)
+;;   (let ((a (lower-bound x))
+;; 	(b (upper-bound x))
+;; 	(c (lower-bound y))
+;; 	(d (upper-bound y)))
+;;     (cond
+;;      ((and (and (positive? a) (positive? b)) (and (positive? c) (positive? d)))
+;;       (make-interval (* a c) (* b d)))
+;;      ((and (and (positive? a) (positive? b)) (and (negative? c) (positive? d)))
+;;       (make-interval (* b c) (* b d)))
+;;      ((and (and (positive? a) (positive? b)) (and (negative? c) (negative? d)))
+;;       (make-interval (* b c) (* a d)))
+;;      ((and (and (negative? a) (positive? b)) (and (positive? c) (positive? d)))
+;;       (make-interval (* a d) (* b d)))
+;;      ((and (and (negative? a) (positive? b)) (and (negative? c) (positive? d)))
+;;       (let ((p (* a c))
+;; 	    (q (* a d))
+;; 	    (r (* b c))
+;; 	    (s (* b d)))
+;; 	(make-interval (min p q r s) (max p q r s))))
+;;      ((and (and (negative? a) (positive? b)) (and (negative? c) (negative? d)))
+;;       (make-interval (* b c) (* a c)))
+;;      ((and (and (negative? a) (negative? b)) (and (positive? c) (positive? d)))
+;;       (make-interval (* a d) (* b c)))
+;;      ((and (and (negative? a) (negative? b)) (and (negative? c) (positive? d)))
+;;       (make-interval (* a d) (* a c)))
+;;      ((and (and (negative? a) (negative? b)) (and (negative? c) (negative? d)))
+;;       (make-interval (* b d) (* a c))))))
 
 
 ;; some extra definitions from the book (page 95)
@@ -337,3 +350,72 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FALTAN 13, 14, 15 & 16 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.17 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (last-pair l)
+  (if (= 1 (length l))
+      l
+      (last-pair (cdr l))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.18 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (reverse l)
+  (cond ((null? l) l)
+	((= 1 (length l)) l)
+	(else (append (reverse (cdr l)) (list (car l))))))
+
+(define (reverse-iter l)
+  (define (iter list res)
+    (if (null? list)
+	res
+	(iter (cdr list) (cons (car list) res))))
+  (iter l null))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.19 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+	((or (< amount 0) (no-more? coin-values)) 0)
+	(else (+ (cc amount
+		     (except-first-denomination coin-values))
+		 (cc (- amount
+			(fist-denomination coin-values))
+		     coin-values)))))
+
+(define (except-first-denomination coin-values)
+  (cdr coin-values))
+
+(define (no-more? coins)
+  (= 0 (length coins)))
+
+(define (fist-denomination kinds-of-coins)
+  (car kinds-of-coins))
+
+(define us-coins (list 50 25 10 5 1))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+
+(define us-coins (list 1 5 10 25 50))
+(define (count-change amount)
+  (cc amount us-coins))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.20 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (same-parity first . rest)
+  (define (iter items res)
+    (if (= 0 (length items))
+	res
+	(let ((head (car items)))
+	  (if (even? (+ head first))
+	      (iter (cdr items) (append res (list (car items))))
+	      (iter (cdr items) res)))))
+  (iter (cons first rest) null))
+	  
