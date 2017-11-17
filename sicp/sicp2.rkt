@@ -419,3 +419,91 @@
 	      (iter (cdr items) res)))))
   (iter (cons first rest) null))
 	  
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.21 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (square x)
+  (* x x))
+
+(define (square-list items)
+  (if (null? items)
+      null
+      (cons (square (car items))
+	    (square-list (cdr items)))))
+
+(define (square-list items)
+  (map square items))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.22 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+	answer
+	(iter (cdr things)
+	      (append answer (list (square (car things)))))))
+  (iter items null))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.23 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (for-each f items)
+  (map f items)
+  #t)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.24 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; hecho en papel :)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.25 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(car (cdr (car (cdr (cdr (list 1 3 (list 5 7) 9))))))
+
+(car (car (list (list 7))))
+
+(cadr (cadr (cadr (cadr (cadr (cadr (list 1
+					  (list 2
+						(list 3
+						      (list 4
+							    (list 5
+								  (list 6 7))))))))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.26 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define x (list 1 2 3))
+(define y (list 4 5 6))
+
+(append x y) ;; '(1 2 3 4 5 6)
+(cons x y) ;; '((1 2 3) 4 5 6)
+(list x y) ;; '((1 2 3) (4 5 6))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.27 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (deep-reverse l)
+  (cond ((null? l) l)
+	((pair? l) (append (deep-reverse (cdr l))
+			   (list (deep-reverse (car l)))))
+	(else l)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.28 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (fringe tree)
+  (cond ((null? tree) tree)
+	((pair? (car tree))
+	 (append (fringe (car tree)) (fringe (cdr tree))))
+	(else (cons (car tree) (fringe (cdr tree))))))
