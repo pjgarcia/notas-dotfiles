@@ -585,5 +585,42 @@
   (cdr branch))
   
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.30 ;;
+;;;;;;;;;;;;;;;;;;;
 
-       
+(define (square-tree tree)
+  (map (lambda (subtree)
+	 (if (pair? subtree)
+	     (square-tree subtree)
+	     (square subtree)))
+       tree))
+
+(define (square-tree tree)
+  (cond ((null? tree) null)
+	((pair? tree) (cons (square-tree (car tree))
+			    (square-tree (cdr tree))))
+	(else (square tree))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.31 ;;
+;;;;;;;;;;;;;;;;;;;
+	 
+(define (tree-map f tree)
+  (map (lambda (subtree)
+	 (if (pair? subtree)
+	     (tree-map f subtree)
+	     (f subtree)))
+       tree))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.32 ;;
+;;;;;;;;;;;;;;;;;;;
+	 
+(define (subsets s)
+  (if (null? s)
+      (list null)
+      (let ((rest (subsets (cdr s))))
+	(append rest (map (lambda (subset)
+			    (append subset (list (car s))))
+			  rest)))))
