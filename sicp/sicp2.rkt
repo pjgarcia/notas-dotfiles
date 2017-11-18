@@ -507,3 +507,83 @@
 	((pair? (car tree))
 	 (append (fringe (car tree)) (fringe (cdr tree))))
 	(else (cons (car tree) (fringe (cdr tree))))))
+
+(define (fring tree)
+  (cond ((null? tree) tree)
+	((not (pair? tree)) (list tree))
+	(else (append (fring (car tree))
+		      (fring (cdr tree))))))
+	 
+	      
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.29 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; Part 1
+
+(define (make-mobile left right)
+  (list left right))
+
+(define (make-branch length structure)
+  (list length structure))
+
+(define (left-branch mobile)
+  (car mobile))
+
+(define (right-branch mobile)
+  (car (cdr mobile)))
+
+(define (branch-length branch)
+  (car branch))
+
+(define (branch-structure branch)
+  (car (cdr branch)))
+ 
+;; Part 2
+
+(define (total-weight mobile)
+  (define (structure-weight structure)
+    (if (not (pair? structure))
+	structure
+	(+ (structure-weight (branch-structure (left-branch structure)))
+	   (structure-weight (branch-structure (right-branch structure))))))
+  (structure-weight mobile))
+
+;; Part 3
+
+(define (balanced? mobile)
+  (define (torque branch)
+    (* (total-weight (branch-structure branch))
+       (branch-length branch)))
+  (define (structure-balanced? structure)
+    (if (not (pair? structure))
+	#t
+	(let ((left (left-branch structure))
+	      (right (right-branch structure)))
+	  (and (structure-balanced? (branch-structure left))
+	       (structure-balanced? (branch-structure right))
+	       (= (torque left) (torque right))))))
+  (structure-balanced? mobile))
+
+;; Part 4
+
+(define (make-mobile left right)
+  (cons left right))
+
+(define (make-branch leng structure)
+  (cons length structure))
+
+(define (left-branch mobile)
+  (car mobile))
+(define (right-branch mobile)
+  (cdr mobile))
+
+(define (branch-length branch)
+  (car branch))
+(define (branch-structure branch)
+  (cdr branch))
+  
+
+
+       
