@@ -401,7 +401,7 @@
 (define us-coins (list 50 25 10 5 1))
 (define uk-coins (list 100 50 20 10 5 2 1 0.5))
 
-(define us-coins (list 1 5 10 25 50))
+;;(define us-coins (list 1 5 10 25 50))
 (define (count-change amount)
   (cc amount us-coins))
 
@@ -433,20 +433,20 @@
       (cons (square (car items))
 	    (square-list (cdr items)))))
 
-(define (square-list items)
-  (map square items))
+;; (define (square-list items)
+;;   (map square items))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.22 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (square-list items)
-  (define (iter things answer)
-    (if (null? things)
-	answer
-	(iter (cdr things)
-	      (append answer (list (square (car things)))))))
-  (iter items null))
+;; (define (square-list items)
+;;   (define (iter things answer)
+;;     (if (null? things)
+;; 	answer
+;; 	(iter (cdr things)
+;; 	      (append answer (list (square (car things)))))))
+;;   (iter items null))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.23 ;;
@@ -568,21 +568,21 @@
 
 ;; Part 4
 
-(define (make-mobile left right)
-  (cons left right))
+;; (define (make-mobile left right)
+;;   (cons left right))
 
-(define (make-branch leng structure)
-  (cons length structure))
+;; (define (make-branch leng structure)
+;;   (cons length structure))
 
-(define (left-branch mobile)
-  (car mobile))
-(define (right-branch mobile)
-  (cdr mobile))
+;; (define (left-branch mobile)
+;;   (car mobile))
+;; (define (right-branch mobile)
+;;   (cdr mobile))
 
-(define (branch-length branch)
-  (car branch))
-(define (branch-structure branch)
-  (cdr branch))
+;; (define (branch-length branch)
+;;   (car branch))
+;; (define (branch-structure branch)
+;;   (cdr branch))
   
 
 ;;;;;;;;;;;;;;;;;;;
@@ -596,11 +596,11 @@
 	     (square subtree)))
        tree))
 
-(define (square-tree tree)
-  (cond ((null? tree) null)
-	((pair? tree) (cons (square-tree (car tree))
-			    (square-tree (cdr tree))))
-	(else (square tree))))
+;; (define (square-tree tree)
+;;   (cond ((null? tree) null)
+;; 	((pair? tree) (cons (square-tree (car tree))
+;; 			    (square-tree (cdr tree))))
+;; 	(else (square tree))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.31 ;;
@@ -624,3 +624,112 @@
 	(append rest (map (lambda (subset)
 			    (append subset (list (car s))))
 			  rest)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.33 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+	  (accumulate op initial (cdr sequence)))))
+
+;; (define (map p sequence)
+;;   (accumulate (lambda (x y)
+;; 		(cons (p x) y))
+;; 	      null
+;; 	      sequence))
+
+(define (append seq1 seq2)
+  (accumulate cons seq2 seq1))
+
+(define (length sequence)
+  (accumulate (lambda (x y)
+		(+ 1 y))
+	      0
+	      sequence))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.34 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms)
+		(+ (* higher-terms x)
+		   this-coeff))
+	      0
+	      coefficient-sequence))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.35 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (count-leaves t)
+  (accumulate + 0 (map (lambda (subtree)
+			 (if (pair? subtree)
+			     (count-leaves subtree)
+			     1))
+		       t)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.36 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      null
+      (cons (accumulate op init (map car seqs))
+	    (accumulate-n op init (map cdr seqs)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.37 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+
+(define (matrix-*-vector m v)
+  (map (lambda (row) (dot-product row v)) m))
+
+
+(define (transpose mat)
+  (accumulate-n cons null mat))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (row) (matrix-*-vector cols row)) m)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.38 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+	result
+	(iter (op result (car rest))
+	      (cdr rest))))
+  (iter initial sequence))
+
+(define fold-right accumulate)
+
+;; op should be commutative
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.39 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (reverse sequence)
+  (fold-right (lambda (x y)
+		(append y (list x)))
+	      null
+	      sequence))
+
+(define (reverse sequence)
+  (fold-left (lambda (x y)
+	       (cons y x))
+	     null
+	     sequence))
+	      
+
