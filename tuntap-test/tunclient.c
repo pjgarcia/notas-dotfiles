@@ -13,7 +13,10 @@ int main(int argc, char *argv[]) {
   char tun_name[IFNAMSIZ];
   char buffer[1500];
   
-  strcpy(tun_name, "tun77");
+  if (argc < 2) exit(1);
+  strcpy(tun_name, argv[1]);
+  printf("Name: %s", tun_name);
+  
   tun_fd = tun_alloc(tun_name, IFF_TUN | IFF_NO_PI);
 
   if (tun_fd < 0) {
