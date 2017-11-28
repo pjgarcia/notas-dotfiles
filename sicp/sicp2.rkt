@@ -720,16 +720,116 @@
 ;; Exercise 2.39 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (reverse sequence)
-  (fold-right (lambda (x y)
-		(append y (list x)))
-	      null
-	      sequence))
+;; (define (reverse sequence)
+;;   (fold-right (lambda (x y)
+;; 		(append y (list x)))
+;; 	      null
+;; 	      sequence))
 
-(define (reverse sequence)
-  (fold-left (lambda (x y)
-	       (cons y x))
-	     null
-	     sequence))
+;; (define (reverse sequence)
+;;   (fold-left (lambda (x y)
+;; 	       (cons y x))
+;; 	     null
+;; 	     sequence))
 	      
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.40 ;;
+;;;;;;;;;;;;;;;;;;;
 
+(define (flatmap proc seq)
+  (accumulate append null (map proc seq)))
+
+(define (enumerate-interval low high)
+  (if (> low high)
+      null
+      (cons low (enumerate-interval (+ low 1) high))))
+
+;; generates the sequence of pairs (i,j) with 1 <= j < i <= n
+(define (unique-pairs n)
+  (flatmap (lambda (i)
+	     (map (lambda (j)
+		    (list i j))
+		  (enumerate-interval 1 (- i 1))))
+	   (enumerate-interval 1 n)))
+
+(define (make-pair-sum pair)
+  (list (car pair)
+	(cadr pair)
+	(+ (car pair) (cadr pair))))
+
+(define (prime-sum? pair)
+  (prime? (+ (car pair) (cadr pair))))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum?
+	       (unique-pairs n))))
+
+(define (smallest-divisor-next n)
+  (define (next n)
+    (if (= n 2)
+	3
+	(+ n 2)))
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+	  ((divides? test-divisor n) test-divisor)
+	  (else (find-divisor n (next test-divisor)))))  
+  (find-divisor n 2))
+
+(define (prime? n)
+  (= (smallest-divisor-next n) n))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.41 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-triplets n)
+  (flatmap (lambda (i)
+	     (flatmap (lambda (j)
+			(map (lambda (k)
+			       (list i j k))
+			     (enumerate-interval 1 n)))
+		      (enumerate-interval 1 n)))
+	   (enumerate-interval 1 n)))
+
+(define (filter-dif-numbers triplets)
+  (filter (lambda (t)
+	    (not (or (= (car t) (cadr t))
+		     (= (car t) (caddr t))
+		     (= (cadr t) (caddr t)))))
+	  triplets))
+
+(define (triplet-sum triplet)
+  (accumulate + 0 triplet))
+		    
+(define (triplets-sum n s)
+  (filter (lambda (t)
+	    (= (triplet-sum t) s))
+	  (filter-dif-numbers (make-triplets n))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.42 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (adjoin-position row col positions))
+(define empty-board)
+(define (safe? k positions))
+
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+	(list empty-board)
+	(filter (lambda (positions)
+		  (safe? k positions))
+		(flatmap (lambda (rest-of-queens)
+			   (map (lambda (new-row)
+				  (adjoin-position new-row
+						   k
+						   rest-of-queens))
+				(enumerate-interval 1 board-size)))
+			 (queen-cols (- k 1))))))
+  (queen-cols board-size))
+				   
+		
