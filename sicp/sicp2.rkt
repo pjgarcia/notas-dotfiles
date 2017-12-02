@@ -641,14 +641,14 @@
 ;; 	      null
 ;; 	      sequence))
 
-(define (append seq1 seq2)
-  (accumulate cons seq2 seq1))
+;; (define (append seq1 seq2)
+;;   (accumulate cons seq2 seq1))
 
-(define (length sequence)
-  (accumulate (lambda (x y)
-		(+ 1 y))
-	      0
-	      sequence))
+;; (define (length sequence)
+;;   (accumulate (lambda (x y)
+;; 		(+ 1 y))
+;; 	      0
+;; 	      sequence))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.34 ;;
@@ -813,23 +813,80 @@
 ;; Exercise 2.42 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (adjoin-position row col positions))
-(define empty-board)
-(define (safe? k positions))
+(define (flatmap mapper seq)
+  (accumulate append null (map mapper seq)))
+
+(define (enumerate-interval start end)
+  (if (> start end)
+      null
+      (cons start (enumerate-interval (+ start 1) end))))
+
+(define empty-board null)
+
+(define (adjoin-position row col positions)
+  (append positions (list (list row col))))
+
+(define (pos-row position)
+  (car position))
+
+(define (pos-col position)
+  (cadr position))
+
+(define (upper-left-diagonal pos)
+  (if (or (= (pos-row pos) 1) (= (pos-col pos) 1))
+      null
+      (let ((diagonal (list (- (pos-row pos) 1) (- (pos-col pos) 1))))
+	(append (upper-left-diagonal diagonal) (list diagonal)))))
+
+(define (lower-left-diagonal pos)
+  (if (= (pos-col pos) 1)
+      null
+      (let ((diagonal (list (+ (pos-row pos) 1) (- (pos-col pos) 1))))
+	(append (lower-left-diagonal diagonal) (list diagonal)))))
+;; determines, for a set of positions, wether the queen
+;; in the kth column is safe with respect to the others
+(define (safe? col queens)
+  (let ((last-queen-pos (car (filter (lambda (pos) (= (pos-col pos) col))
+				     queens))))
+    (and (= (length (filter (lambda (pos)
+			     (= (pos-row pos) (pos-row last-queen-pos)))
+			   queens))
+	   1)
+	(= (length (filter (lambda (pos)
+			     (= (pos-col pos) (pos-col last-queen-pos)))
+			   queens))
+	   1)
+	(let ((diagonals (append (upper-left-diagonal last-queen-pos)
+				 (lower-left-diagonal last-queen-pos))))
+	  (let ((diag-queens-intersection (flatmap (lambda (diagonal)
+						     (filter (lambda (previous-queen)
+							       (and (= (pos-row diagonal) (pos-row previous-queen))
+								    (= (pos-col diagonal) (pos-col previous-queen))))
+							     queens))
+						   diagonals)))
+	    (= (length diag-queens-intersection) 0))))))
 
 (define (queens board-size)
   (define (queen-cols k)
     (if (= k 0)
 	(list empty-board)
-	(filter (lambda (positions)
-		  (safe? k positions))
+	(filter (lambda (positions) (safe? k positions))
 		(flatmap (lambda (rest-of-queens)
 			   (map (lambda (new-row)
-				  (adjoin-position new-row
-						   k
-						   rest-of-queens))
+				  (adjoin-position new-row k rest-of-queens))
 				(enumerate-interval 1 board-size)))
 			 (queen-cols (- k 1))))))
   (queen-cols board-size))
-				   
-		
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.43 ;;
+;;;;;;;;;;;;;;;;;;;
+			   
+;; If the order of mappings is inverted, (queen-cols (- k 1)) is re-evaluated
+;; for (length (enumerate-interval 1 board-size)) times. If the puzzle is solved
+;; in time T (4.42), then with this change it should take approx T * (board-size ^ board-size)
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.44 ;;
+;;;;;;;;;;;;;;;;;;;
