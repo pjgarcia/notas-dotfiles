@@ -887,6 +887,155 @@
 ;; in time T (4.42), then with this change it should take approx T * (board-size ^ board-size)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Section 2.2.4 Example: A Picture Language ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (define wave2 (beside wave (flip-vert wave)))
+;; (define wave4 (below wave2 wave2))
+
+(define (flipped-pairs painter)
+  (let ((painter2 (beside painter (flip-vert painter))))
+    (below painter2 painter2)))
+
+;; (define wave4 (flipped-pairs wave))
+
+(define (right-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (right-split painter (- n 1))))
+	(beside painter
+		(below smaller smaller)))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.44 ;;
 ;;;;;;;;;;;;;;;;;;;
+
+(define (up-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (up-split painter (- n 1))))
+	(below painter
+	       (beside smaller smaller)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.45 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (split main second)
+  (lambda (painter n)
+    (if (= n 0)
+	painter
+	(let ((smaller ((split main secod) painter (- n 1))))
+	  (main painter
+		(second smaller smaller))))))
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.46 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-vect x y)
+  (cons x y))
+
+(define (xcor-vect v)
+  (car v))
+(define (ycor-vect v)
+  (cdr v))
+
+(define (add-vect va vb)
+  (make-vect (+ (xcor-vect va)
+		(xcor-vect vb))
+	     (+ (ycor-vect va)
+		(ycor-vect vb))))
+
+(define (sub-vect va vb)
+  (add-vect va (make-vector (- (xcor-vect vb))
+			    (- (ycor-vect vb)))))
+
+(define (scale-vect v factor)
+  (make-vect (* (xcor-vect v) factor)
+	     (* (ycor-vect v) factor)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.47 ;;
+;;;;;;;;;;;;;;;;;;;
+  
+(define (make-frame origin edge1 edge2)
+  (list origin edge1 edge2))
+(define (origin-frame f)
+  (car f))
+(define (edge1-frame f)
+  (cadr f))
+(define (edge2-frame f)
+  (caddr f))
+
+;; (define (make-frame origin edge1 edge2)
+;;   (cons origin (cons edge1 edge2)))
+;; (define (origin-frame f)
+;;   (car f))
+;; (define (edge1-frame f)
+;;   (cadr f))
+;; (define (edge2-frame f)
+;;   (cddr f))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.48 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-segment start end)
+  (cons start end))
+
+(define (start-segment seg)
+  (car seg))
+(define (end-segment seg)
+  (cdr seg))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.49 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (segments->painter segment-list)
+  (lambda (frame)
+    (for-each (lambda (segment)
+		(draw-line
+		 ((frame-coord-map frame) (start-segment segment))
+		 ((frame-coord-map frame) (end-segment segment))))
+	      segment-list)))
+
+(segments->painter (list (make-segment (make-vector 0 0) (make-vector 1 0))
+			 (make-segment (make-vector 1 0) (make-vector 1 1))
+			 (make-segment (make-vector 1 1) (make-vector 0 1))
+			 (make-segment (make-vector 0 1) (make-vector 0 0))))
+
+(segments->painter (list (make-segment (make-vector 0 0) (make-vector 1 1))
+			 (make-segment (make-vector 0 1) (make-vector 1 0))))
+
+(segments->painter (list (make-segment (make-vector 0.5 0) (make-vector 1 0.5))
+			 (make-segment (make-vector 1 0.5) (make-vector 0.5 1))
+			 (make-segment (make-vector 0.5 1) (make-vector 0 0.5))
+			 (make-segment (make-vector 0 0.5) (make-vector 0.5 0))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.50 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (flip-horiz painter)
+  (transform-painter painter
+		     (make-vect 1.0 0)
+		     (make-vect 0 0)
+		     (make-vect 1.0 1.0)))
+
+(define (rot-counter-180 painter)
+  (transform-painter painter
+		     (make-vect 1.0 1.0)
+		     (make-vect 0 1.0)
+		     (make-vect 1.0 0)))
+
+(define (rot-counter-270 painter)
+  (transform-painter painter
+		     (make-vect 0 1.0)
+		     (make-vect 0 0)
+		     (make-vect 1.0 1.0)))
+				
+		     
