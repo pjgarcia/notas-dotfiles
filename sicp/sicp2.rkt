@@ -813,13 +813,13 @@
 ;; Exercise 2.42 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (flatmap mapper seq)
-  (accumulate append null (map mapper seq)))
+;; (define (flatmap mapper seq)
+;;   (accumulate append null (map mapper seq)))
 
-(define (enumerate-interval start end)
-  (if (> start end)
-      null
-      (cons start (enumerate-interval (+ start 1) end))))
+;; (define (enumerate-interval start end)
+;;   (if (> start end)
+;;       null
+;;       (cons start (enumerate-interval (+ start 1) end))))
 
 (define empty-board null)
 
@@ -894,6 +894,13 @@
 ;; (define wave2 (beside wave (flip-vert wave)))
 ;; (define wave4 (below wave2 wave2))
 
+(define beside '())
+(define flip-vert '())
+(define draw-line '())
+(define frame-coord-map '())
+(define transform-map '())
+(define transform-painter '())
+
 (define (flipped-pairs painter)
   (let ((painter2 (beside painter (flip-vert painter))))
     (below painter2 painter2)))
@@ -926,7 +933,7 @@
   (lambda (painter n)
     (if (= n 0)
 	painter
-	(let ((smaller ((split main secod) painter (- n 1))))
+	(let ((smaller ((split main second) painter (- n 1))))
 	  (main painter
 		(second smaller smaller))))))
 
@@ -950,7 +957,7 @@
 		(ycor-vect vb))))
 
 (define (sub-vect va vb)
-  (add-vect va (make-vector (- (xcor-vect vb))
+  (add-vect va (make-vect (- (xcor-vect vb))
 			    (- (ycor-vect vb)))))
 
 (define (scale-vect v factor)
@@ -983,13 +990,13 @@
 ;; Exercise 2.48 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (make-segment start end)
-  (cons start end))
+;; (define (make-segment start end)
+;;   (cons start end))
 
-(define (start-segment seg)
-  (car seg))
-(define (end-segment seg)
-  (cdr seg))
+;; (define (start-segment seg)
+;;   (car seg))
+;; (define (end-segment seg)
+;;   (cdr seg))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.49 ;;
@@ -1003,18 +1010,18 @@
 		 ((frame-coord-map frame) (end-segment segment))))
 	      segment-list)))
 
-(segments->painter (list (make-segment (make-vector 0 0) (make-vector 1 0))
-			 (make-segment (make-vector 1 0) (make-vector 1 1))
-			 (make-segment (make-vector 1 1) (make-vector 0 1))
-			 (make-segment (make-vector 0 1) (make-vector 0 0))))
+(segments->painter (list (make-segment (make-vect 0 0) (make-vect 1 0))
+			 (make-segment (make-vect 1 0) (make-vect 1 1))
+			 (make-segment (make-vect 1 1) (make-vect 0 1))
+			 (make-segment (make-vect 0 1) (make-vect 0 0))))
 
-(segments->painter (list (make-segment (make-vector 0 0) (make-vector 1 1))
-			 (make-segment (make-vector 0 1) (make-vector 1 0))))
+(segments->painter (list (make-segment (make-vect 0 0) (make-vect 1 1))
+			 (make-segment (make-vect 0 1) (make-vect 1 0))))
 
-(segments->painter (list (make-segment (make-vector 0.5 0) (make-vector 1 0.5))
-			 (make-segment (make-vector 1 0.5) (make-vector 0.5 1))
-			 (make-segment (make-vector 0.5 1) (make-vector 0 0.5))
-			 (make-segment (make-vector 0 0.5) (make-vector 0.5 0))))
+(segments->painter (list (make-segment (make-vect 0.5 0) (make-vect 1 0.5))
+			 (make-segment (make-vect 1 0.5) (make-vect 0.5 1))
+			 (make-segment (make-vect 0.5 1) (make-vect 0 0.5))
+			 (make-segment (make-vect 0 0.5) (make-vect 0.5 0))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.50 ;;
@@ -1039,3 +1046,128 @@
 		     (make-vect 1.0 1.0)))
 				
 		     
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.51 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (below painter1 painter2)
+  (let ((split-point (make-vect 0.0 0.5)))
+    (let ((paint-below (transform-painter painter1
+					  (make-vect 0.0 0.0)
+					  (make-vect 1.0 0.0)
+					  split-point))
+	  (paint-above (transform-painter painter2
+					  split-point
+					  (add-vect split-point (make-vect 0.5 0.0))
+					  (add-vect split-point (make-vect 0.0 0.5)))))
+      (lambda (frame)
+	(paint-below frame)
+	(paint-above frame)))))
+
+;; (define (below painter1 painter2)
+;;   (rot-counter-270
+;;    (rot-counter-180
+;;     (beside (rot-counter-270 painter1)
+;; 	    (rot-counter-270 painter2)))))
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.53 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(list 'a 'b 'c) ;; (a b c)
+(list (list 'george)) ;; ((george))
+(cdr '((x1 x2) (y1 y2))) ;; ((y1 y2))
+(cadr '((x1 x2) (y1 y2))) ;; (y1 y2)
+(pair? (car '(a short lst))) ;; false
+(memq 'red '((red shoes) (blue socks))) ;; false
+(memq 'red '(red shoes blue socks)) ;; (red shoes blue socks)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.54 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (equal? a b)
+  (cond ((and (symbol? a) (symbol? b))
+	 (eq? a b))
+	((and (pair? a) (pair? b))
+	 (and (equal? (car a) (car b))
+	      (equal? (cdr a) (cdr b))))
+	(else #f)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.55 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(car ''abracadabra) ;; (car (quote (quote abracadabra)))
+;; quote
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.56 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+	((variable? exp)
+	 (if (same-variable? exp var) 1 0))
+	((sum? exp)
+	 (make-sum (deriv (addend exp) var)
+		   (deriv (augend exp) var)))
+	((product? exp)
+	 (make-sum (make-product (multiplier exp)
+				 (deriv (multiplicand exp) var))
+		   (make-product (multiplicand exp)
+				 (deriv (multiplier exp) var))))
+	((exponentiation? exp)
+	 (make-product
+	  (make-product (exponent exp)
+			(make-exponentiation (base exp)
+					     (- (exponent exp) 1)))
+	  (deriv (base exp) var)))
+	(else (error "unknown expression type: DERIV" exp))))
+	     
+(define (=number? exp num)
+  (and (number? exp) (= exp num)))
+
+(define (variable? x) (symbol? x))
+(define (same-variable? v1 v2)
+  (and (variable? v1) (variable? v2) (eq? v1 v2)))
+
+(define (make-sum a1 a2)
+  (cond ((=number? a1 0) a2)
+	((=number? a2 0) a1)
+	((and (number? a1) (number? a2)) (+ a1 a2))
+	(else (list '+ a1 a2))))
+
+(define (make-product m1 m2)
+  (cond ((=number? m1 1) m2)
+	((=number? m2 1) m1)
+	((or (=number? m1 0) (=number? m2 0)) 0)
+	((and (number? m1) (number? m2)) (* m1 m2))
+	(else (list '* m1 m2))))
+
+(define (sum? x)
+  (and (pair? x) (eq? '+ (car x))))
+(define (addend s) (cadr s))
+(define (augend s)
+  (cond ((= 2 (length (cdr s))) (caddr s))
+	(else (cons '+ (cddr s)))))
+
+(define (product? x)
+  (and (pair? x) (eq? '* (car x))))
+(define (multiplier p) (cadr p))
+(define (multiplicand p)
+  (cond ((= 2 (length (cdr p))) (caddr p))
+	(else (cons '* (cddr p)))))
+
+(define (exponentiation? exp)
+  (and (pair? exp) (eq? '** (car exp))))
+(define (base exp)
+  (cadr exp))
+(define (exponent exp)
+  (caddr exp))
+(define (make-exponentiation base exponent)
+  (cond ((= exponent 0) 1)
+	((= exponent 1) base)
+	(else (list '** base exponent))))
+
