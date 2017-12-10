@@ -1150,15 +1150,13 @@
   (and (pair? x) (eq? '+ (car x))))
 (define (addend s) (cadr s))
 (define (augend s)
-  (cond ((= 2 (length (cdr s))) (caddr s))
-	(else (cons '+ (cddr s)))))
+  (caddr s))
 
 (define (product? x)
   (and (pair? x) (eq? '* (car x))))
 (define (multiplier p) (cadr p))
 (define (multiplicand p)
-  (cond ((= 2 (length (cdr p))) (caddr p))
-	(else (cons '* (cddr p)))))
+  (caddr p))
 
 (define (exponentiation? exp)
   (and (pair? exp) (eq? '** (car exp))))
@@ -1171,3 +1169,87 @@
 	((= exponent 1) base)
 	(else (list '** base exponent))))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.57 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; (define (augend s)
+;;   (cond ((= 2 (length (cdr s))) (caddr s))
+;; 	(else (cons '+ (cddr s)))))
+
+;; (define (multiplicand p)
+;;   (cond ((= 2 (length (cdr p))) (caddr p))
+;; 	(else (cons '* (cddr p)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.58 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; part a)
+(define (make-sum a1 a2)
+  (cond ((=number? a1 0) a2)
+	((=number? a2 0) a1)
+	((and (number? a1) (number? a2)) (+ a1 a2))
+	(else (list a1 '+ a2))))
+
+(define (make-product m1 m2)
+  (cond ((=number? m1 1) m2)
+	((=number? m2 1) m1)
+	((or (=number? m1 0) (=number? m2 0)) 0)
+	((and (number? m1) (number? m2)) (* m1 m2))
+	(else (list m1 '* m2))))
+
+(define (sum? x)
+  (and (pair? x) (eq? '+ (cadr x))))
+(define (addend s) (car s))
+(define (augend s) (caddr s))
+
+(define (product? x)
+  (and (pair? x) (eq? '* (cadr x))))
+(define (multiplier p) (car p))
+(define (multiplicand p) (caddr p))
+
+;; part b)
+
+;; (x + 3 * (x + y + 2))
+(define (sum? x)
+  (and (pair? x)
+       (> (length (filter (lambda (e) (eq? e '+)) x))
+	  0)))
+(define (addend s)
+  (define (iter addend rest)
+    (if (eq? (car rest) '+)
+	(if (= (length addend) 1)
+	    (car addend)
+	    addend)
+	(iter (append addend (list (car rest)))
+	      (cdr rest))))
+  (iter '() s))
+(define (augend s)
+  (let ((aug (cdr (memq '+ s))))
+    (if (= 1 (length aug))
+	(car aug)
+	aug)))
+  
+(define (product? x)
+  (and (pair? x)
+       (let ((operators (filter symbol? x)))
+	 (= (length operators)
+	    (length (filter (lambda (e)
+			      (eq? e '*))
+			    x))))))
+(define (multiplier p)
+  (define (iter multip rest)
+    (if (eq? (car rest) '*)
+	(if (= (length multip) 1)
+	    (car multip)
+	    multip)
+	(iter (append multip (list (car rest)))
+	      (cdr rest))))
+  (iter '() p))
+(define (multiplicand p)
+  (let ((multip (cdr (memq '* p))))
+    (if (= 1 (length multip))
+	(car multip)
+	multip)))
+	   
