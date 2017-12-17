@@ -1088,12 +1088,13 @@
 ;;;;;;;;;;;;;;;;;;;
 
 (define (equal? a b)
-  (cond ((and (symbol? a) (symbol? b))
+  (cond ((and (not (pair? a)) (not (pair? b)))
 	 (eq? a b))
 	((and (pair? a) (pair? b))
 	 (and (equal? (car a) (car b))
 	      (equal? (cdr a) (cdr b))))
 	(else #f)))
+  
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.55 ;;
@@ -1253,3 +1254,107 @@
 	(car multip)
 	multip)))
 	   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sets as unordered lists ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; O(n)
+(define (element-of-set? x set)
+  (cond ((null? set) #f)
+	((equal? x (car set)) #t)
+	(else (element-of-set? x (cdr set)))))
+;; O(n)
+(define (adjoin-set x set)
+  (if (element-of-set? x set)
+      set
+      (cons x set)))
+
+;; O(n^2)
+(define (intersection-set set1 set2)
+  (cond ((null? set1) '())
+	((element-of-set? (car set1) set2)
+	 (cons (car set1)
+	       (intersection-set (cdr set1) set2)))
+	(else (intersection-set (cdr set1) set2))))
+
+;;;;;;;;;;;;;;;;;;;;
+;; Excercise 2.59 ;;
+;;;;;;;;;;;;;;;;;;;;
+
+;; O(n^2)
+(define (union-set set1 set2)
+  (cond ((null? set1) set2)
+	(else (adjoin-set (car set1)
+			  (union-set (cdr set1) set2)))))
+
+(define (union-set set1 set2)
+  (accumulate adjoin-set set2 set1))
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.60 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; O(1)
+(define (adjoin-set x set)
+  (cons x set))
+
+(define (union-set set1 set2)
+  (append set1 set2))
+
+;; el resto son iguales
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sets as ordered lists ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; S={1,2,3,4} => '(1 2 3 4)
+;; O(n)
+(define (element-of-set? x set)
+  (cond ((null? set) #t)
+	((< x (car set)) #f)
+	((= x (car set)) #t)
+	(else (element-of-set? x (cdr set)))))
+
+;; O(n)
+;; each step removes one element of set1, set2 or both
+;; at most, if n1=(size set1) && n2=(size set2)
+;; n1+n2 steps are needed ( O(n) ), instead of n1*n2 ( O(n^2) )
+;; as with unordered lists
+(define (intersection-set set1 set2)
+  (cond ((or (null? set1) (null? set2)) '())
+	(let ((x1 (car set1))
+	      (x2 (car set2)))
+	  (cond ((< x1 x2)
+		 (intersection-set (cdr set1) set2))
+		((< x2 x1)
+		 (intersection-set set1 (cdr set2)))
+		(else
+		 (cons x1 (intersection-set (cdr set1)
+					    (cdr set2))))))))
+  
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.61 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (adjoin-set x set)
+  (cond ((null? set) (list x))
+	((< x (car set)) (cons x set))
+	((= x (car set)) set)
+	(else (cons (car set) (adjoin-set x (cdr set))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.62 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (union-set set1 set2)
+  (cond ((null? set1) set2)
+	((null? set2) set1)
+	(else (let ((x1 (car set1))
+		    (x2 (car set2)))
+		(cond ((< x1 x2)
+		       (cons x1 (union-set (cdr set1) set2)))
+		      ((= x1 x2)
+		       (cons x1 (union-set (cdr set1) (cdr set2))))
+		      (else ;; (> x1 x2)
+		       (cons x2 (union-set set1 (cdr set2)))))))))
+					   
+		
