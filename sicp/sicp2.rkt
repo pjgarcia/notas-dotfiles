@@ -528,11 +528,11 @@
 (define (make-branch length structure)
   (list length structure))
 
-(define (left-branch mobile)
-  (car mobile))
+;; (define (left-branch mobile)
+;;   (car mobile))
 
-(define (right-branch mobile)
-  (car (cdr mobile)))
+;; (define (right-branch mobile)
+;;   (car (cdr mobile)))
 
 (define (branch-length branch)
   (car branch))
@@ -1187,118 +1187,119 @@
 ;;;;;;;;;;;;;;;;;;;
 
 ;; part a)
-(define (make-sum a1 a2)
-  (cond ((=number? a1 0) a2)
-	((=number? a2 0) a1)
-	((and (number? a1) (number? a2)) (+ a1 a2))
-	(else (list a1 '+ a2))))
+;; (define (make-sum a1 a2)
+;;   (cond ((=number? a1 0) a2)
+;; 	((=number? a2 0) a1)
+;; 	((and (number? a1) (number? a2)) (+ a1 a2))
+;; 	(else (list a1 '+ a2))))
 
-(define (make-product m1 m2)
-  (cond ((=number? m1 1) m2)
-	((=number? m2 1) m1)
-	((or (=number? m1 0) (=number? m2 0)) 0)
-	((and (number? m1) (number? m2)) (* m1 m2))
-	(else (list m1 '* m2))))
+;; (define (make-product m1 m2)
+;;   (cond ((=number? m1 1) m2)
+;; 	((=number? m2 1) m1)
+;; 	((or (=number? m1 0) (=number? m2 0)) 0)
+;; 	((and (number? m1) (number? m2)) (* m1 m2))
+;; 	(else (list m1 '* m2))))
 
-(define (sum? x)
-  (and (pair? x) (eq? '+ (cadr x))))
-(define (addend s) (car s))
-(define (augend s) (caddr s))
+;; (define (sum? x)
+;;   (and (pair? x) (eq? '+ (cadr x))))
+;; (define (addend s) (car s))
+;; (define (augend s) (caddr s))
 
-(define (product? x)
-  (and (pair? x) (eq? '* (cadr x))))
-(define (multiplier p) (car p))
-(define (multiplicand p) (caddr p))
+;; (define (product? x)
+;;   (and (pair? x) (eq? '* (cadr x))))
+;; (define (multiplier p) (car p))
+;; (define (multiplicand p) (caddr p))
 
 ;; part b)
 
 ;; (x + 3 * (x + y + 2))
-(define (sum? x)
-  (and (pair? x)
-       (> (length (filter (lambda (e) (eq? e '+)) x))
-	  0)))
-(define (addend s)
-  (define (iter addend rest)
-    (if (eq? (car rest) '+)
-	(if (= (length addend) 1)
-	    (car addend)
-	    addend)
-	(iter (append addend (list (car rest)))
-	      (cdr rest))))
-  (iter '() s))
-(define (augend s)
-  (let ((aug (cdr (memq '+ s))))
-    (if (= 1 (length aug))
-	(car aug)
-	aug)))
+;; (define (sum? x)
+;;   (and (pair? x)
+;;        (> (length (filter (lambda (e) (eq? e '+)) x))
+;; 	  0)))
+;; (define (addend s)
+;;   (define (iter addend rest)
+;;     (if (eq? (car rest) '+)
+;; 	(if (= (length addend) 1)
+;; 	    (car addend)
+;; 	    addend)
+;; 	(iter (append addend (list (car rest)))
+;; 	      (cdr rest))))
+;;   (iter '() s))
+;; (define (augend s)
+;;   (let ((aug (cdr (memq '+ s))))
+;;     (if (= 1 (length aug))
+;; 	(car aug)
+;; 	aug)))
   
-(define (product? x)
-  (and (pair? x)
-       (let ((operators (filter symbol? x)))
-	 (= (length operators)
-	    (length (filter (lambda (e)
-			      (eq? e '*))
-			    x))))))
-(define (multiplier p)
-  (define (iter multip rest)
-    (if (eq? (car rest) '*)
-	(if (= (length multip) 1)
-	    (car multip)
-	    multip)
-	(iter (append multip (list (car rest)))
-	      (cdr rest))))
-  (iter '() p))
-(define (multiplicand p)
-  (let ((multip (cdr (memq '* p))))
-    (if (= 1 (length multip))
-	(car multip)
-	multip)))
+;; (define (product? x)
+;;   (and (pair? x)
+;;        (let ((operators (filter symbol? x)))
+;; 	 (= (length operators)
+;; 	    (length (filter (lambda (e)
+;; 			      (eq? e '*))
+;; 			    x))))))
+;; (define (multiplier p)
+;;   (define (iter multip rest)
+;;     (if (eq? (car rest) '*)
+;; 	(if (= (length multip) 1)
+;; 	    (car multip)
+;; 	    multip)
+;; 	(iter (append multip (list (car rest)))
+;; 	      (cdr rest))))
+;;   (iter '() p))
+;; (define (multiplicand p)
+;;   (let ((multip (cdr (memq '* p))))
+;;     (if (= 1 (length multip))
+;; 	(car multip)
+;; 	multip)))
 	   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Sets as unordered lists ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; O(n)
-(define (element-of-set? x set)
-  (cond ((null? set) #f)
-	((equal? x (car set)) #t)
-	(else (element-of-set? x (cdr set)))))
+;; (define (element-of-set? x set)
+;;   (cond ((null? set) #f)
+;; 	((equal? x (car set)) #t)
+;; 	(else (element-of-set? x (cdr set)))))
+
 ;; O(n)
-(define (adjoin-set x set)
-  (if (element-of-set? x set)
-      set
-      (cons x set)))
+;; (define (adjoin-set x set)
+;;   (if (element-of-set? x set)
+;;       set
+;;       (cons x set)))
 
 ;; O(n^2)
-(define (intersection-set set1 set2)
-  (cond ((null? set1) '())
-	((element-of-set? (car set1) set2)
-	 (cons (car set1)
-	       (intersection-set (cdr set1) set2)))
-	(else (intersection-set (cdr set1) set2))))
+;; (define (intersection-set set1 set2)
+;;   (cond ((null? set1) '())
+;; 	((element-of-set? (car set1) set2)
+;; 	 (cons (car set1)
+;; 	       (intersection-set (cdr set1) set2)))
+;; 	(else (intersection-set (cdr set1) set2))))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Excercise 2.59 ;;
 ;;;;;;;;;;;;;;;;;;;;
 
 ;; O(n^2)
-(define (union-set set1 set2)
-  (cond ((null? set1) set2)
-	(else (adjoin-set (car set1)
-			  (union-set (cdr set1) set2)))))
+;; (define (union-set set1 set2)
+;;   (cond ((null? set1) set2)
+;; 	(else (adjoin-set (car set1)
+;; 			  (union-set (cdr set1) set2)))))
 
-(define (union-set set1 set2)
-  (accumulate adjoin-set set2 set1))
+;; (define (union-set set1 set2)
+;;   (accumulate adjoin-set set2 set1))
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.60 ;;
 ;;;;;;;;;;;;;;;;;;;
 
 ;; O(1)
-(define (adjoin-set x set)
-  (cons x set))
+;; (define (adjoin-set x set)
+;;   (cons x set))
 
-(define (union-set set1 set2)
-  (append set1 set2))
+;; (define (union-set set1 set2)
+;;   (append set1 set2))
 
 ;; el resto son iguales
 
@@ -1308,53 +1309,144 @@
 
 ;; S={1,2,3,4} => '(1 2 3 4)
 ;; O(n)
-(define (element-of-set? x set)
-  (cond ((null? set) #t)
-	((< x (car set)) #f)
-	((= x (car set)) #t)
-	(else (element-of-set? x (cdr set)))))
+;; (define (element-of-set? x set)
+;;   (cond ((null? set) #t)
+;; 	((< x (car set)) #f)
+;; 	((= x (car set)) #t)
+;; 	(else (element-of-set? x (cdr set)))))
 
 ;; O(n)
 ;; each step removes one element of set1, set2 or both
 ;; at most, if n1=(size set1) && n2=(size set2)
 ;; n1+n2 steps are needed ( O(n) ), instead of n1*n2 ( O(n^2) )
 ;; as with unordered lists
-(define (intersection-set set1 set2)
-  (cond ((or (null? set1) (null? set2)) '())
-	(let ((x1 (car set1))
-	      (x2 (car set2)))
-	  (cond ((< x1 x2)
-		 (intersection-set (cdr set1) set2))
-		((< x2 x1)
-		 (intersection-set set1 (cdr set2)))
-		(else
-		 (cons x1 (intersection-set (cdr set1)
-					    (cdr set2))))))))
+;; (define (intersection-set set1 set2)
+;;   (cond ((or (null? set1) (null? set2)) '())
+;; 	(let ((x1 (car set1))
+;; 	      (x2 (car set2)))
+;; 	  (cond ((< x1 x2)
+;; 		 (intersection-set (cdr set1) set2))
+;; 		((< x2 x1)
+;; 		 (intersection-set set1 (cdr set2)))
+;; 		(else
+;; 		 (cons x1 (intersection-set (cdr set1)
+;; 					    (cdr set2))))))))
   
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.61 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (adjoin-set x set)
-  (cond ((null? set) (list x))
-	((< x (car set)) (cons x set))
-	((= x (car set)) set)
-	(else (cons (car set) (adjoin-set x (cdr set))))))
+;; (define (adjoin-set x set)
+;;   (cond ((null? set) (list x))
+;; 	((< x (car set)) (cons x set))
+;; 	((= x (car set)) set)
+;; 	(else (cons (car set) (adjoin-set x (cdr set))))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.62 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (union-set set1 set2)
-  (cond ((null? set1) set2)
-	((null? set2) set1)
-	(else (let ((x1 (car set1))
-		    (x2 (car set2)))
-		(cond ((< x1 x2)
-		       (cons x1 (union-set (cdr set1) set2)))
-		      ((= x1 x2)
-		       (cons x1 (union-set (cdr set1) (cdr set2))))
-		      (else ;; (> x1 x2)
-		       (cons x2 (union-set set1 (cdr set2)))))))))
+;; (define (union-set set1 set2)
+;;   (cond ((null? set1) set2)
+;; 	((null? set2) set1)
+;; 	(else (let ((x1 (car set1))
+;; 		    (x2 (car set2)))
+;; 		(cond ((< x1 x2)
+;; 		       (cons x1 (union-set (cdr set1) set2)))
+;; 		      ((= x1 x2)
+;; 		       (cons x1 (union-set (cdr set1) (cdr set2))))
+;; 		      (else ;; (> x1 x2)
+;; 		       (cons x2 (union-set set1 (cdr set2)))))))))
 					   
-		
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sets as binary trees ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (entry tree) (car tree))
+
+(define (left-branch tree) (cadr tree))
+
+(define (right-branch tree) (caddr tree))
+
+(define (make-tree entry left right)
+  (list entry left right))
+
+;; abstraction barrier :)
+
+(define (element-of-set? x set)
+  (cond ((null? set) #f)
+	((= x (entry set)) #t)
+	((< x (entry set)) (element-of-set? x (left-branch set)))
+	(else (element-of-set? x (right-branch set)))))
+
+(define (adjoin-set x set)
+  (cond ((null? set) (make-tree x '() '()))
+	((= x (entry set)) set)
+	((< x (entry set))
+	 (make-tree (entry set)
+		    (adjoin-set x (left-branch set))
+		    (right-branch set)))
+	(else
+	 (make-tree (entry set)
+		    (left-branch set)
+		    (adjoin-set x (right-branch set))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.63 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (tree->list-1 tree)
+  (if (null? tree)
+      '()
+      (append (tree->list-1 (left-branch tree))
+	      (list (entry tree))
+	      (tree->list-1 (right-branch tree)))))
+
+(define (tree->list-2 tree)
+  (define (copy-to-list tree result-list)
+    (if (null? tree)
+	result-list
+	(copy-to-list (left-branch tree)
+		      (cons (entry tree)
+			    (copy-to-list (right-branch tree)
+					  result-list)))))
+  (copy-to-list tree '()))
+
+;; a) yes, both procedures generate the same answer
+;; b) tree->list-1: T(n) = 2*T(n/2) + O(n/2) (por append)
+;;                  T(n) = O(n * log n)
+;;    tree->list-2: T(n) = 2*T(n/2) + O(1) (por cons)
+;;                  T(n) = O(n)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.64 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+
+(define (partial-tree elts n)
+  (if (= n 0)
+      (cons '() elts)
+      (let ((left-size (quotient (- n 1) 2)))
+	(let ((left-result (partial-tree elts left-size)))
+	  (let ((left-tree (car left-result))
+		(non-left-elts (cdr left-result))
+		(right-size (- n (+ left-size 1))))
+	    (let ((this-entry (car non-left-elts))
+		  (right-result (partial-tree (cdr non-left-elts)
+					      right-size)))
+	      (let ((right-tree (car right-result))
+		    (remaining-elts (cdr right-result)))
+		(cons (make-tree this-entry left-tree right-tree)
+		      remaining-elts))))))))
+		  
+;; a)
+;; partial-tree takes a number N and a list of elements of at
+;; least N elements ELTS.
+;; it computes the number of elements corresponding to each halve
+;; of the tree (each branch), and recursively calls itself to
+;; produce the partial trees corresponding to those elements.
+;; each time a subtree is made, the first item of the list is taken
+
+;; b) T(n) = 2*T(n/2) + O(1) (por cons)
