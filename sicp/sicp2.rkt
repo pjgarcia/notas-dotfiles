@@ -1259,24 +1259,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; O(n)
-;; (define (element-of-set? x set)
-;;   (cond ((null? set) #f)
-;; 	((equal? x (car set)) #t)
-;; 	(else (element-of-set? x (cdr set)))))
+(define (element-of-set? x set)
+  (cond ((null? set) #f)
+	((equal? x (car set)) #t)
+	(else (element-of-set? x (cdr set)))))
 
-;; O(n)
-;; (define (adjoin-set x set)
-;;   (if (element-of-set? x set)
-;;       set
-;;       (cons x set)))
+;;O(n)
+(define (adjoin-set x set)
+  (if (element-of-set? x set)
+      set
+      (cons x set)))
 
 ;; O(n^2)
-;; (define (intersection-set set1 set2)
-;;   (cond ((null? set1) '())
-;; 	((element-of-set? (car set1) set2)
-;; 	 (cons (car set1)
-;; 	       (intersection-set (cdr set1) set2)))
-;; 	(else (intersection-set (cdr set1) set2))))
+(define (intersection-set set1 set2)
+  (cond ((null? set1) '())
+	((element-of-set? (car set1) set2)
+	 (cons (car set1)
+	       (intersection-set (cdr set1) set2)))
+	(else (intersection-set (cdr set1) set2))))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Excercise 2.59 ;;
@@ -1364,9 +1364,9 @@
 
 (define (entry tree) (car tree))
 
-(define (left-branch tree) (cadr tree))
+;; (define (left-branch tree) (cadr tree))
 
-(define (right-branch tree) (caddr tree))
+;; (define (right-branch tree) (caddr tree))
 
 (define (make-tree entry left right)
   (list entry left right))
@@ -1472,14 +1472,14 @@
 ;; Exercise 2.66 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (lookup given-key set-of-records)
-  (cond ((null? set-of-records) #f)
-	((= given-key (key (entry set-of-records)))
-	 (entry set-of-records))
-	((< given-key (key (entry set-of-records)))
-	 (lookup given-key (left-branch set-of-records)))
-	(else
-	 (lookup given-key (right-branch set-of-records)))))
+;; (define (lookup given-key set-of-records)
+;;   (cond ((null? set-of-records) #f)
+;; 	((= given-key (key (entry set-of-records)))
+;; 	 (entry set-of-records))
+;; 	((< given-key (key (entry set-of-records)))
+;; 	 (lookup given-key (left-branch set-of-records)))
+;; 	(else
+;; 	 (lookup given-key (right-branch set-of-records)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 2.3.4 Example: Huffman Encoding Trees ;;
@@ -1519,9 +1519,9 @@
 	'()
 	(let ((next-branch (choose-branch (car bits) current-branch)))
 	  (if (leaf? next-branch)
-	      (cons (symbol next-branch)
+	      (cons (symbol-leaf next-branch)
 		    (decode-1 (cdr bits) tree))
-	      (decode-1 (cdr bits) (next-branch))))))
+	      (decode-1 (cdr bits) next-branch)))))
   (decode-1 bits tree))
 
 (define (choose-branch bit branch)
@@ -1546,10 +1546,53 @@
 ;; Exercise 2.67 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define sample-tree (make-code-tree (make-leaf 'A 4)
-				    (make-code-tree (make-leaf 'B 2)
-						    (make-code-tree (make-leaf 'D 1)
-								    (make-leaf 'C 1)))))
+(define sample-tree
+  (make-code-tree
+   (make-leaf 'A 4)
+   (make-code-tree (make-leaf 'B 2)
+		   (make-code-tree (make-leaf 'D 1)
+				   (make-leaf 'C 1)))))
 
 (define sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
   
+;; '(A D A B B C A)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.68 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message) tree)
+	      (encode (cdr message) tree))))
+
+(define (symbol-of-branch? symbol branch)
+  (= 1 (length (intersection-set (list symbol)
+				 (symbols branch)))))
+
+(define (encode-symbol s tree)
+  (cond ((null? tree) (error "null tree"))
+	((leaf? tree) '())
+	((symbol-of-branch? s (left-branch tree))
+	 (cons 0 (encode-symbol s (left-branch tree))))
+	((symbol-of-branch? s (right-branch tree))
+	 (cons 1 (encode-symbol s (right-branch tree))))
+	(else (error "symbol not in any branch"))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.69 ;;
+;;;;;;;;;;;;;;;;;;;
+  
+(define (generate-huffman-tree pairs)
+  (succesive-merge (make-leaf-set pairs)))
+
+(define (succesive-merge leaves)
+  (define (merge-iter branches)
+    (if (= (length branches) 1)
+	(car branches)
+	(merge-iter (huffman-adjoin-set
+		     (make-code-tree (car branches)
+				     (cadr branches))
+		     (cddr branches)))))
+  (merge-iter leaves))
