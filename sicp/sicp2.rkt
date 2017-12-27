@@ -1567,6 +1567,8 @@
       (append (encode-symbol (car message) tree)
 	      (encode (cdr message) tree))))
 
+;; inter. len.
+;; O(n) + O(n) = O(n) (inter. es O(n) porque uno de los sets tiene solo el simbolo)
 (define (symbol-of-branch? symbol branch)
   (= 1 (length (intersection-set (list symbol)
 				 (symbols branch)))))
@@ -1587,12 +1589,49 @@
 (define (generate-huffman-tree pairs)
   (succesive-merge (make-leaf-set pairs)))
 
-(define (succesive-merge leaves)
-  (define (merge-iter branches)
-    (if (= (length branches) 1)
-	(car branches)
-	(merge-iter (huffman-adjoin-set
-		     (make-code-tree (car branches)
-				     (cadr branches))
-		     (cddr branches)))))
-  (merge-iter leaves))
+(define (succesive-merge branches)
+  (if (= (length branches) 1)
+      (car branches)
+      (succesive-merge (huffman-adjoin-set
+			(make-code-tree (car branches)
+					(cadr branches))
+			(cddr branches)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.70 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(let ((song-tree (generate-huffman-tree
+		  '((A 2) (NA 16)
+		    (BOOM 1) (SHA 3)
+		    (GET 2) (YIP 9)
+		    (JOB 2) (WAH 1))))
+      (song '((GET A JOB SHA)
+	      (SHA NA NA NA NA NA NA NA NA)
+   	      (GET A JOB SHA)
+	      (SHA NA NA NA NA NA NA NA NA)
+	      (WAH YIP YIP YIP YIP)
+	      (YIP YIP YIP YIP YIP)
+	      (SHA BOOM))))
+  (length (flatmap (lambda (phrase)
+	 (encode phrase song-tree))
+       song)))
+
+;; 92 bits with the huffman encoding
+(* 3 36) ;; 108 with a fixed length encoding
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.71 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; in such a tree there is only needed 1 bit to encode the
+;; most frequent symbol, but n-1 to encode the least frequent.
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.72 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; T(n) = O(n) + T(n-1)
+;; best case: O(1) (porque va a buscar un simbolo en un set de 1 simbolo)
+;; worst case: O(n^2) (n veces va a buscar un simbolo en un set de n-1,2,... elementos
+
