@@ -1635,3 +1635,70 @@
 ;; best case: O(1) (porque va a buscar un simbolo en un set de 1 simbolo)
 ;; worst case: O(n^2) (n veces va a buscar un simbolo en un set de n-1,2,... elementos
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.73 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; 1) We can't assimilate the predicates number? and variable? into the
+;; data-directed dispatch because it operates on non-tagged data
+
+;; 2) & 3)
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+	((variable? exp) (if (same-variable? exp var) 1 0))
+	(else ((get 'deriv (operator exp)) (operands exp) var))))
+	 
+(define (operator exp) (car exp))
+(define (operands exp) (cdr exp))
+
+(define (install-deriv-package)
+  ;; internal procedures
+  (define (deriv-sum exp var)
+    (make-sum (deriv (addend exp) var)
+	      (deriv (augend exp) var)))
+  (define (deriv-prod exp-var)
+    (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var))
+	      (make-product (deriv (multiplier exp) var) (multiplicand exp))))
+  (define (deriv-exp exp var)
+    (make-product
+     (make-product (exponent exp)
+		   (make-exponentiation (base exp)
+					(- (exponent exp) 1)))
+     (deriv (base exp) var)))
+  ;; interface to the rest of the system
+  (put 'deriv '+ deriv-sum)
+  (put 'deriv '* deriv-prod)
+  (put 'deriv '** deriv-prod)
+  done)
+
+;; 4) The only changes needed would be to change the order of the arguments to "put"
+;; when we install the handlers.
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.74 ;;
+;;;;;;;;;;;;;;;;;;;
+
+
+(define (get-record employee-key personnel-file)
+  ((get 'get-record (division personnel-file)) employee-key (contents personnel-file)))
+;; each division's file should be tagged with a division's descriptor, like 'TEXAS,
+;; that will be retrieved by (division file)
+
+(define (get-salary employee-key personnel-file)
+  (let (record (get-record employee-key personnel-file))
+    ((get 'employee-salary (division personnel-file)) (contents record))))
+;; the record should also be tagged with a division's descriptor
+
+(define (find-employee-record employee-key files)
+  (if (null? files)
+      #f
+      (or (get-record employee-key (car files))
+	  (find-employee-record employee-key (cdr files)))))
+
+;; when insatiable takes over a new company, the new personnel file and
+;; the way to read that must be installed on the system.
+
+;; | operation / company | TEXAS                 | MIAMI                 | NYC                 |
+;; |---------------------+-----------------------+-----------------------+---------------------|
+;; | get-record          | get-record-texas      | get-record-miami      | get-record-nyc      |
+;; | employee-salary     | employee-salary-texas | employee-salary-miami | employee-salary-nyc |
