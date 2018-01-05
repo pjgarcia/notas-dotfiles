@@ -1320,17 +1320,17 @@
 ;; at most, if n1=(size set1) && n2=(size set2)
 ;; n1+n2 steps are needed ( O(n) ), instead of n1*n2 ( O(n^2) )
 ;; as with unordered lists
-(define (intersection-set set1 set2)
-  (cond ((or (null? set1) (null? set2)) '())
-	(else (let ((x1 (car set1))
-		    (x2 (car set2)))
-		(cond ((< x1 x2)
-		       (intersection-set (cdr set1) set2))
-		      ((< x2 x1)
-		       (intersection-set set1 (cdr set2)))
-		      (else
-		       (cons x1 (intersection-set (cdr set1)
-						  (cdr set2)))))))))
+;; (define (intersection-set set1 set2)
+;;   (cond ((or (null? set1) (null? set2)) '())
+;; 	(else (let ((x1 (car set1))
+;; 		    (x2 (car set2)))
+;; 		(cond ((< x1 x2)
+;; 		       (intersection-set (cdr set1) set2))
+;; 		      ((< x2 x1)
+;; 		       (intersection-set set1 (cdr set2)))
+;; 		      (else
+;; 		       (cons x1 (intersection-set (cdr set1)
+;; 						  (cdr set2)))))))))
   
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.61 ;;
@@ -1373,23 +1373,23 @@
 
 ;; abstraction barrier :)
 
-(define (element-of-set? x set)
-  (cond ((null? set) #f)
-	((= x (entry set)) #t)
-	((< x (entry set)) (element-of-set? x (left-branch set)))
-	(else (element-of-set? x (right-branch set)))))
+;; (define (element-of-set? x set)
+;;   (cond ((null? set) #f)
+;; 	((= x (entry set)) #t)
+;; 	((< x (entry set)) (element-of-set? x (left-branch set)))
+;; 	(else (element-of-set? x (right-branch set)))))
 
-(define (adjoin-set x set)
-  (cond ((null? set) (make-tree x '() '()))
-	((= x (entry set)) set)
-	((< x (entry set))
-	 (make-tree (entry set)
-		    (adjoin-set x (left-branch set))
-		    (right-branch set)))
-	(else
-	 (make-tree (entry set)
-		    (left-branch set)
-		    (adjoin-set x (right-branch set))))))
+;; (define (adjoin-set x set)
+;;   (cond ((null? set) (make-tree x '() '()))
+;; 	((= x (entry set)) set)
+;; 	((< x (entry set))
+;; 	 (make-tree (entry set)
+;; 		    (adjoin-set x (left-branch set))
+;; 		    (right-branch set)))
+;; 	(else
+;; 	 (make-tree (entry set)
+;; 		    (left-branch set)
+;; 		    (adjoin-set x (right-branch set))))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.63 ;;
@@ -1643,11 +1643,15 @@
 ;; data-directed dispatch because it operates on non-tagged data
 
 ;; 2) & 3)
-(define (deriv exp var)
-  (cond ((number? exp) 0)
-	((variable? exp) (if (same-variable? exp var) 1 0))
-	(else ((get 'deriv (operator exp)) (operands exp) var))))
-	 
+;; (define (deriv exp var)
+;;   (cond ((number? exp) 0)
+;; 	((variable? exp) (if (same-variable? exp var) 1 0))
+;; 	(else ((get 'deriv (operator exp)) (operands exp) var))))
+
+;; los defino para poder entrar al modulo y evaluar en racket
+(define put '())
+(define get '())
+
 (define (operator exp) (car exp))
 (define (operands exp) (cdr exp))
 
@@ -1656,7 +1660,7 @@
   (define (deriv-sum exp var)
     (make-sum (deriv (addend exp) var)
 	      (deriv (augend exp) var)))
-  (define (deriv-prod exp-var)
+  (define (deriv-prod exp var)
     (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var))
 	      (make-product (deriv (multiplier exp) var) (multiplicand exp))))
   (define (deriv-exp exp var)
@@ -1669,7 +1673,7 @@
   (put 'deriv '+ deriv-sum)
   (put 'deriv '* deriv-prod)
   (put 'deriv '** deriv-prod)
-  done)
+  'done)
 
 ;; 4) The only changes needed would be to change the order of the arguments to "put"
 ;; when we install the handlers.
@@ -1678,6 +1682,8 @@
 ;; Exercise 2.74 ;;
 ;;;;;;;;;;;;;;;;;;;
 
+(define division 1)
+(define contents 1)
 
 (define (get-record employee-key personnel-file)
   ((get 'get-record (division personnel-file)) employee-key (contents personnel-file)))
@@ -1685,7 +1691,7 @@
 ;; that will be retrieved by (division file)
 
 (define (get-salary employee-key personnel-file)
-  (let (record (get-record employee-key personnel-file))
+  (let ((record (get-record employee-key personnel-file)))
     ((get 'employee-salary (division personnel-file)) (contents record))))
 ;; the record should also be tagged with a division's descriptor
 
@@ -1702,3 +1708,39 @@
 ;; |---------------------+-----------------------+-----------------------+---------------------|
 ;; | get-record          | get-record-texas      | get-record-miami      | get-record-nyc      |
 ;; | employee-salary     | employee-salary-texas | employee-salary-miami | employee-salary-nyc |
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.75 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-from-mag-ang r a)
+  (lambda (message)
+    (cond ((eq? message 'magnitude) r)
+	  ((eq? message 'angle) a)
+	  ((eq? message 'real-part)
+	   (* r (cos a)))
+	  ((eq? message 'imag-part)
+	   (* r (sin a)))
+	  (else (error "Unknown message -- MAKE-FROM-MAG-ANG" message)))))
+	   
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.76 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; generic operations with explicit dispatch:
+;; to add new types we must install the functions keeping in mind to don't generate name-colissions.
+;; then, for each dispatcher function we must add a clause to the new type.
+;; to add a new operation we must create a new dispatcher function to call the new functions that will
+;; implement the operation on each type.
+
+;; data-directed style:
+;; new type: install the package corresponding to the new type (no name collision risk)
+;; by adding the operations to the dispatch table
+;; new operation: re-install every package with the new operation.
+
+;; message-passing:
+;; new type: generate a new function that responds all the operations for that type.
+;; new operation: for each type-function, add the new operation and re-install it.
+
+;; best for a system with frequent new types: message-passing or data-directed
+;; best for a system with frequent new operations: message-passing
