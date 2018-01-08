@@ -182,8 +182,8 @@
 (define one (lambda (f) (lambda (x) (f x))))
 (define two (lambda (f) (lambda (x) (f (f x)))))
 
-(define (add n m)
-  (lambda (f) (lambda (x) ((n f) ((m f) x)))))
+;; (define (add n m)
+;;   (lambda (f) (lambda (x) ((n f) ((m f) x)))))
 
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.7 ;;
@@ -1744,3 +1744,98 @@
 
 ;; best for a system with frequent new types: message-passing or data-directed
 ;; best for a system with frequent new operations: message-passing
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Systems with generic operations ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (add x y) (apply-generic 'add x y))
+(define (sub x y) (apply-generic 'sub x y))
+(define (mul x y) (apply-generic 'mul x y))
+(define (div x y) (apply-generic 'div x y))
+
+(define (attach-tag type-tag contents)
+  (cons type-tag contents))
+(define (type-tag datum)
+  (if (pair? datum)
+      (car datum)
+      (error "Bad tagged datum -- TYPE-TAG" datum)))
+(define (content datum)
+  (if (pair? datum)
+      (cdr datum)
+      (error "Bad tagged datum -- TYPE-TAG" datum)))
+
+(define dispatch-table (make-hash))
+
+(define (put-dispatch op type item)
+  (hash-set! dispatch-table (list op type) item))
+(define (get-dispatch op type)
+  (hash-ref dispatch-table (list op type)))
+
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get-dispatch op type-tags)))
+      (if proc
+	  (apply proc (map content args))
+	  (error "No method for these types -- APPLY-GENERIC"
+		 (list op type-tags))))))
+
+
+(define (install-scheme-number-package)
+  (define (tag x)
+    (attach-tag 'scheme-number x))
+  (put-dispatch 'add '(scheme-number scheme-number)
+		(lambda (x y) (tag (+ x y))))
+  (put-dispatch 'sub '(scheme-number scheme-number)
+		(lambda (x y) (tag (- x y))))
+  (put-dispatch 'mul '(scheme-number scheme-number)
+		(lambda (x y) (tag (* x y))))
+  (put-dispatch 'div '(scheme-number scheme-number)
+		(lambda (x y) (tag (/ x y))))
+  (put-dispatch 'make 'scheme-number
+		(lambda (x) (tag x)))
+  'done)
+
+(define (make-scheme-number n)
+  ((get-dispatch 'make 'scheme-number) n))
+
+
+(define (install-rational-package)
+  ;; internal procedures
+  (define (numer x) (car x))
+  (define (denom x) (cdr x))
+  (define (make-rat n d)
+    (let ((g ((if (> d 0) + -) (gcd n d))))
+      (cons (/ n g) (/ d g))))
+  (define (add-rat x y)
+    (make-rat (+ (* (numer x) (denom y))
+		 (* (numer y) (denom x)))
+	      (* (denom x) (denom y))))
+  (define (sub-rat x y)
+    (make-rat (- (* (numer x) (denom y))
+		 (* (numer y) (denom x)))
+	      (* (denom x) (denom y))))
+  (define (mul-rat x y)
+    (make-rat (* (numer x) (numer y))
+	      (* (denom x) (denom y))))
+  (define (div-rat x y)
+    (make-rat (* (numer x) (denom y))
+	      (* (denom x) (numer y))))
+
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'rational x))
+  ;; (put-dispatch 'add '(rational rational)
+  ;; 		(lambda (x y) (tag (add-rat x y))))
+  (put-dispatch 'sub '(rational rational)
+  		(lambda (x y) (tag (add-rat x y))))
+  ;; (put-dispatch 'mul '(rational rational)
+  ;; 		(lambda (x y) (tag (mul-rat x y))))
+  ;; (put-dispatch 'div '(rational rational)
+  ;; 		(lambda (x y) (div (mul-rat x y))))
+  ;; (put-dispatch 'make 'rational
+  ;; 		(lambda (n d) (tag (make-rat n d))))
+  'done)
+
+(define (make-rational n d)
+  ((get-dispatch 'make 'rational) n d))
+
