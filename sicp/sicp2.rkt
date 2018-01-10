@@ -1886,7 +1886,7 @@
   (put-dispatch 'real-part '(polar) real-part)
   (put-dispatch 'imag-part '(polar) imag-part)
   (put-dispatch 'magnitude '(polar) magnitude)
-  (put-dispatch 'angle '(polar) magnitude)
+  (put-dispatch 'angle '(polar) angle)
   (put-dispatch 'make-from-real-imag 'polar
 		(lambda (x y)
 		  (tag (make-from-real-imag x y))))
@@ -1899,9 +1899,9 @@
   ;; imported procedures from rectangular
   ;; and polar packages
   (define (make-from-real-imag x y)
-    ((get-dispatch 'make 'rectangular) x y))
+    ((get-dispatch 'make-from-real-imag 'rectangular) x y))
   (define (make-from-mag-ang r a)
-    ((get-dispatch 'make 'polar) r a))
+    ((get-dispatch 'make-from-mag-ang 'polar) r a))
   ;; internal procedures
   (define (add-complex z1 z2)
     (make-from-real-imag (+ (real-part z1) (real-part z2))
@@ -1943,8 +1943,52 @@
 (define (make-complex-from-mag-ang r a)
   ((get-dispatch 'make-from-mag-ang 'complex) r a))
 
-  
-  
-			  
-		
-  
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.77 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (real-part z)
+  (apply-generic 'real-part z))
+(define (imag-part z)
+  (apply-generic 'imag-part z))
+(define (magnitude z)
+  (apply-generic 'magnitude z))
+(define (angle z)
+  (apply-generic 'angle z))
+
+(put-dispatch 'real-part '(complex) real-part)
+(put-dispatch 'imag-part '(complex) imag-part)
+(put-dispatch 'magnitude '(complex) magnitude)
+(put-dispatch 'angle '(complex) angle)
+
+;; call trace
+;; (magnitude (make-complex-from-real-imag 1 2))
+;; (apply-generic 'magnitude '(complex rectangular 1 . 2))
+;; ((get-dispatch 'magnitude '(complex)) '(rectangular 1 . 2))
+;; (magnitude '(rectangular 1 . 2))
+;; (apply-generic 'magnitude '(rectangular 1 . 2))
+;; ((get-dispatch 'magnitude '(rectangular)) (cons 1 2))
+;; ((lambda (z)
+;;    (sqrt (+ (square (real-part z))
+;; 	    (square (imag-part z)))))
+;;  (cons 1 2))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.78 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (attach-tag type-tag contents)
+  (if (number? contents)
+      contents
+      (cons type-tag contents)))
+
+(define (type-tag datum)
+  (cond ((pair? datum) (car datum))
+	((number? datum) 'scheme-number)
+	(error "Bad tagged datum -- TYPE-TAG" datum)))
+
+(define (content datum)
+  (cond ((pair? datum) (cdr datum))
+	((number? datum) datum)
+	(error "Bad tagged datum -- TYPE-TAG" datum)))
+
