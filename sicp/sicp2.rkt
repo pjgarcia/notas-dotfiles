@@ -1753,17 +1753,19 @@
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
+(define (equ? x y) (apply-generic 'equ? x y))
+(define (=zero? x) (apply-generic '=zero? x))
 
-(define (attach-tag type-tag contents)
-  (cons type-tag contents))
-(define (type-tag datum)
-  (if (pair? datum)
-      (car datum)
-      (error "Bad tagged datum -- TYPE-TAG" datum)))
-(define (content datum)
-  (if (pair? datum)
-      (cdr datum)
-      (error "Bad tagged datum -- TYPE-TAG" datum)))
+;; (define (attach-tag type-tag contents)
+;;   (cons type-tag contents))
+;; (define (type-tag datum)
+;;   (if (pair? datum)
+;;       (car datum)
+;;       (error "Bad tagged datum -- TYPE-TAG" datum)))
+;; (define (content datum)
+;;   (if (pair? datum)
+;;       (cdr datum)
+;;       (error "Bad tagged datum -- TYPE-TAG" datum)))
 
 (define dispatch-table (make-hash))
 
@@ -1792,6 +1794,10 @@
 		(lambda (x y) (tag (* x y))))
   (put-dispatch 'div '(scheme-number scheme-number)
 		(lambda (x y) (tag (/ x y))))
+  (put-dispatch 'equ? '(scheme-number scheme-number)
+		(lambda (x y) (= x y)))
+  (put-dispatch '=zero? '(scheme-number)
+		(lambda (x) (= x 0)))
   (put-dispatch 'make 'scheme-number
 		(lambda (x) (tag x)))
   'done)
@@ -1821,7 +1827,11 @@
   (define (div-rat x y)
     (make-rat (* (numer x) (denom y))
 	      (* (denom x) (numer y))))
-
+  (define (equ? r1 r2)
+    (and (= (numer r1) (numer r2))
+	 (= (denom r1) (denom r2))))
+  (define (=zero? r)
+    (= (numer r) 0))
   ;; interface to the rest of the system
   (define (tag x) (attach-tag 'rational x))
   (put-dispatch 'add '(rational rational)
@@ -1832,6 +1842,8 @@
   		(lambda (x y) (tag (mul-rat x y))))
   (put-dispatch 'div '(rational rational)
   		(lambda (x y) (div (mul-rat x y))))
+  (put-dispatch 'equ? '(rational rational) equ?)
+  (put-dispatch '=zero? '(rational) =zero?)
   (put-dispatch 'make 'rational
   		(lambda (n d) (tag (make-rat n d))))
   'done)
@@ -1853,6 +1865,13 @@
     (cons x y))
   (define (make-from-mag-ang r a)
     (cons (* r (cos a)) (* r (sin a))))
+  (define (equ? z1 z2)
+    (and (= (real-part z1) (real-part z2))
+	 (= (imag-part z1) (imag-part z2))))
+  (define (=zero? z)
+    (and (= (real-part z) 0)
+	 (= (imag-part z) 0)))
+
   ;; interface to the rest of the system
   (define (tag x)
     (attach-tag 'rectangular x))
@@ -1860,6 +1879,8 @@
   (put-dispatch 'imag-part '(rectangular) imag-part)
   (put-dispatch 'magnitude '(rectangular) magnitude)
   (put-dispatch 'angle '(rectangular) angle)
+  (put-dispatch 'equ? '(rectangular rectangular) equ?)
+  (put-dispatch 'equ? '(rectangular rectangular) =zero?)
   (put-dispatch 'make-from-real-imag 'rectangular
 		(lambda (x y)
 		  (tag (make-from-real-imag x y))))
@@ -1881,12 +1902,20 @@
   (define (make-from-real-imag x y)
     (cons (sqrt (+ (square x) (square y)))
 	  (atan y x)))
+  (define (equ? z1 z2)
+    (and (= (magnitude z1) (magnitude z2))
+	 (= (angle z1) (angle z2))))
+  (define (=zero? z)
+    (= (magnitude z) 0))
+  
   ;; interface to the rest of the system
   (define (tag x) (attach-tag 'polar x))
   (put-dispatch 'real-part '(polar) real-part)
   (put-dispatch 'imag-part '(polar) imag-part)
   (put-dispatch 'magnitude '(polar) magnitude)
   (put-dispatch 'angle '(polar) angle)
+  (put-dispatch 'equ? '(polar polar) equ?)
+  (put-dispatch '=zero? '(polar) =zero?)
   (put-dispatch 'make-from-real-imag 'polar
 		(lambda (x y)
 		  (tag (make-from-real-imag x y))))
@@ -1915,6 +1944,7 @@
   (define (div-complex z1 z2)
     (make-from-mag-ang (/ (magnitude z1) (magnitude z2))
 		       (- (angle z1) (angle z2))))
+
   ;; interface to the rest of the system
   (define (tag z) (attach-tag 'complex z))
   (put-dispatch 'add '(complex complex)
@@ -1929,6 +1959,8 @@
   (put-dispatch 'div '(complex complex)
 		(lambda (z1 z2)
 		  (tag (div-complex z1 z2))))
+  (put-dispatch 'equ? '(complex complex) equ?)
+  (put-dispatch '=zero? '(complex) =zero?)
   (put-dispatch 'make-from-real-imag 'complex
 		(lambda (x y)
 		  (tag (make-from-real-imag x y))))
@@ -1992,3 +2024,14 @@
 	((number? datum) datum)
 	(error "Bad tagged datum -- TYPE-TAG" datum)))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.79 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; already added to the packages
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.80 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; already added to the packages
