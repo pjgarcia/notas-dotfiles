@@ -1772,15 +1772,15 @@
 (define (put-dispatch op type item)
   (hash-set! dispatch-table (list op type) item))
 (define (get-dispatch op type)
-  (hash-ref dispatch-table (list op type)))
+  (hash-ref dispatch-table (list op type) #f))
 
-(define (apply-generic op . args)
-  (let ((type-tags (map type-tag args)))
-    (let ((proc (get-dispatch op type-tags)))
-      (if proc
-	  (apply proc (map content args))
-	  (error "No method for these types -- APPLY-GENERIC"
-		 (list op type-tags))))))
+;; (define (apply-generic op . args)
+;;   (let ((type-tags (map type-tag args)))
+;;     (let ((proc (get-dispatch op type-tags)))
+;;       (if proc
+;; 	  (apply proc (map content args))
+;; 	  (error "No method for these types -- APPLY-GENERIC"
+;; 		 (list op type-tags))))))
 
 
 (define (install-scheme-number-package)
@@ -2035,3 +2035,268 @@
 ;;;;;;;;;;;;;;;;;;;
 
 ;; already added to the packages
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.81 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define coercion-table (make-hash))
+
+(define (put-coercion from to item)
+  (hash-set! coercion-table (list from to) item))
+(define (get-coercion from to)
+  (hash-ref coercion-table (list from to) #f))
+
+;; 1) If we call exp with two complex numbers as arguments
+;; there will be an endless call to apply-generic after
+;; coercing the types to themselves
+		
+;; 2) apply-generic works correctly as it is
+
+;; 3)
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get-dispatch op type-tags)))
+      (if proc
+	  (apply proc (map content args))
+	  (if (= (length args) 2)
+	      (let ((type1 (car type-tags))
+		    (type2 (cadr type-tags))
+		    (a1 (car args))
+		    (a2 (cadr args)))
+		(if (eq? type1 type2)
+		    (let ((t1->t2 (get-coercion type1 type2))
+			  (t2->t1 (get-coercion type2 type1)))
+		      (cond (t1->t2 (apply-generic op (t1->t2 a1) a2))
+			    (t2->t1 (apply-generic op a1 (t2->t1 a2)))
+			    (else (error "No method fo67r these types"
+					 (list op type-tags)))))
+		    (error "No method for these types"
+			   (list op type-tags))))
+	      (error "No method for these types"
+		     (list op type-tags)))))))
+    
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.82 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (all-same-types types)
+  (define (same-of type rest)
+    (cond ((null? rest) #t)
+	  ((eq? (car rest) type)
+	   (same-of type (cdr rest)))
+	  (else #f)))
+  (cond ((null? types) #t)
+	(same-of (car types) (cdr types))))
+
+(define (types-combinations types)
+  ;; (sn rat com) => ((sn rat->sn com->sn) (sn->rat rat com->rat) (sn->com rat->com com))
+  (map (lambda (first-type)
+	 (map (lambda (other-type)
+		(if (eq? first-type other-type)
+		    (list first-type)
+		    (list other-type first-type)))
+	      types))
+       types))
+
+(define (coersions types)
+  (map (lambda (types-row)
+	 (map (lambda (types-cell)
+		(if (= 1 (length types-cell))
+		    (lambda (x) x)
+		    (get-coercion (car types-cell)
+				  (cadr types-cell))))
+	      types-row))
+       (types-combinations types)))
+
+(define (applicable-conversions types)
+  (filter (lambda (types-row)
+	    (not (memq #f types-row)))
+	  (coersions types)))
+
+(define (apply-generic2 op . args)
+  (let ((type-tags (map type-tag args)))
+    (if (all-same-types type-tags)
+	(let ((proc (get-dispatch op type-tags)))
+	  (if proc
+	      (apply proc (map content args))
+	      (error "asdfasdf")))
+	(let ((coercions (applicable-conversions type-tags)))
+	  (if (null? coercions)
+	      (error "asdf")
+	      (car (map (lambda (coercions-row)
+			  (apply apply-generic (cons op (map (lambda (coercion arg)
+							       (coercion arg))
+							     coercions-row
+							     args))))
+			coercions)))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.83 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define types-tower (make-hash))
+(define (put-type . args)
+  (let ((subtype (car args))
+	(supertype (cdr args)))
+    (cond ((null? supertype)
+	   (hash-set! types-tower subtype 10))
+	  (else
+	   (hash-set! types-tower
+		      subtype
+		      (+ 1 (has-ref types-tower supertype)))))))
+(define (get-type-level type)
+  (hash-ref types-tower type))
+
+(define (install-int-package)
+  (define (raise-int x)
+    (make-rational x 1))
+  (put-type 'int 'rat)
+  (put-dispatch 'raise '(int) raise-int))
+
+(define (raise x)
+  (apply-generic 'raise x))
+
+;; (define (raise-rat r)
+;;   (make-real (/ (numer x) (denom x))))
+
+;; (define (raise-real r)
+;;   (make-complex-from-real-imag r 0))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.84 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (apply-generic3 op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get-dispatch op type-tags)))
+      (cond (proc (apply proc (map content args)))
+	    ((not (all-same-types type-tags))
+	     (apply apply-generic (cons op (raise-lower args))))
+	    (else (error "asdfasdf"))))))
+
+(define (raise-lower args)
+  (let ((levels (map (lambda (arg)
+		       (get-type-level (type-tag arg)))
+		     args)))
+    (let ((higher-level (foldl (lambda (x y) (if (> x y) x y)) 0 levels)))
+      (map (lambda (arg level)
+	     (if (< level higher-level)
+		 (raise arg)
+		 arg))
+	   args
+	   levels))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.85 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (project-complex z)
+  (make-real (real-part z)))
+(define (project-real r)
+  (make-rat (numerator r) (denominator r)))
+(define (project-rational r)
+  (make-int (round (/ (numer r) (denom r)))))
+
+(define (drop x)
+  (if (equ? x (raise (project x)))
+      (drop (project x))
+      x))
+
+(define (apply-generic4 op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get-dispatch op type-tags)))
+      (cond (proc (apply proc (map content args)))
+	    ((not (all-same-types type-tags))
+	     (apply apply-generic (cons op (raise-lower args))))
+	    (else (error "asdfasdf"))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.86 ;;
+;;;;;;;;;;;;;;;;;;;
+
+
+(define (install-complex-package2)
+  ;; imported procedures from rectangular
+  ;; and polar packages
+  (define (make-from-real-imag x y)
+    ((get-dispatch 'make-from-real-imag 'rectangular) x y))
+  (define (make-from-mag-ang r a)
+    ((get-dispatch 'make-from-mag-ang 'polar) r a))
+  ;; internal procedures
+  (define (add-complex z1 z2)
+    (make-from-real-imag (add (real-part z1) (real-part z2))
+			 (add (imag-part z1) (imag-part z2))))
+  (define (sub-complex z1 z2)
+    (make-from-real-imag (sub (real-part z1) (real-part z2))
+			 (sub (imag-part z1) (imag-part z2))))
+  (define (mul-complex z1 z2)
+    (make-from-mag-ang (mul (magnitude z1) (magnitude z2))
+		       (add (angle z1) (angle z2))))
+  (define (div-complex z1 z2)
+    (make-from-mag-ang (div (magnitude z1) (magnitude z2))
+		       (sub (angle z1) (angle z2))))
+
+  ;; interface to the rest of the system
+  (define (tag z) (attach-tag 'complex z))
+  (put-dispatch 'add '(complex complex)
+		(lambda (z1 z2)
+		  (tag (add-complex z1 z2))))
+  (put-dispatch 'sub '(complex complex)
+		(lambda (z1 z2)
+		  (tag (sub-complex z1 z2))))
+  (put-dispatch 'mul '(complex complex)
+		(lambda (z1 z2)
+		  (tag (mul-complex z1 z2))))
+  (put-dispatch 'div '(complex complex)
+		(lambda (z1 z2)
+		  (tag (div-complex z1 z2))))
+  (put-dispatch 'equ? '(complex complex) equ?)
+  (put-dispatch '=zero? '(complex) =zero?)
+  (put-dispatch 'make-from-real-imag 'complex
+		(lambda (x y)
+		  (tag (make-from-real-imag x y))))
+  (put-dispatch 'make-from-mag-ang 'complex
+		(lambda (r a)
+		  (tag (make-from-mag-ang r a))))
+  'done)
+
+;; complex polar package
+(define (install-polar-package2)
+  ;; internal procedures
+  (define (magnitude z) (car z))
+  (define (angle z) (cdr z))
+  (define (make-from-mag-ang r a) (cons r a))
+  (define (real-part z)
+    (mul (magnitude z) (cosine (angle z))))
+  (define (imag-part z)
+    (mul (magnitude z) (sine (angle z))))
+  (define (make-from-real-imag x y)
+    (cons (squareroot (+ (square2 x) (square2 y)))
+	  (arctangent y x)))
+  (define (equ? z1 z2)
+    (and (equ? (magnitude z1) (magnitude z2))
+	 (equ? (angle z1) (angle z2))))
+  (define (=zero? z)
+    (equ? (magnitude z) 0))
+  
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'polar x))
+  (put-dispatch 'real-part '(polar) real-part)
+  (put-dispatch 'imag-part '(polar) imag-part)
+  (put-dispatch 'magnitude '(polar) magnitude)
+  (put-dispatch 'angle '(polar) angle)
+  (put-dispatch 'equ? '(polar polar) equ?)
+  (put-dispatch '=zero? '(polar) =zero?)
+  (put-dispatch 'make-from-real-imag 'polar
+		(lambda (x y)
+		  (tag (make-from-real-imag x y))))
+  (put-dispatch 'make-from-mag-ang 'polar
+		(lambda (r a)
+		  (tag (make-from-mag-ang r a))))
+  'done)
+
+(define (cosine r)
+  (apply-generic 'cosine r))
+(define (sine r)
+  (apply-generic 'sine r))
