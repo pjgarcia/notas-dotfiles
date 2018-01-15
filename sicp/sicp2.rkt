@@ -2144,7 +2144,7 @@
 	  (else
 	   (hash-set! types-tower
 		      subtype
-		      (+ 1 (has-ref types-tower supertype)))))))
+		      (+ 1 (hash-ref types-tower supertype)))))))
 (define (get-type-level type)
   (hash-ref types-tower type))
 
@@ -2191,30 +2191,29 @@
 ;; Exercise 2.85 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (project-complex z)
-  (make-real (real-part z)))
-(define (project-real r)
-  (make-rat (numerator r) (denominator r)))
-(define (project-rational r)
-  (make-int (round (/ (numer r) (denom r)))))
+;; (define (project-complex z)
+;;   (make-real (real-part z)))
+;; (define (project-real r)
+;;   (make-rat (numerator r) (denominator r)))
+;; (define (project-rational r)
+;;   (make-int (round (/ (numer r) (denom r)))))
 
-(define (drop x)
-  (if (equ? x (raise (project x)))
-      (drop (project x))
-      x))
+;; (define (drop x)
+;;   (if (equ? x (raise (project x)))
+;;       (drop (project x))
+;;       x))
 
-(define (apply-generic4 op . args)
-  (let ((type-tags (map type-tag args)))
-    (let ((proc (get-dispatch op type-tags)))
-      (cond (proc (apply proc (map content args)))
-	    ((not (all-same-types type-tags))
-	     (apply apply-generic (cons op (raise-lower args))))
-	    (else (error "asdfasdf"))))))
+;; (define (apply-generic4 op . args)
+;;   (let ((type-tags (map type-tag args)))
+;;     (let ((proc (get-dispatch op type-tags)))
+;;       (cond (proc (apply proc (map content args)))
+;; 	    ((not (all-same-types type-tags))
+;; 	     (apply apply-generic (cons op (raise-lower args))))
+;; 	    (else (error "asdfasdf"))))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.86 ;;
 ;;;;;;;;;;;;;;;;;;;
-
 
 (define (install-complex-package2)
   ;; imported procedures from rectangular
@@ -2262,41 +2261,126 @@
   'done)
 
 ;; complex polar package
-(define (install-polar-package2)
-  ;; internal procedures
-  (define (magnitude z) (car z))
-  (define (angle z) (cdr z))
-  (define (make-from-mag-ang r a) (cons r a))
-  (define (real-part z)
-    (mul (magnitude z) (cosine (angle z))))
-  (define (imag-part z)
-    (mul (magnitude z) (sine (angle z))))
-  (define (make-from-real-imag x y)
-    (cons (squareroot (+ (square2 x) (square2 y)))
-	  (arctangent y x)))
-  (define (equ? z1 z2)
-    (and (equ? (magnitude z1) (magnitude z2))
-	 (equ? (angle z1) (angle z2))))
-  (define (=zero? z)
-    (equ? (magnitude z) 0))
+;; (define (install-polar-package2)
+;;   ;; internal procedures
+;;   (define (magnitude z) (car z))
+;;   (define (angle z) (cdr z))
+;;   (define (make-from-mag-ang r a) (cons r a))
+;;   (define (real-part z)
+;;     (mul (magnitude z) (cosine (angle z))))
+;;   (define (imag-part z)
+;;     (mul (magnitude z) (sine (angle z))))
+;;   (define (make-from-real-imag x y)
+;;     (cons (squareroot (+ (square2 x) (square2 y)))
+;; 	  (arctangent y x)))
+;;   (define (equ? z1 z2)
+;;     (and (equ? (magnitude z1) (magnitude z2))
+;; 	 (equ? (angle z1) (angle z2))))
+;;   (define (=zero? z)
+;;     (equ? (magnitude z) 0))
   
-  ;; interface to the rest of the system
-  (define (tag x) (attach-tag 'polar x))
-  (put-dispatch 'real-part '(polar) real-part)
-  (put-dispatch 'imag-part '(polar) imag-part)
-  (put-dispatch 'magnitude '(polar) magnitude)
-  (put-dispatch 'angle '(polar) angle)
-  (put-dispatch 'equ? '(polar polar) equ?)
-  (put-dispatch '=zero? '(polar) =zero?)
-  (put-dispatch 'make-from-real-imag 'polar
-		(lambda (x y)
-		  (tag (make-from-real-imag x y))))
-  (put-dispatch 'make-from-mag-ang 'polar
-		(lambda (r a)
-		  (tag (make-from-mag-ang r a))))
-  'done)
+;;   ;; interface to the rest of the system
+;;   (define (tag x) (attach-tag 'polar x))
+;;   (put-dispatch 'real-part '(polar) real-part)
+;;   (put-dispatch 'imag-part '(polar) imag-part)
+;;   (put-dispatch 'magnitude '(polar) magnitude)
+;;   (put-dispatch 'angle '(polar) angle)
+;;   (put-dispatch 'equ? '(polar polar) equ?)
+;;   (put-dispatch '=zero? '(polar) =zero?)
+;;   (put-dispatch 'make-from-real-imag 'polar
+;; 		(lambda (x y)
+;; 		  (tag (make-from-real-imag x y))))
+;;   (put-dispatch 'make-from-mag-ang 'polar
+;; 		(lambda (r a)
+;; 		  (tag (make-from-mag-ang r a))))
+;;   'done)
 
 (define (cosine r)
   (apply-generic 'cosine r))
 (define (sine r)
   (apply-generic 'sine r))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Section 2.5.3 Example: Symbolic Algebra ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (install-polynomial-package)
+  ;; internal procedures
+  ;; representation of poly
+  (define (make-poly variable term-list)
+    (cons variable term-list))
+  (define (variable p) (car p))
+  (define (term-list p) (cdr p))
+  (define (variable? x) (symbol? x))
+  (define (same-variable? v1 v2)
+    (and (variable? v1) (variable? v2) (eq? v1 v2)))
+
+  ;; representation of terms and term lists
+  (define (add-terms L1 L2)
+    (display (list "add-terms" L1 L2))
+    (newline)
+    (cond ((empty-termlist? (term-list L1)) L2)
+	  ((empty-termlist? (term-list L2)) L1)
+	  (else
+	   (let ((t1 (first-term L1))
+		 (t2 (first-term L2)))
+	     (cond ((> (order t1) (order t2))
+		    (adjoin-term t1 (add-terms (rest-terms L1) L2)))
+		   ((> (order t2) (order t1))
+		    (adjoin-term t2 (add-terms L1 (rest-terms L2))))
+		   (else
+		    (adjoin-term (make-term (order t1)
+					    (add (coeff t1) (coeff t2)))
+				 (add-terms (rest-terms L1)
+					    (rest-terms L2)))))))))
+  (define (mul-terms L1 L2)
+    (if (empty-termlist? L1)
+	(the-empty-termlist)
+	(add-terms (mul-term-by-all-terms (first-term L1) L2)
+		   (mul-terms (rest-terms L1) L2))))
+  (define (adjoin-term term term-list)
+    (if (=zero? (coeff term))
+	term-list
+	(cons term term-list)))
+  (define (the-empty-termlist) '())
+  (define (first-term term-list) (car term-list))
+  (define (rest-terms term-list) (cdr term-list))
+  (define (empty-termlist? term-list) (null? term-list))
+  (define (make-term order coeff) (list order coeff))
+  (define (order term) (car term))
+  (define (coeff term) (cadr term))
+  
+  (define (mul-term-by-all-terms t1 L)
+    (if (empty-termlist? L)
+	(the-empty-termlist)
+	(let ((t2 (first-term L)))
+	  (adjoin-term (make-term (+ (order t1) (order t2))
+				  (mul (coeff t1) (coeff t2)))
+		       (mul-term-by-all-terms t1 (rest-terms L))))))
+  (define (add-poly p1 p2)
+    (if (same-variable? (variable p1) (variable p2))
+	(make-poly (variable p1)
+		   (add-terms (term-list p1)
+			      (term-list p2)))
+	(error "Polys not in same var -- ADD-POLY"
+	       (list p1 p2))))
+  (define (mul-poly p1 p2)
+    (if (same-variable? (variable p1) (variable p2))
+	(make-poly (variable p1)
+		   (mul-terms (term-list p1)
+			      (term-list p2)))
+	(error "Polys not in same var -- MUL-POLY"
+	       (list p1 p2))))
+
+  ;; interface to the rest of the system
+  (define (tag p) (attach-tag 'polynomial p))
+  (put-dispatch 'add '(polynomial polynomial)
+       (lambda (p1 p2) (tag (add-poly p1 p2))))
+  (put-dispatch 'mul '(polynomial polynomial)
+       (lambda (p1 p2) (tag (mul-poly p1 p2))))
+  (put-dispatch 'make 'polynomial
+       (lambda (var terms) (tag (make-poly var terms))))
+  'done)
+
+(define (make-polynomial var terms)
+  ((get-dispatch 'make 'polynomial) var terms))
