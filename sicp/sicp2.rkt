@@ -1755,6 +1755,7 @@
 (define (div x y) (apply-generic 'div x y))
 (define (equ? x y) (apply-generic 'equ? x y))
 (define (=zero? x) (apply-generic '=zero? x))
+(define (negative x) (apply-generic 'negative x))
 
 ;; (define (attach-tag type-tag contents)
 ;;   (cons type-tag contents))
@@ -1774,13 +1775,13 @@
 (define (get-dispatch op type)
   (hash-ref dispatch-table (list op type) #f))
 
-;; (define (apply-generic op . args)
-;;   (let ((type-tags (map type-tag args)))
-;;     (let ((proc (get-dispatch op type-tags)))
-;;       (if proc
-;; 	  (apply proc (map content args))
-;; 	  (error "No method for these types -- APPLY-GENERIC"
-;; 		 (list op type-tags))))))
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get-dispatch op type-tags)))
+      (if proc
+	  (apply proc (map content args))
+	  (error "No method for these types -- APPLY-GENERIC"
+		 (list op type-tags))))))
 
 
 (define (install-scheme-number-package)
@@ -1800,6 +1801,8 @@
 		(lambda (x) (= x 0)))
   (put-dispatch 'make 'scheme-number
 		(lambda (x) (tag x)))
+  (put-dispatch 'negative '(scheme-number)
+		(lambda (x) (- x)))
   'done)
 
 (define (make-scheme-number n)
@@ -2069,7 +2072,7 @@
 			  (t2->t1 (get-coercion type2 type1)))
 		      (cond (t1->t2 (apply-generic op (t1->t2 a1) a2))
 			    (t2->t1 (apply-generic op a1 (t2->t1 a2)))
-			    (else (error "No method fo67r these types"
+			    (else (error "No method for these types"
 					 (list op type-tags)))))
 		    (error "No method for these types"
 			   (list op type-tags))))
@@ -2317,10 +2320,8 @@
 
   ;; representation of terms and term lists
   (define (add-terms L1 L2)
-    (display (list "add-terms" L1 L2))
-    (newline)
-    (cond ((empty-termlist? (term-list L1)) L2)
-	  ((empty-termlist? (term-list L2)) L1)
+    (cond ((empty-termlist? L1) L2)
+	  ((empty-termlist? L2) L1)
 	  (else
 	   (let ((t1 (first-term L1))
 		 (t2 (first-term L2)))
@@ -2338,13 +2339,21 @@
 	(the-empty-termlist)
 	(add-terms (mul-term-by-all-terms (first-term L1) L2)
 		   (mul-terms (rest-terms L1) L2))))
+  ;; (define (adjoin-term term term-list)
+  ;;   (if (=zero? (coeff term))
+  ;; 	term-list
+  ;; 	(cons term term-list)))
   (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-	term-list
-	(cons term term-list)))
-  (define (the-empty-termlist) '())
-  (define (first-term term-list) (car term-list))
+    (if (> (order term) (length term-list))
+	(adjoin-term term (cons 0 term-list))
+	(cons (coeff term) term-list)))
+  (define (first-term term-list)
+    (make-term (length term-list)
+	       (car term-list)))
   (define (rest-terms term-list) (cdr term-list))
+  (define (the-empty-termlist) '())
+  ;; (define (first-term term-list) (car term-list))
+  ;; (define (rest-terms term-list) (cdr term-list))
   (define (empty-termlist? term-list) (null? term-list))
   (define (make-term order coeff) (list order coeff))
   (define (order term) (car term))
@@ -2371,16 +2380,51 @@
 			      (term-list p2)))
 	(error "Polys not in same var -- MUL-POLY"
 	       (list p1 p2))))
+  ;; exercise 2.87
+  (define (=zero?-poly p)
+    (empty-termlist? (term-list p)))
+  ;; exercise 2.88
+  (define (negative-poly p)
+    (make-poly
+     (variable p)
+     (map (lambda (term)
+	    (make-term (order term)
+		       (negative (coeff term))))
+	  (term-list p))))
+  (define (sub-poly p1 p2)
+    (add-poly p1 (negative-poly p2)))
 
   ;; interface to the rest of the system
   (define (tag p) (attach-tag 'polynomial p))
   (put-dispatch 'add '(polynomial polynomial)
-       (lambda (p1 p2) (tag (add-poly p1 p2))))
+		(lambda (p1 p2) (tag (add-poly p1 p2))))
   (put-dispatch 'mul '(polynomial polynomial)
-       (lambda (p1 p2) (tag (mul-poly p1 p2))))
+		(lambda (p1 p2) (tag (mul-poly p1 p2))))
   (put-dispatch 'make 'polynomial
-       (lambda (var terms) (tag (make-poly var terms))))
+		(lambda (var terms) (tag (make-poly var terms))))
+  (put-dispatch '=zero? '(polynomial) =zero?-poly)
+  (put-dispatch 'negative '(polynomial)
+		(lambda (p) (tag (negative-poly p))))
+  (put-dispatch 'sub '(polynomial polynomial)
+		(lambda (p1 p2) (tag (sub-poly p1 p2))))
   'done)
+
 
 (define (make-polynomial var terms)
   ((get-dispatch 'make 'polynomial) var terms))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.87 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; added =zero? to install-polynomial-package
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.88 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; added negative and sub
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.89 ;;
+;;;;;;;;;;;;;;;;;;;
