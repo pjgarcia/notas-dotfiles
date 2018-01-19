@@ -2057,27 +2057,29 @@
 ;; 2) apply-generic works correctly as it is
 
 ;; 3)
-(define (apply-generic op . args)
-  (let ((type-tags (map type-tag args)))
-    (let ((proc (get-dispatch op type-tags)))
-      (if proc
-	  (apply proc (map content args))
-	  (if (= (length args) 2)
-	      (let ((type1 (car type-tags))
-		    (type2 (cadr type-tags))
-		    (a1 (car args))
-		    (a2 (cadr args)))
-		(if (eq? type1 type2)
-		    (let ((t1->t2 (get-coercion type1 type2))
-			  (t2->t1 (get-coercion type2 type1)))
-		      (cond (t1->t2 (apply-generic op (t1->t2 a1) a2))
-			    (t2->t1 (apply-generic op a1 (t2->t1 a2)))
-			    (else (error "No method for these types"
-					 (list op type-tags)))))
-		    (error "No method for these types"
-			   (list op type-tags))))
-	      (error "No method for these types"
-		     (list op type-tags)))))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (define (apply-generic op . args)						 ;;
+;;   (let ((type-tags (map type-tag args)))					 ;;
+;;     (let ((proc (get-dispatch op type-tags)))				 ;;
+;;       (if proc								 ;;
+;; 	  (apply proc (map content args))					 ;;
+;; 	  (if (= (length args) 2)						 ;;
+;; 	      (let ((type1 (car type-tags))					 ;;
+;; 		    (type2 (cadr type-tags))					 ;;
+;; 		    (a1 (car args))						 ;;
+;; 		    (a2 (cadr args)))						 ;;
+;; 		(if (eq? type1 type2)						 ;;
+;; 		    (let ((t1->t2 (get-coercion type1 type2))			 ;;
+;; 			  (t2->t1 (get-coercion type2 type1)))			 ;;
+;; 		      (cond (t1->t2 (apply-generic op (t1->t2 a1) a2))		 ;;
+;; 			    (t2->t1 (apply-generic op a1 (t2->t1 a2)))		 ;;
+;; 			    (else (error "No method for these types"		 ;;
+;; 					 (list op type-tags)))))		 ;;
+;; 		    (error "No method for these types"				 ;;
+;; 			   (list op type-tags))))				 ;;
+;; 	      (error "No method for these types"				 ;;
+;; 		     (list op type-tags)))))))					 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.82 ;;
@@ -2344,11 +2346,14 @@
   ;; 	term-list
   ;; 	(cons term term-list)))
   (define (adjoin-term term term-list)
-    (if (> (order term) (length term-list))
-	(adjoin-term term (cons 0 term-list))
-	(cons (coeff term) term-list)))
+    (cond ((=zero? (coeff term))
+	   term-list)
+	  ((> (order term) (length term-list))
+	   (adjoin-term term (cons 0 term-list)))
+	  (else
+	   (cons (coeff term) term-list))))
   (define (first-term term-list)
-    (make-term (length term-list)
+    (make-term (- (length term-list) 1)
 	       (car term-list)))
   (define (rest-terms term-list) (cdr term-list))
   (define (the-empty-termlist) '())
@@ -2384,13 +2389,17 @@
   (define (=zero?-poly p)
     (empty-termlist? (term-list p)))
   ;; exercise 2.88
+  (define (negative-terms terms)
+    (if (empty-termlist? terms)
+	(the-empty-termlist)
+	(let ((first (first-term terms)))
+	  (adjoin-term (make-term (order first)
+				  (negative (coeff first)))
+		       (negative-terms (rest-terms terms))))))
   (define (negative-poly p)
     (make-poly
      (variable p)
-     (map (lambda (term)
-	    (make-term (order term)
-		       (negative (coeff term))))
-	  (term-list p))))
+     (negative-terms (term-list p))))
   (define (sub-poly p1 p2)
     (add-poly p1 (negative-poly p2)))
 
@@ -2427,4 +2436,10 @@
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.89 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; added adjoin-term, first-term & rest-terms
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.90 ;;
 ;;;;;;;;;;;;;;;;;;;
