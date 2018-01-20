@@ -2524,3 +2524,9 @@
 
 (define (make-dense-term order coeff)
   ((get-dispatch 'make-term 'dense) order coeff))
+(define (the-empty-dense-termlist)
+  ((get-dispatch 'the-empty-termlist 'dense)))
+
+(define (adjoin-term term term-list)
+  (apply-generic 'adjoin-term term term-list))
+;; rest of interface functions
