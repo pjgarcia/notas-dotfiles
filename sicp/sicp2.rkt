@@ -2443,3 +2443,84 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 2.90 ;;
 ;;;;;;;;;;;;;;;;;;;
+
+;; ((100 5) (3 1) (2 10))
+(define (install-sparse-terms-package)
+  (define (adjoin-term term term-list)
+    (if (=zero? (coeff term))
+	term-list
+	(cons term term-list)))
+  (define (the-empty-termlist) '())
+  (define (first-term term-list) (car term-list))
+  (define (rest-terms term-list) (cdr term-list))
+  (define (empty-termlist? term-list) (null? term-list))
+  (define (make-term order coeff) (list order coeff))
+  (define (order term) (car term))
+  (define (coeff term) (cadr term))
+
+  ;; interface to the rest of the system
+  (define (tag t) (attach-tag 'sparse t))
+  (put-dispatch 'adjoin-term '(sparse sparse)
+		(lambda (term term-list)
+		  (tag (adjoin-term term term-list))))
+  (put-dispatch 'first-term '(sparse)
+		(lambda (term-list)
+		  (tag (first-term term-list))))
+  (put-dispatch 'rest-terms '(sparse)
+		(lambda (term-list)
+		  (tag (rest-terms term-list))))
+  (put-dispatch 'empty-termlist? '(sparse) empty-termlist?)
+  (put-dispatch 'order '(sparse) order)
+  (put-dispatch 'coeff '(sparse) coeff)
+  (put-dispatch 'make-term 'sparse
+		(lambda (order coeff)
+		  (tag (make-term order coeff))))
+  (put-dispatch 'the-empty-termlist 'sparse
+		(lambda () (tag (the-empty-termlist))))
+  'done)
+
+(define (make-sparse-term order coeff)
+  ((get-dispatch 'make-term 'sparse) order coeff))
+
+;; (5 2 0 2 3 1)
+(define (install-dense-terms-package)
+  (define (adjoin-term term term-list)
+    (cond ((=zero? (coeff term))
+	   term-list)
+	  ((> (order term) (length term-list))
+	   (adjoin-term term (cons 0 term-list)))
+	  (else
+	   (cons (coeff term) term-list))))
+  (define (the-empty-termlist) '())
+  (define (first-term term-list)
+    (make-term (- (length term-list) 1)
+	       (car term-list)))
+  (define (rest-terms term-list) (cdr term-list))
+  (define (empty-termlist? term-list) (null? term-list))
+  (define (make-term order coeff) (list order coeff))
+  (define (order term) (car term))
+  (define (coeff term) (cadr term))
+
+  ;; interface to the rest of the system
+  (define (tag t) (attach-tag 'dense t))
+  (put-dispatch 'adjoin-term '(dense dense)
+		(lambda (term term-list)
+		  (tag (adjoin-term term term-list))))
+  (put-dispatch 'first-term '(dense)
+		(lambda (term-list)
+		  (tag (first-term term-list))))
+  (put-dispatch 'rest-terms '(dense)
+		(lambda (term-list)
+		  (tag (rest-terms term-list))))
+  (put-dispatch 'empty-termlist? '(dense) empty-termlist?)
+  (put-dispatch 'order '(dense) order)
+  (put-dispatch 'coeff '(dense) coeff)
+  (put-dispatch 'make-term 'dense
+		(lambda (order coeff)
+		  (tag (make-term order coeff))))
+  (put-dispatch 'the-empty-termlist 'dense
+		(lambda () (tag (the-empty-termlist))))
+  'done)
+
+(define (make-dense-term order coeff)
+  ((get-dispatch 'make-term 'dense) order coeff))
