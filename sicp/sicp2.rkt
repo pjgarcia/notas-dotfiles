@@ -2467,9 +2467,9 @@
 ;; ((100 5) (3 1) (2 10))
 (define (install-sparse-terms-package)
   (define (term-order term)
-    ((get-dispatch 'order 'term) term))
+    ((get-dispatch 'order '(term)) term))
   (define (term-coeff term)
-    ((get-dispatch 'coeff 'term) term))
+    ((get-dispatch 'coeff '(term)) term))
   (define (adjoin-term-sparse term term-list)
     (if (=zero? (term-coeff term))
 	term-list
@@ -2502,9 +2502,9 @@
 ;; (5 2 0 2 3 1)
 (define (install-dense-terms-package)
   (define (term-order term)
-    ((get-dispatch 'order 'term) term))
+    ((get-dispatch 'order '(term)) term))
   (define (term-coeff term)
-    ((get-dispatch 'coeff 'term) term))
+    ((get-dispatch 'coeff '(term)) term))
   (define (adjoin-term-dense term term-list)
     (cond ((=zero? (term-order term))
 	   term-list)
@@ -2574,8 +2574,8 @@
 					    (rest-terms L2)))))))))
   (define (mul-terms L1 L2)
     (if (empty-termlist? L1)
-	;; podria retornar L1 para conservar el tipo de implementacion
-	;; en lugar de forzar una sparse
+	;; ver de retornar una the-empty-X-termlist de acuerdo
+	;; a los argumentos en lugar de forzar una sparse
 	(the-empty-sparse-termlist)
 	(add-terms (mul-term-by-all-terms (first-term L1) L2)
 		   (mul-terms (rest-terms L1) L2))))
