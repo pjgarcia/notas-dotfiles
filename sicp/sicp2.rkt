@@ -2620,6 +2620,33 @@
   (define (sub-poly p1 p2)
     (add-poly p1 (negative-poly p2)))
 
+  (define (div-poly p1 p2)
+    (if (same-variable? (variable p1) (variable p2))
+	(make-poly (variable p1)
+		   (div-terms (term-list p1)
+			      (term-list p2)))
+	(error "Polys not in same var -- DIV-POLY"
+	       (list p1 p2))))
+
+  (define (div-terms L1 L2)
+    (if (empty-termlist? L1)
+	(list (the-empty-sparse-termlist) (the-empty-sparse-termlist))
+	(let ((t1 (first-term L1))
+	      (t2 (first-term L2)))
+	  (if (> (order t2) (order t1))
+	      (list (the-empty-sparse-termlist) L1)
+	      (let ((new-c (div (coeff t1) (coeff t2)))
+		    (new-o (sub (- (order t1) (order t2)))))
+		(let ((rest-of-result
+		       (div-terms (add-terms L1
+					     (invert (mul-terms (adjoin-term (make-term new-o new-c)
+									     (the-empty-sparse-termlist))
+								L2)))
+				  L2)))
+		  (list (adjoin-term (make-term new-o new-c)
+				     (car rest-of-result))
+			(cadr rest-of-result))))))))
+
   ;; interface to the rest of the system
   (define (tag p) (attach-tag 'polynomial p))
   (put-dispatch 'add '(polynomial polynomial)
@@ -2634,3 +2661,4 @@
   (put-dispatch 'sub '(polynomial polynomial)
 		(lambda (p1 p2) (tag (sub-poly p1 p2))))
   'done)
+
