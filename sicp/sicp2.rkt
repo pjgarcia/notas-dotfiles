@@ -1840,11 +1840,11 @@
   (put-dispatch 'add '(rational rational)
   		(lambda (x y) (tag (add-rat x y))))
   (put-dispatch 'sub '(rational rational)
-  		(lambda (x y) (tag (add-rat x y))))
+  		(lambda (x y) (tag (sub-rat x y))))
   (put-dispatch 'mul '(rational rational)
   		(lambda (x y) (tag (mul-rat x y))))
   (put-dispatch 'div '(rational rational)
-  		(lambda (x y) (div (mul-rat x y))))
+  		(lambda (x y) (tag (div-rat x y))))
   (put-dispatch 'equ? '(rational rational) equ?)
   (put-dispatch '=zero? '(rational) =zero?)
   (put-dispatch 'make 'rational
@@ -2636,12 +2636,12 @@
 	  (if (> (order t2) (order t1))
 	      (list (the-empty-sparse-termlist) L1)
 	      (let ((new-c (div (coeff t1) (coeff t2)))
-		    (new-o (sub (- (order t1) (order t2)))))
+		    (new-o (- (order t1) (order t2))))
 		(let ((rest-of-result
 		       (div-terms (add-terms L1
-					     (invert (mul-terms (adjoin-term (make-term new-o new-c)
-									     (the-empty-sparse-termlist))
-								L2)))
+					     (negative-terms (mul-terms (adjoin-term (make-term new-o new-c)
+										     (the-empty-sparse-termlist))
+									L2)))
 				  L2)))
 		  (list (adjoin-term (make-term new-o new-c)
 				     (car rest-of-result))
@@ -2660,5 +2660,80 @@
 		(lambda (p) (tag (negative-poly p))))
   (put-dispatch 'sub '(polynomial polynomial)
 		(lambda (p1 p2) (tag (sub-poly p1 p2))))
+  (put-dispatch 'div '(polynomial polynomial)
+		(lambda (p1 p2)
+		  (tag (div-poly p1 p2))))
   'done)
 
+
+
+(define (install-packages)
+  (install-scheme-number-package)
+  (install-term-package)
+  (install-dense-terms-package)
+  (install-sparse-terms-package)
+  (install-polynomial-package2))
+
+;; x^5 - 1
+;; ------- = x^3 + x, remainder x - 1
+;; x^2 - 1
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.91 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; added to (install-polynomial-package2)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.92 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; TODO
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.93 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (install-rational-package-generic)
+  ;; internal procedures
+  (define (numer x) (car x))
+  (define (denom x) (cdr x))
+  ;; (define (make-rat n d)
+  ;;   (let ((g ((if (> d 0) + -) (gcd n d))))
+  ;;     (cons (/ n g) (/ d g))))
+  (define (make-rat n d)
+    (cons n d))
+  (define (add-rat x y)
+    (make-rat (add (mul (numer x) (denom y))
+		   (mul (numer y) (denom x)))
+	      (mul (denom x) (denom y))))
+  (define (sub-rat x y)
+    (make-rat (sub (mul (numer x) (denom y))
+		   (mul (numer y) (denom x)))
+	      (mul (denom x) (denom y))))
+  (define (mul-rat x y)
+    (make-rat (mul (numer x) (numer y))
+	      (mul (denom x) (denom y))))
+  (define (div-rat x y)
+    (make-rat (mul (numer x) (denom y))
+	      (mul (denom x) (numer y))))
+  (define (equ-rat? r1 r2)
+    (and (equ? (numer r1) (numer r2))
+	 (equ? (denom r1) (denom r2))))
+  (define (=zero-rat? r)
+    (=zero? (numer r)))
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'rational x))
+  (put-dispatch 'add '(rational rational)
+  		(lambda (x y) (tag (add-rat x y))))
+  (put-dispatch 'sub '(rational rational)
+  		(lambda (x y) (tag (sub-rat x y))))
+  (put-dispatch 'mul '(rational rational)
+  		(lambda (x y) (tag (mul-rat x y))))
+  (put-dispatch 'div '(rational rational)
+  		(lambda (x y) (tag (div-rat x y))))
+  (put-dispatch 'equ? '(rational rational) equ-rat?)
+  (put-dispatch '=zero? '(rational) =zero-rat?)
+  (put-dispatch 'make 'rational
+  		(lambda (n d) (tag (make-rat n d))))
+  'done)
