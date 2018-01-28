@@ -2665,15 +2665,6 @@
 		  (tag (div-poly p1 p2))))
   'done)
 
-
-
-(define (install-packages)
-  (install-scheme-number-package)
-  (install-term-package)
-  (install-dense-terms-package)
-  (install-sparse-terms-package)
-  (install-polynomial-package2))
-
 ;; x^5 - 1
 ;; ------- = x^3 + x, remainder x - 1
 ;; x^2 - 1
@@ -2737,3 +2728,12 @@
   (put-dispatch 'make 'rational
   		(lambda (n d) (tag (make-rat n d))))
   'done)
+
+(define (install-packages)
+  (install-scheme-number-package)
+  (install-term-package)
+  (install-dense-terms-package)
+  (install-sparse-terms-package)
+  (install-polynomial-package2)
+  (install-rational-package-generic)
+  'done-packages)
