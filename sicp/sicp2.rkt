@@ -1803,6 +1803,7 @@
 		(lambda (x) (tag x)))
   (put-dispatch 'negative '(scheme-number)
 		(lambda (x) (- x)))
+  (put-dispatch 'greatest-common-divisor '(scheme-number) gcd)
   'done)
 
 (define (make-scheme-number n)
@@ -2647,6 +2648,20 @@
 				     (car rest-of-result))
 			(cadr rest-of-result))))))))
 
+  (define (gcd-poly a b)
+    (if (same-variable? (variable a) (variable b))
+	(make-poly (variable a)
+		   (gcd-terms (term-list a) (term-list b)))
+	(error "Polys not in the save var -- GCD POLY"
+	       (list a b))))
+  (define (gcd-terms a b)
+    (if (empty-termlist? b)
+	a
+	(gcd-terms b (remainder-terms a b))))
+  (define (remainder-terms a b)
+    (cadr (div-terms a b)))
+    
+
   ;; interface to the rest of the system
   (define (tag p) (attach-tag 'polynomial p))
   (put-dispatch 'add '(polynomial polynomial)
@@ -2663,6 +2678,9 @@
   (put-dispatch 'div '(polynomial polynomial)
 		(lambda (p1 p2)
 		  (tag (div-poly p1 p2))))
+  (put-dispatch 'greatest-common-divisor '(polynomial polynomial)
+		(lambda (p1 p2)
+		  (tag (gcd-poly p1 p2))))
   'done)
 
 ;; x^5 - 1
@@ -2689,11 +2707,11 @@
   ;; internal procedures
   (define (numer x) (car x))
   (define (denom x) (cdr x))
-  ;; (define (make-rat n d)
-  ;;   (let ((g ((if (> d 0) + -) (gcd n d))))
-  ;;     (cons (/ n g) (/ d g))))
   (define (make-rat n d)
-    (cons n d))
+    (let ((g ((if (> d 0) + -) (greatest-common-divisor n d))))
+      (cons (/ n g) (/ d g))))
+  ;; (define (make-rat n d)
+  ;;   (cons n d))
   (define (add-rat x y)
     (make-rat (add (mul (numer x) (denom y))
 		   (mul (numer y) (denom x)))
@@ -2737,3 +2755,11 @@
   (install-polynomial-package2)
   (install-rational-package-generic)
   'done-packages)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.94 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (greatest-common-divisor a b)
+  (apply-generic 'greatest-common-divisor a b))
+
