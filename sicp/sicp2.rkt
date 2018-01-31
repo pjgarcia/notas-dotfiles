@@ -2655,6 +2655,8 @@
 	(error "Polys not in the save var -- GCD POLY"
 	       (list a b))))
   (define (gcd-terms a b)
+    (newline)
+    (display (list "gcd-terms" a b))
     (if (empty-termlist? b)
 	a
 	(gcd-terms b (remainder-terms a b))))
@@ -2763,3 +2765,36 @@
 (define (greatest-common-divisor a b)
   (apply-generic 'greatest-common-divisor a b))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.95 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define P1
+  (make-polynomial 'x 
+		   (adjoin-term 
+		    (make-term 2 1)
+		    (adjoin-term
+		     (make-term 1 -2)
+		     (adjoin-term
+		      (make-term 0 1)
+		      (the-empty-sparse-termlist))))))
+
+(define P2
+  (make-polynomial 'x 
+		   (adjoin-term 
+		    (make-term 2 11)
+		    (adjoin-term
+		     (make-term 0 7)
+		     (the-empty-sparse-termlist)))))
+
+
+(define P3
+  (make-polynomial 'x 
+		   (adjoin-term 
+		    (make-term 1 13)
+		    (adjoin-term
+		     (make-term 0 5)
+		     (the-empty-sparse-termlist)))))
+
+;; El problema surge porque en el calculo de la division
+;; aparecen numeros racionales como coeficientes
