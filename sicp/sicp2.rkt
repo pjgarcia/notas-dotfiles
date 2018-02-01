@@ -2658,11 +2658,26 @@
     (newline)
     (display (list "gcd-terms" a b))
     (if (empty-termlist? b)
-	a
-	(gcd-terms b (remainder-terms a b))))
-  (define (remainder-terms a b)
-    (cadr (div-terms a b)))
-    
+	(simplify-terms a)
+	(gcd-terms b (pseudoremainder-terms a b))))
+  (define (gcd-term-coeffs terms)
+    (cond ((= (length terms) 2) (coeff (first-term terms)))
+	  (else (gcd (coeff (first-term terms))
+		     (gcd-term-coeffs (rest-terms terms))))))
+  (define (simplify-terms terms)
+    (let ((gcd (gcd-term-coeffs terms)))
+      (mul-term-by-all-terms (make-term 0 (/ 1 gcd))
+			     terms)))
+  ;; (define (remainder-terms a b)
+  ;;   (cadr (div-terms a b)))
+  (define (pseudoremainder-terms a b)
+    (let ((o1 (order (first-term a)))
+	  (o2 (order (first-term b)))
+	  (c (coeff (first-term b))))
+      (let ((integerizing-factor (expt c (+ 1 (- o1 o2)))))
+	(let ((pseudo-a
+	       (mul-term-by-all-terms (make-term 0 integerizing-factor) a)))
+	  (cadr (div-terms pseudo-a b))))))
 
   ;; interface to the rest of the system
   (define (tag p) (attach-tag 'polynomial p))
@@ -2798,3 +2813,10 @@
 
 ;; El problema surge porque en el calculo de la division
 ;; aparecen numeros racionales como coeficientes
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.96 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; done :)
+;; resuelto en el mismo package de polys
