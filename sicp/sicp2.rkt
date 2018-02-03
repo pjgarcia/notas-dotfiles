@@ -1803,6 +1803,10 @@
 		(lambda (x) (tag x)))
   (put-dispatch 'negative '(scheme-number)
 		(lambda (x) (- x)))
+  (put-dispatch 'reduce '(scheme-number scheme-number)
+		(lambda (n d)
+		  (let ((g (gcd n d)))
+		    (list (/ n g) (/ d g)))))
   (put-dispatch 'greatest-common-divisor '(scheme-number) gcd)
   'done)
 
@@ -2623,15 +2627,19 @@
 
   (define (div-poly p1 p2)
     (if (same-variable? (variable p1) (variable p2))
-	(make-poly (variable p1)
-		   (div-terms (term-list p1)
-			      (term-list p2)))
+	(let ((division-termlists (div-terms (term-list p1)
+					     (term-list p2))))
+	  (list (make-poly (variable p1)
+			   (car division-termlists))
+		(make-poly (variable p1)
+			   (cadr division-termlists))))
 	(error "Polys not in same var -- DIV-POLY"
 	       (list p1 p2))))
 
   (define (div-terms L1 L2)
     (if (empty-termlist? L1)
-	(list (the-empty-sparse-termlist) (the-empty-sparse-termlist))
+	(list (the-empty-sparse-termlist)
+	      (the-empty-sparse-termlist))
 	(let ((t1 (first-term L1))
 	      (t2 (first-term L2)))
 	  (if (> (order t2) (order t1))
@@ -2639,11 +2647,15 @@
 	      (let ((new-c (div (coeff t1) (coeff t2)))
 		    (new-o (- (order t1) (order t2))))
 		(let ((rest-of-result
-		       (div-terms (add-terms L1
-					     (negative-terms (mul-terms (adjoin-term (make-term new-o new-c)
-										     (the-empty-sparse-termlist))
-									L2)))
-				  L2)))
+		       (div-terms
+			(add-terms
+			 L1
+			 (negative-terms
+			  (mul-terms (adjoin-term
+				      (make-term new-o new-c)
+				      (the-empty-sparse-termlist))
+				     L2)))
+			L2)))
 		  (list (adjoin-term (make-term new-o new-c)
 				     (car rest-of-result))
 			(cadr rest-of-result))))))))
@@ -2655,8 +2667,6 @@
 	(error "Polys not in the save var -- GCD POLY"
 	       (list a b))))
   (define (gcd-terms a b)
-    (newline)
-    (display (list "gcd-terms" a b))
     (if (empty-termlist? b)
 	(simplify-terms a)
 	(gcd-terms b (pseudoremainder-terms a b))))
@@ -2678,7 +2688,35 @@
 	(let ((pseudo-a
 	       (mul-term-by-all-terms (make-term 0 integerizing-factor) a)))
 	  (cadr (div-terms pseudo-a b))))))
-
+  (define (reduce-terms n d)
+    (let ((gcd (gcd-terms n d))
+	  (order-numer (order (first-term n)))
+	  (order-denom (order (first-term d))))
+      (let ((o1 (max order-numer order-denom))
+	    (o2 (order (first-term gcd)))
+	    (c (coeff (first-term gcd))))
+	(let ((integerizing-factor (expt c (+ 1 (- o1 o2)))))
+	  (let ((scaled-numer
+		 (mul-term-by-all-terms
+		  (make-term 0 integerizing-factor)
+		  n))
+		(scaled-denom
+		 (mul-term-by-all-terms
+		  (make-term 0 integerizing-factor)
+		  d)))
+	    (list
+	     (div-terms scaled-numer gcd)
+	     (div-terms scaled-denom gcd)))))))
+  (define (reduce-poly n d)
+    (if (same-variable? (variable n) (variable d))
+	(let ((reduced-terms
+	       (reduce-terms (term-list n)
+			     (term-list d))))
+	  (list (make-poly (variable n) (caar reduced-terms))
+		(make-poly (variable n) (caadr reduced-terms))))
+	(error "Polys not in the save var -- REDUCE POLY"
+	       (list n d))))
+  
   ;; interface to the rest of the system
   (define (tag p) (attach-tag 'polynomial p))
   (put-dispatch 'add '(polynomial polynomial)
@@ -2694,10 +2732,19 @@
 		(lambda (p1 p2) (tag (sub-poly p1 p2))))
   (put-dispatch 'div '(polynomial polynomial)
 		(lambda (p1 p2)
-		  (tag (div-poly p1 p2))))
+		  (let ((divided-polys
+			 (div-poly p1 p2)))
+		    (list (tag (car divided-polys))
+			  (tag (cadr divided-polys))))))
   (put-dispatch 'greatest-common-divisor '(polynomial polynomial)
 		(lambda (p1 p2)
 		  (tag (gcd-poly p1 p2))))
+  (put-dispatch 'reduce '(polynomial polynomial)
+		(lambda (p1 p2)
+		  (let ((reduced-polys
+			 (reduce-poly p1 p2)))
+		    (list (tag (car reduced-polys))
+			  (tag (cadr reduced-polys))))))
   'done)
 
 ;; x^5 - 1
@@ -2725,8 +2772,8 @@
   (define (numer x) (car x))
   (define (denom x) (cdr x))
   (define (make-rat n d)
-    (let ((g ((if (> d 0) + -) (greatest-common-divisor n d))))
-      (cons (/ n g) (/ d g))))
+    (let ((reduced (reduce n d)))
+      (cons (car reduced) (cadr reduced))))
   ;; (define (make-rat n d)
   ;;   (cons n d))
   (define (add-rat x y)
@@ -2784,33 +2831,6 @@
 ;; Exercise 2.95 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define P1
-  (make-polynomial 'x 
-		   (adjoin-term 
-		    (make-term 2 1)
-		    (adjoin-term
-		     (make-term 1 -2)
-		     (adjoin-term
-		      (make-term 0 1)
-		      (the-empty-sparse-termlist))))))
-
-(define P2
-  (make-polynomial 'x 
-		   (adjoin-term 
-		    (make-term 2 11)
-		    (adjoin-term
-		     (make-term 0 7)
-		     (the-empty-sparse-termlist)))))
-
-
-(define P3
-  (make-polynomial 'x 
-		   (adjoin-term 
-		    (make-term 1 13)
-		    (adjoin-term
-		     (make-term 0 5)
-		     (the-empty-sparse-termlist)))))
-
 ;; El problema surge porque en el calculo de la division
 ;; aparecen numeros racionales como coeficientes
 
@@ -2820,3 +2840,41 @@
 
 ;; done :)
 ;; resuelto en el mismo package de polys
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.97 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (reduce n d)
+  (apply-generic 'reduce n d))
+
+(install-packages)
+
+(define p1 (make-polynomial
+	    'x
+	    (adjoin-term
+	     (make-term 1 1)
+	     (adjoin-term
+	      (make-term 0 1)
+	      (the-empty-sparse-termlist)))))
+(define p2 (make-polynomial
+	    'x
+	    (adjoin-term
+	     (make-term 3 1)
+	     (adjoin-term
+	      (make-term 0 -1)
+	      (the-empty-sparse-termlist)))))
+(define p3 (make-polynomial
+	    'x
+	    (adjoin-term
+	     (make-term 1 1)
+	     (the-empty-sparse-termlist))))
+(define p4 (make-polynomial
+	    'x
+	    (adjoin-term
+	     (make-term 2 1)
+	     (adjoin-term
+	      (make-term 0 -1)
+	      (the-empty-sparse-termlist)))))
+
+
