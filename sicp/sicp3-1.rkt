@@ -60,8 +60,9 @@
 ;; The Monte Carlo Method ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define random-init "test")
-(define rand-update "test")
+(define random-init 3)
+(define (rand-update x)
+  (+ x 1))
 
 (define rand
   (let ((x random-init))
@@ -144,3 +145,43 @@
     (* (monte-carlo trials region-test)
        rectangle-area)))
    
+;;;;;;;;;;;;;;;;;;
+;; Exercise 3.6 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define rand2
+  (let ((x random-init))
+    (lambda (action)
+      (cond ((eq? action 'generate)
+	     (set! x (rand-update x))
+	     x)
+	    ((eq? action 'reset)
+	     (lambda (new-x)
+	       (set! x new-x)
+	       x))
+	    (else
+	     (error "Unknown action -- MY-RAND" action))))))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 3.7 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (make-joint account original-passwd new-passwd)
+  (lambda (passwd action)
+    (if (eq? passwd new-passwd)
+	(account original-passwd action)
+	(lambda (x) "Incorrect password"))))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 3.8 ;;
+;;;;;;;;;;;;;;;;;;
+
+(+ (f 0) (f 1))
+
+(define f (let ((first-time-called #t))
+	    (lambda (x)
+	      (if first-time-called
+		  (begin
+		    (set! first-time-called #f)
+		    x)
+		  0))))
