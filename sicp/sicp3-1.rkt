@@ -176,7 +176,7 @@
 ;; Exercise 3.8 ;;
 ;;;;;;;;;;;;;;;;;;
 
-(+ (f 0) (f 1))
+;; (+ (f 0) (f 1))
 
 (define f (let ((first-time-called #t))
 	    (lambda (x)
@@ -185,3 +185,34 @@
 		    (set! first-time-called #f)
 		    x)
 		  0))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.13 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (last-pair l)
+  (if (null? (mcdr l))
+      l
+      (last-pair (mcdr l))))
+
+(define (make-cycle l)
+  (set-mcdr! (last-pair l) l)
+  l)
+
+;; si tratamos de evaluar (last-pair (make-cycle L))
+;; entramos en un ciclo de cdr, cdr, ...
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.14 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (mystery x)
+  (define (loop x y)
+    (if (null? x)
+	y
+	(let ((temp (mcdr x)))
+	  (set-mcdr! x y)
+	  (loop temp x))))
+  (loop x '()))
+
+;; in general, mystery reverses the list fiven as an argument
