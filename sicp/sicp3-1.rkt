@@ -216,3 +216,49 @@
   (loop x '()))
 
 ;; in general, mystery reverses the list fiven as an argument
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.16 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (count-pairs x)
+  (if (not (pair? x))
+      0
+      (+ (count-pairs (car x))
+	 (count-pairs (cdr x))
+	 1)))
+
+(define (count-mpairs x)
+  (if (not (mpair? x))
+      0
+      (+ (count-mpairs (mcar x))
+	 (count-mpairs (mcdr x))
+	 1)))
+
+(define should-be-3 (mcons 1 (mcons 2 (mcons 3 '()))))
+(define should-be-4 (mcons 1 (mcons 2 (mcons 3 '()))))
+(set-mcar! should-be-4 (mcdr (mcdr should-be-4)))
+(define should-be-7 (mcons 1 (mcons 2 (mcons 3 '()))))
+(set-mcar! should-be-7 (mcdr should-be-7))
+(set-mcar! (mcdr should-be-7) (mcdr (mcdr should-be-7)))
+(define should-be-endless (mcons 1 (mcons 2 (mcons 3 '()))))
+(set-mcar! (mcdr (mcdr should-be-endless)) should-be-endless)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.17 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (refined-count-mpairs list)
+  (let ((already-seen '()))
+    (define (is-already-seen? node)
+      (not (not (memq node already-seen))))
+    (define (internal x)
+      (cond ((or (and (mpair? x) (is-already-seen? x))
+		 (not (mpair? x)))
+	     0)
+	    (else
+	     (set! already-seen (cons x already-seen))
+	     (+ (internal (mcar x))
+		(internal (mcdr x))
+		1))))
+    (internal list)))
