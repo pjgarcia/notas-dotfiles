@@ -262,3 +262,26 @@
 		(internal (mcdr x))
 		1))))
     (internal list)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.18 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (has-loop? list)
+  (let ((already-seen '()))
+    (define (is-already-seen? node)
+      (not (not (memq node already-seen))))
+    (define (add-to-seen node)
+      (set! already-seen (cons node already-seen)))
+    (define (internal x)
+      (if (not (mpair? x))
+	  #f
+	  (begin
+	    (add-to-seen x)
+	    (if (is-already-seen? (mcdr x))
+		#t
+		(internal (mcdr x))))))
+    (internal list)))
+
+(define should-be-endless2 (mcons 1 (mcons 2 (mcons 3 '()))))
+(set-mcdr! (mcdr (mcdr should-be-endless2)) should-be-endless2)
