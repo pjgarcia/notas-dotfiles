@@ -1,0 +1,44 @@
+#+OPTIONS: toc:nil 
+#+OPTIONS: num:0
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="main-styles.css" />
+#+HTML_CONTAINER: div
+
+* Consider
+** Not eating animals, you motherfucker!
+   [[file:angry-cow.jpg]]
+   
+   There is no excuse. You eat animals because because you like the taste. 
+   *You don't need to. It's just a luxury.*
+   Animals are not born for you to eat them. You are not a caveman any more.
+   It's inmoral to raise animals only to torture, abuse and kill them.
+   An empathic, morally healthy society can not tolerate the suffering of other beings, whatever they are.
+   Do you recall the last time you saw a dog being hit? How you felt? That anguish deep inside your chest 
+   can not be isolated. The livestock industry mantains a torture machine far away from your home. 
+   But the truth is out there for you to see it. Wake up.
+
+   + "It's expensive" :: Really? Dont you notice that it is the cheese and ham in your shopping cart 
+                         that populates the expensive bill? Grains, cereals, fruits, vegetables and legumes
+	                 are the cheap ones.
+   + "Animals... don't you see there are other things to be concerned of?" :: Yes, indeed. What do you do
+	to make the world a better place? The road to a better society has many paths, one of wich is veganism.
+   + "There is simply no space to feed us all with veggies!" :: Wrong, there is. Actually the agriculture industry
+	is more efficient than livestock to produce food. So, if you care about the world nutrition, and 
+	those who won't have dinner tonight, investigate and fight against this waste of resources.
+	
+*** Now what? You hungry?
+    There is *a lot* of info out there to cook suffering-free food.
+    [[https://www.thebuddhistchef.com/][The Buddhist Chef]] is full of great recipes. Enjoy!
+   
+** Using free software
+
+   [[https://www.fsf.org][file:///home/pedro/workspace/site-concider/fsf.png]]
+
+   In this era in which so much of your life is online or related to a computer, you don't care about what 
+   is going on under the hood? 
+   OK, then send me an email with ALL your stuff, even the private stuff.
+   "No!" you say? Well... that may be happening right now without your consent.
+   
+   It does not only helps protecting you, but your friends, family or anyone you are connected to.
+
+   + "Free software is crappy" :: yes, some of it. As also is some proprietary software.
+        Help the people that makes it possible finantially or giving a sincere "thanks".
