@@ -344,3 +344,48 @@
 	 (print-queue-contents (front-ptr queue))
 	 (display "]")
 	 (newline))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.22 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-queue2)
+  (let ((front-ptr '())
+	(rear-ptr '()))
+    ;; accessors
+    (define (empty-queue?)
+      (null? front-ptr))
+    (define (front-queue)
+      (if (empty-queue?)
+	  (error "FRONT called with an empty queue" front-ptr)
+	  (mcar front-ptr)))
+    ;; mutators
+    (define (insert-queue! item)
+      (let ((new-pair (mcons item null)))
+	(cond ((empty-queue?)
+	       (set! front-ptr new-pair)
+	       (set! rear-ptr new-pair)
+	       dispatch)
+	      (else
+	       (set-mcdr! rear-ptr new-pair)
+	       (set! rear-ptr new-pair)
+	       dispatch))))
+    (define (delete-queue!)
+      (cond ((empty-queue?)
+	     (error "DELETE called with an empty queue" queue))
+	    (else
+	     (set! front-ptr (mcdr front-ptr)))))
+    ;; dispatch
+    (define (dispatch m)
+      (cond ((eq? m 'empty-queue?)
+	     (empty-queue?))
+	    ((eq? m 'front-queue)
+	     (front-queue))
+	    ((eq? m 'insert-queue!)
+	     insert-queue!)
+	    ((eq? m 'delete-queue!)
+	     (delete-queue!))
+	    (else
+	     (error "DISPATCH called with an unknown message:" m))))
+    dispatch))
+
