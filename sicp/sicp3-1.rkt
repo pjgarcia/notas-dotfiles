@@ -352,7 +352,7 @@
 (define (make-queue2)
   (let ((front-ptr '())
 	(rear-ptr '()))
-    ;; accessors
+    ;; selectors
     (define (empty-queue?)
       (null? front-ptr))
     (define (front-queue)
@@ -389,3 +389,69 @@
 	     (error "DISPATCH called with an unknown message:" m))))
     dispatch))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.23 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-deque)
+  (mcons '() '()))
+
+;; predicate
+(define (empty-deque? deque)
+  (null? (front-ptr deque)))
+
+;; selectors
+(define (front-deque deque)
+  (cond ((empty-deque? deque)
+	 (error "EMPTY"))
+	(else
+	 (mcar (mcar (front-ptr deque))))))
+(define (rear-deque deque)
+  (cond ((empty-deque? deque)
+	 (error "EMPTY"))
+	(else
+	 (mcar (mcar (rear-ptr deque))))))
+
+;; mutators
+(define (front-insert-deque! deque item)
+  (let ((new-pair (mcons (mcons item null) null)))
+  (cond ((empty-deque? deque)
+	 (set-front-ptr! deque new-pair)
+	 (set-rear-ptr! deque new-pair))
+	(else
+	 (set-previous-ptr! (front-ptr deque) new-pair)
+	 (set-mcdr! new-pair (front-ptr deque))
+	 (set-front-ptr! deque new-pair)))))
+(define (rear-insert-deque! deque item)
+  (let ((new-pair (mcons (mcons item null) null)))
+  (cond ((empty-deque? deque)
+	 (set-front-ptr! deque new-pair)
+	 (set-rear-ptr! deque new-pair))
+	(else
+	 (set-previous-ptr! new-pair (rear-ptr deque))
+	 (set-mcdr! (rear-ptr deque) new-pair)
+	 (set-rear-ptr! deque new-pair)))))
+(define (front-delete-deque! deque)
+  (cond ((empty-deque? deque)
+	 (error "EMPTY"))
+	((null? (mcdr (front-ptr deque)))
+	 (set-front-ptr! deque null)
+	 (set-front-ptr! deque null))
+	(else
+	 (set-front-ptr! deque (mcdr (front-ptr deque)))
+	 (set-previous-ptr! (front-ptr deque) null))))
+(define (rear-delete-deque! deque)
+  (cond ((empty-deque? deque)
+	 (error "EMPTY"))
+	;; if one item
+	((null? (previous-ptr (rear-ptr deque)))
+	 (set-front-ptr! deque null)
+	 (set-rear-ptr! deque null))
+	(else
+	 (set-rear-ptr! deque (previous-ptr (rear-ptr deque)))
+	 (set-mcdr! (rear-ptr deque) null))))
+
+(define (set-previous-ptr! item prev-item)
+  (set-mcdr! (mcar item) prev-item))
+(define (previous-ptr item)
+  (mcdr (mcar item)))
