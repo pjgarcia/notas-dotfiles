@@ -372,7 +372,7 @@
 	       dispatch))))
     (define (delete-queue!)
       (cond ((empty-queue?)
-	     (error "DELETE called with an empty queue" queue))
+	     (error "DELETE called with an empty queue"))
 	    (else
 	     (set! front-ptr (mcdr front-ptr)))))
     ;; dispatch
@@ -455,3 +455,33 @@
   (set-mcdr! (mcar item) prev-item))
 (define (previous-ptr item)
   (mcdr (mcar item)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.24 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-table same-key?)
+  (define (assoc key records)
+    (cond ((null? records) #f)
+	  ((same-key? key (mcar (mcar records))) (mcar records))
+	  (else #f)))
+  (let ((table (mcons '*table* '())))
+    (define (lookup key)
+      (let ((record (assoc key (mcdr table))))
+	(if record
+	    (mcdr record)
+	    #f)))
+    (define (insert key value)
+      (let ((record (assoc key (mcdr table))))
+	(if record
+	    (set-mcdr! record)
+	    (set-mcdr! table
+		       (mcons (mcons key value)
+			      (mcdr table)))))
+      'ok)
+    (define (dispatch m)
+      (cond ((eq? m 'lookup) lookup)
+	    ((eq? m 'insert) insert)
+	    (else (error "Unknown operation"))))
+    dispatch))
+    
