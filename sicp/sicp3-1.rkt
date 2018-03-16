@@ -474,7 +474,7 @@
     (define (insert key value)
       (let ((record (assoc key (mcdr table))))
 	(if record
-	    (set-mcdr! record)
+	    (set-mcdr! record value)
 	    (set-mcdr! table
 		       (mcons (mcons key value)
 			      (mcdr table)))))
@@ -485,3 +485,41 @@
 	    (else (error "Unknown operation"))))
     dispatch))
     
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.25 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-recursive-table)
+  (let ((table (mcons '*table* '())))
+    (define (assoc key records)
+      (cond ((null? records) #f)
+	    ((eq? key (mcar (mcar records))) (mcar records))
+	    (else #f)))   
+    (define (lookup keys)
+      (define (iter remaining-keys subtable)
+	(if (null? remaining-keys)
+	    (mcdr subtable)
+	    (let ((record (assoc (car remaining-keys)
+				 (mcdr subtable))))
+	      (if record
+		  (iter (cdr remaining-keys)
+			record)
+		  #f))))
+      (iter keys table))
+    (define (insert! keys value)
+      (define (iter remaining-keys subtable)
+	(if (null? remaining-keys)
+	    (set-mcdr! subtable value)
+	    (let ((record (assoc (car keys) (mcdr subtable))))
+	      (if record
+		  (iter (cdr remaining-keys) record)
+		  (set-mcdr! subtable
+			     (mcons (mcons (car remaining-keys)
+					   value)
+				    (mcdr subtable)))))))
+      (iter keys table))
+    (define (dispatch m)
+      (cond ((eq? m 'lookup) lookup)
+	    ((eq? m 'insert!) insert!)
+	    (else (error "Unknown operation"))))
+    dispatch))
