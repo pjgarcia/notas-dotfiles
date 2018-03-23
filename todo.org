@@ -1,30 +1,6 @@
-* Lecturas
-** FINALIZADO Days of War, Nights of Love
-** FINALIZADO Matematica, estas ahi?
-** FINALIZADO The Linux Command Line
-** FINALIZADO Siddharta
-** FINALIZADO Programming Ruby (parts 1 & 2)
-** EN-CURS0 The Ruby Programming Language
-** FINALIZADO Eloquent Ruby
-** NO-INICIADO Rubygems tutorial
-** NO-INICIADO RailsGuides
-** NO-INICIADO Ruby on Rails Tutorial (3rd ed)
-** NO-INICIADO POODR
-** NO-INICIADO Debian Administrator's Handbook
-** NO-INICIADO Como funcionan las cosas?
-** NO-INICIADO Prime numbers
 
-esta linea redefine las palabras claves de TODO en este archivo.
-(el TODO de arriba queda asi por como estaba antes, pero ya no es una
-palabra clave)
-#+TODO: REPORT(r) BUG(b) KNOWNCAUSE(k) | FIXED(f)
-#+TODO: NO-INICIADO EN-CURS0 | FINALIZADO
-
-
-* Cursos
-** FINALIZADO Clojure for the Brave and True
-** FINALIZADO Ruby Monk
-** FINALIZADO Ruby Koans
-** NO-INICIADO Introduction to Psychology (YALE)
-** EN-CURS0 Psychology Crash Course
-** EN-CURS0 Art of Problem Solving
+* COMPUTADORA "Taurinus X200" (Core 2 Duo 2.26 GHz, 4GB + 240SSD)
+  + Libiquity :: $624 2 semanas de demora aprox. [[https://shop.libiquity.com/product/taurinus-x200][libiquity]]
+  + Minifree :: E408 + E45 (shipping ups) [[https://minifree.org/product/libreboot-x200/?attribute_storage-and-ram=4GiB+RAM+and+240GB+SSD][minifree]] $567    
+  + Vikings :: E330 + E184 (shipping ups VER) [[https://store.vikings.net/x200-ryf-certfied][vikings]] $630
+  + Technoetical :: E478 + E30 (shipping) $620 NO-STOCK [[https://tehnoetic.com/laptops/tet-x200s][technoetical]]

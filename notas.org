@@ -2,7 +2,7 @@
 #+FILETAGS: :notas:emacs:
 
 * Cosas para hacer
-** cardiologo 10:30am
+** DONE cardiologo 10:30am
    DEADLINE: <2018-01-05 vie>
 
 * NOTAS
