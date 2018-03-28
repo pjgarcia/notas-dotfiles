@@ -538,3 +538,65 @@
 	    ((eq? m 'insert!) insert!)
 	    (else (error "Unknown operation"))))
     dispatch))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.28 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (or-gate a1 a2 output)
+  (define (or-action)
+    (let ((new-value (logical-or (get-signal a1)
+				 (get-signal a2))))
+      (after-delay or-gate-delay
+		   (lambda ()
+		     (set-signal! output new-value)))))
+  (add-action! a1 or-action)
+  (add-action! a2 or-action)
+  'ok)
+
+(define (logical-or s1 s2)
+  (or (= s1 1) (= s2 1)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.29 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (or-gate-alternative a1 a2 output)
+  (let ((b1 (make-wire))
+	(b2 (make-wire))
+	(c (make-wire)))
+    (inverter a1 b1)
+    (inverter a2 b2)
+    (and-gate b1 b2 c)
+    (inverter c output)
+    'ok))
+;; the delay is: 2 * inverter-delay + and-gate-delay
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 2.30 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; (define (ripple-carry-adder a-wires b-wires s-wires carry-input carry-output)
+;;   (define (iter as bs ss c)
+;;     (cond ((null? as)
+;; 	   'ready)
+;; 	  (else
+;; 	   (let ((c1 (if (null? (cdr as))
+;; 			 carry-output
+;; 			 (make-wire))))
+;; 	     (full-adder (car a) (car b) c
+;; 			 (car s) c1)
+;; 	     (iter (cdr a) (cdr b) (cdr s) c1)))))
+;;   (iter a-wires b-wires s-wires carry-input))
+
+(define (ripple-carry-adder a-wires b-wires s-wires C)
+  (if (null? a-wires)
+      'ok
+      (let ((an (car a-wires))
+	    (bn (car b-wires))
+	    (sn (car s-wires))
+	    (cn (make-wire)))
+	(full-adder an bn cn sn C)
+	(ripple-carry-adder
+	 (cdr a-wires) (cdr b-wires) (cdr s-wires) cn))))
+				  
