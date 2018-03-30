@@ -643,3 +643,26 @@
 	(ripple-carry-adder
 	 (cdr a-wires) (cdr b-wires) (cdr s-wires) cn))))
 				  
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.31 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; The initialization is needed because it guarantees that
+;; the function boxes behave correctly (have the correct output
+;; for their inputs)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.32 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; The procedures to be run during each time segment of the agenda
+;; must be kept in a queue to maintain the order in which they
+;; were originated (and thus put in the queue).
+
+;; If the inputs of an AND function changes from (0,1) to (1,0) at
+;; the same time, using a list instead of a queue will produce an
+;; incorrect output.
+
+;; Altough in the simulation the wire's signal change at the same
+;; time, they are processed in sequence, and that order must be
+;; preserved to generate the appropriate output.
