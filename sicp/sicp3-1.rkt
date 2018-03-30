@@ -494,7 +494,7 @@
     (define (assoc key records)
       (cond ((null? records) #f)
 	    ((eq? key (mcar (mcar records))) (mcar records))
-	    (else #f)))   
+	    (else (assoc key (mcdr records)))))
     (define (lookup keys)
       (define (iter remaining-keys subtable)
 	(if (null? remaining-keys)
@@ -540,8 +540,51 @@
     dispatch))
 
 ;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.27 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (fib n)
+  (cond ((= n 0) 0)
+	((= n 1) 1)
+	(else (+ (fib (- n 1))
+		 (fib (- n 2))))))
+
+(define (memoize f)
+  (let ((table (make-recursive-table)))
+    (lambda (x)
+      (let ((previously-computed-result ((table 'lookup) (list x))))
+	(display "prev result? (")
+	(display x)
+	(display ") ")
+	(display previously-computed-result)
+	(newline)
+	(or previously-computed-result
+	    (let ((result (f x)))
+	      ((table 'insert!) (list x) result)
+	      result))))))
+(define memo-fib
+  (memoize (lambda (n)
+	     (cond ((= n 0) 0)
+		   ((= n 1) 1)
+		   (else (+ (memo-fib (- n 1))
+			    (memo-fib (- n 2))))))))
+
+;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.28 ;;
 ;;;;;;;;;;;;;;;;;;;
+
+;; definiciones para que no putee el (enter!..)
+(define (get-signal w) 1)
+(define (after-delay) 1)
+(define or-gate-delay 1)
+(define and-gate-delay 1)
+(define inverter-delay 1)
+(define (set-signal!) 1)
+(define (add-action!) 1)
+(define (make-wire) 1)
+(define (inverter) 1)
+(define (and-gate) 1)
+(define (full-adder) 1)
 
 (define (or-gate a1 a2 output)
   (define (or-action)
