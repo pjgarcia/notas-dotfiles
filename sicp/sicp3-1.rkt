@@ -671,26 +671,6 @@
 ;; 3.3.5 Propagation of Constraints ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (celcius-farenheit-converter c f)
-  (let ((u (make-connector))
-	(v (make-connector))
-	(w (make-connector))
-	(x (make-connector))
-	(y (make-connector)))
-    (probe "u" u)
-    (probe "v" v)
-    (probe "w" w)
-    (probe "x" x)
-    (probe "y" y)
-    
-    (multiplier c w u)
-    (multiplier v x u)
-    (adder v y f)
-    (constant 9 w)
-    (constant 5 x)
-    (constant 32 y)
-    'ok))
-
 (define (adder a1 a2 sum)
   (define (process-new-value)
     (cond ((and (has-value? a1) (has-value? a2))
@@ -858,19 +838,13 @@
 	(w (make-connector))
 	(x (make-connector))
 	(y (make-connector)))
-    (probe "u" u)
-    (probe "v" v)
-    (probe "w" w)
-    (probe "x" x)
-    (probe "y" y)
-    
     (multiplier c w u)
     (multiplier v x u)
     (adder v y f)
     (constant 9 w)
     (constant 5 x)
     (constant 32 y)
-    'ok))    
+    'ok))
 ;; running the program	
 (define C (make-connector))
 (define F (make-connector))
@@ -878,3 +852,21 @@
 (probe "Celcius temp" C)
 (probe "Farenheit temp" F)
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.33 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (averager a b c)
+  (let ((d (make-connector))
+	(e (make-connector)))
+    (adder a b d)
+    (multiplier c e d)
+    (constant 2 e)))
+
+(define A (make-connector))
+(define B (make-connector))
+(define C (make-connector))
+(probe "A" A)
+(probe "B" B)
+(probe "C" C)
+(averager A B C)
