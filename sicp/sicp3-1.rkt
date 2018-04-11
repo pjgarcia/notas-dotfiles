@@ -870,3 +870,56 @@
 (probe "B" B)
 (probe "C" C)
 (averager A B C)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.34 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (squarer a b)
+  (multiplier a a b))
+
+(define A (make-connector))
+(define B (make-connector))
+(probe "A" A)
+(probe "B" B)
+(squarer A B)
+
+;; Cuando el valor se pone desde la terminal "A", todo sale bien
+;; Cuando se pone desde "B", al constraint multiplier todavia le
+;; quedan 2 terminales sin valor y no puede calcular el valor
+;; (por mas que sean el mismo connector)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.35 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (squarer2 a b)
+  (define (process-new-value)
+    (cond ((has-value? b)
+	   (if (< (get-value b) 0)
+	       (error "square less than 0 -- SQUARER" (get-value b))
+	       (set-value! a (sqrt (get-value b)) me-squarer)))
+	  ((has-value? a)
+	   (set-value! b (* (get-value a) (get-value a)) me-squarer))))
+  (define (process-forget-value)
+    (forget-value! a me-squarer)
+    (forget-value! b me-squarer)
+    (process-new-value))
+  (define (me-squarer request)
+    (cond ((eq? request 'I-have-a-value)
+	   (process-new-value))
+	  ((eq? request 'I-lost-my-value)
+	   (process-forget-value))
+	  (else
+	   (error "Unknown request -- SQUARER" request))))
+  (connect a me-squarer)
+  (connect b me-squarer)
+  me-squarer)
+
+(define A (make-connector))
+(define B (make-connector))
+(probe "A" A)
+(probe "B" B)
+(squarer2 A B)
+    
+	
