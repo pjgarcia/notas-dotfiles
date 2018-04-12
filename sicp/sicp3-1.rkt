@@ -863,13 +863,13 @@
     (multiplier c e d)
     (constant 2 e)))
 
-(define A (make-connector))
-(define B (make-connector))
-(define C (make-connector))
-(probe "A" A)
-(probe "B" B)
-(probe "C" C)
-(averager A B C)
+(define A1 (make-connector))
+(define B1 (make-connector))
+(define C1 (make-connector))
+(probe "A" A1)
+(probe "B" B1)
+(probe "C" C1)
+(averager A1 B1 C1)
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.34 ;;
@@ -878,11 +878,11 @@
 (define (squarer a b)
   (multiplier a a b))
 
-(define A (make-connector))
-(define B (make-connector))
-(probe "A" A)
-(probe "B" B)
-(squarer A B)
+(define A2 (make-connector))
+(define B2 (make-connector))
+(probe "A" A2)
+(probe "B" B2)
+(squarer A2 B2)
 
 ;; Cuando el valor se pone desde la terminal "A", todo sale bien
 ;; Cuando se pone desde "B", al constraint multiplier todavia le
@@ -922,4 +922,42 @@
 (probe "B" B)
 (squarer2 A B)
     
-	
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.37 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (celcius-farenheit-converter2 x)
+  (c+ (c* (c/ (cv 9) (cv 5))
+	  x)
+      (cv 32)))
+
+(define (c+ x y)
+  (let ((z (make-connector)))
+    (adder x y z)
+    z))
+
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier x y z)
+    z))
+
+(define (c/ z y)
+  (let ((x (make-connector)))
+    (multiplier x y z)
+    x))
+
+(define (cv v)
+  (let ((c (make-connector)))
+    (constant v c)
+    c))
+
+(define C2 (make-connector))
+(define F2 (celcius-farenheit-converter2 C2))
+
+
+    
+    
+
+    
+
+
