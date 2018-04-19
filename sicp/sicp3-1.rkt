@@ -956,8 +956,26 @@
 
 
     
-    
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.44 ;;
+;;;;;;;;;;;;;;;;;;;
 
-    
+;; There is no need to use a more sophisticated method to
+;; transfer money between accounts.
+;; The essential difference between the transfer problem
+;; and the exchange problem is that the exchange must be
+;; an atomic operation. That is, the two transacctions
+;; must be done at the same time (with no modifications
+;; to the accounts in between). The transfer process is
+;; different in that the deposit in the destination account
+;; can be preceded with modifications to both accounts.
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.45 ;;
+;;;;;;;;;;;;;;;;;;;
 
+;; What is wrong with Louis's reasoning is that when
+;; serialized-exchange is called, it internally calls
+;; withdraw and deposit, two operations that are
+;; prohibited to run at the same time that the exchange
+;; process. Thus, they will block.
