@@ -1,3 +1,18 @@
 
 para ense;ar usan la tecnica "training from the back of the room"
 otra tecnica CCCC o las 4 "C"
+
+VER: http://brainscience.me/
+
+
+* Clase 1 7/04
+  + Introduccion a Nahual
+  + Armar entre todos definicion de "calidad"
+  + Probar Celfar V1
+  + Conclusiones
+  + Intro al ciclo de desarrollo de software
+* Clase 2 14/04
+  + Revision del ciclo de desarrollo de software
+  + Intro de casos de prueba
+  + Probar Celfar V2 y V3 (mejorando el reporte con cosas como "resultado esperado", "resultado obtenido")
+
