@@ -1,4 +1,4 @@
-sudo apt install emacs25 mupdf tmux cmusq
+sudo apt install emacs25 mupdf tmux cmus
 # networking
 sudo apt install net-tools dnsutils whois
 # duracion de la bateria
