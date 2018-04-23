@@ -979,3 +979,64 @@
 ;; withdraw and deposit, two operations that are
 ;; prohibited to run at the same time that the exchange
 ;; process. Thus, they will block.
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.47 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; a - in terms of mutexes
+(define (make-semaphore n)
+  (let ((mutexes (make-mutexes n))
+	(current-mutex-idx -1))
+    (define (aquire-mutex!)
+      (define (iter ms index)
+	(cond ((null? ms) (aquire-mutex!))
+	      ((not (> index current-mutex-idx))
+	       (iter (cdr ms) (+ index 1)))
+	      (else
+	       ((car ms) 'aquire)
+	       (set! current-mutex-idx index))))
+      (iter mutexes 0))
+    (define (release-mutex!)
+      (define (iter ms index)
+	(cond ((eq? index current-mutex-idx)
+	       ((car ms) 'release)
+	       (set! current-mutex-idx (- current-mutex-idx 1)))
+	      ((< index current-mutex-idx)
+	       (iter (cdr ms) (+ index 1)))))
+      (iter mutexes 0))
+    (define (the-semaphore m)
+      (cond ((eq? m 'aquire) (aquire-mutex!))
+	    ((eq? m 'release) (release-mutex!))
+	    (else (error "Unknown operation THE-SEMAPHORE" m))))
+    the-semaphore))
+	      
+  
+;; b - in terms of atomic test-and-set!
+(define (make-semaphore2 n)
+  (define (make-n-sized-cells-list n)
+    (cond ((eq? n 0) null)
+	  (else (cons #f
+		      (make-n-sized-cells-list (- n 1))))))
+  (let ((cells (make-n-sized-cells-list n)))
+    (define (the-semaphore m)
+      (cond ((eq? m 'aquire)
+	     (if (test-and-set! cells)
+		 (the-semaphore 'aquire))) ;; retry
+	    ((eq? m 'release) (clear-first! cells))))
+    the-semaphore))
+
+(define (clear-first! cells)
+  (cond ((null? cells)
+	 (error "No cells to clear -- CLEAR-FIRST!"))
+	((car cells)
+	 (set-car! cells #f)
+	 "cleared!")
+	(else
+	 (clear-first! (cdr cells)))))
+
+(define (test-and-set! cells)
+  (cond ((null? cells) #t)
+	((car cells) (test-and-set! (cdr cells)))
+	(else (set-car! cell #t)
+	      #f)))
