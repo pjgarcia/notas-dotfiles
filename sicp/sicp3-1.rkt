@@ -1065,3 +1065,51 @@
        (apply proc (map stream-car argstreams))
        (apply stream-map
 	      (cons proc (map stream-cdr argstreams))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.51 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; (define x (stream-map show (stream-enumerate-interval 0 10)))
+;; >> 0
+;; x -> (cons 0 (delay (stream-map show (stream-cdr (cons 0 (stream-enumerate-interval 1 10))))))
+;; (stream-ref x 5)
+;; >> 1
+;; >> 2
+;; >> 3
+;; >> 4
+;; >> 5
+;; 5
+;; (stream-ref x 7)
+;; >> 6
+;; >> 7
+;; 7
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.52 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; (define seq (stream-map accum (stream-enumerate-interval 1 20)))
+;; 1 1
+;; sum = 1
+;; (define y (stream-filter even? seq))
+;; 2 3, 3 6
+;; sum = 6
+;; (define z (stream-filter (lambda (x) (= (remainder x 5) 0)) seq))
+;; 4 10, 5 15
+;; sum = 10
+;; (stream-ref y 7)
+;; 6 21, 7 28, 8 36, 9 45, 10 55, 11 66, 12 78, 13 91, 14 105, 15 120, 16 136
+;; sum = 136
+;; >> 136
+;; (display-stream z)
+;; 17 153, 18 171, 19 190, 20 210
+;; 10 15 45 55 105 120 190 210
+;; sum = 210
+
+;; These responses would differ if we had implemented delay without using the
+;; optimization.
+;; Each time we evaluate stream-cdr, the delay is forced to be evaluated but
+;; it remembers the value if it was called previously. 
+;; That means that accum (in stream-map) will not be called again and modify
+;; the sum value.
