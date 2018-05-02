@@ -1128,7 +1128,21 @@
   (stream-map * s1 s2))
 
 (define factorials (cons-stream 1 (mul-streams (stream-cdr integers)
+					       factorials)))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.55 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (partial-sums stream)
+  (let ((result (cons-stream (car-stream stream)
+			     (add-streams result (cdr stream)))))
+    result))
+
+;; mejor opcion (sacada de http://community.schemewiki.org/?sicp-ex-3.55)
+(define (partial-sums s)
+  (let ((result (add-streams s (cons-stream 0 result))))
+    result))
 
 
 
