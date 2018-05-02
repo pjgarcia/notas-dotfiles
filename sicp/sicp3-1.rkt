@@ -1113,3 +1113,23 @@
 ;; it remembers the value if it was called previously. 
 ;; That means that accum (in stream-map) will not be called again and modify
 ;; the sum value.
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.53 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; s = (1 2 4 8 16 32...)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.54 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (mul-streams s1 s2)
+  (stream-map * s1 s2))
+
+(define factorials (cons-stream 1 (mul-streams (stream-cdr integers)
+
+
+
+
+
