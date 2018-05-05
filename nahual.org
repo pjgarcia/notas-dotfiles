@@ -1,9 +1,6 @@
 
-para ense;ar usan la tecnica "training from the back of the room"
-otra tecnica CCCC o las 4 "C"
-
-VER: http://brainscience.me/
-
+* Training From The Back Of The Room
+  VER: http://brainscience.me/
 
 * Clase 1 7/04
   + Introduccion a Nahual
@@ -15,4 +12,18 @@ VER: http://brainscience.me/
   + Revision del ciclo de desarrollo de software
   + Intro de casos de prueba
   + Probar Celfar V2 y V3 (mejorando el reporte con cosas como "resultado esperado", "resultado obtenido")
+* Clase 3 21/04 Casos de Prueba
+** Conexion: encontrar las diferencias y anotarlas (NO en la hoja de las diferencias)
+   + como hicieron para anotar las diferencias?
+   + si le paso la hoja de un grupo a otro, puede encontrar las diferencias claramente?
+   + objetivo :: importancia de la claridad al reportar algo. (lo que es claro para uno puede no serlo para otro)
+** Concepto
+   Explicar casos de prueba. Basado en lo que vimos la clases pasadas (grafico de desarrollo de software y sus
+   actores) ubicar en que parte del ciclo aparecen los casos de prueba y a partir de ahi preguntar que entiende
+   el grupo que pueden contener (id, nombre, pasos + data, resultado esperado)
+** Practica
+   Hacer los casos de prueba de Celfar
+** Conclusion
+   Charlar sobre los casos que hicieron y tratar de formalizar con algunos ejemplos bien armados
 
+* TODO Clase 4 5/05 Reporte de Bugs
