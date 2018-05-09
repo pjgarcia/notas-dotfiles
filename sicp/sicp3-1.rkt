@@ -1144,6 +1144,12 @@
   (let ((result (add-streams s (cons-stream 0 result))))
     result))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.56 ;;
+;;;;;;;;;;;;;;;;;;;
 
+(define S (cons-stream 1 (merge (scale-stream S 2)
+				(merge (scale-stream S 3)
+ 				       (scale-stream S 5)))))
 
-
+(1 2 3 4 5 6 8 9 10 12 ...)
