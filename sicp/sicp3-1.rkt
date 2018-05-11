@@ -1152,4 +1152,37 @@
 				(merge (scale-stream S 3)
  				       (scale-stream S 5)))))
 
-(1 2 3 4 5 6 8 9 10 12 ...)
+;;(1 2 3 4 5 6 8 9 10 12 ...)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.57 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; to compute the nth fibonacci number, n-2 additions are performed
+;; (0 1 1 2 3 5 8 13 ...)
+
+;; if we had implemented delay as noted (without the memoization)
+;; the ammount of additions would increase exponentially since,
+;; for each value, each delayed evaluation in the stream would
+;; trigger the evaluation of the preceding ones, up to the beggining
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.59 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (integrate-series series)
+  (stream-map (lambda (a i) (/ a i)) series integers))
+
+(define exp-series
+  (cons-stream 1 (integrate-series exp-series)))
+
+(define cosine-series
+  (cons-stream 1 (stream-map (lambda (a) (* -1 a)) (integrate-series sine-series))))
+
+(define sine-series
+  (cons-stream 0 (integrate-series cosine-series)))
+
+
+
+	 
+		
