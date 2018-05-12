@@ -1191,3 +1191,19 @@
 		  (car-stream s2))
 	       (add-streams (scale-stream (car-stream s1) (stream-cdr s2))
 			    (mul-series (cdr-stream s1) s2))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.61 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (invert-unit-series s)
+  (let ((x (cons-stream
+	    1 (scale-stream -1 (mul-series (stream-cdr s) x)))))
+    x))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.62 ;;
+;;;;;;;;;;;;;;;;;;;
+						       
+						       
+					      
