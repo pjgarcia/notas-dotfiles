@@ -1182,7 +1182,12 @@
 (define sine-series
   (cons-stream 0 (integrate-series cosine-series)))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.60 ;;
+;;;;;;;;;;;;;;;;;;;
 
-
-	 
-		
+(define (mul-series s1 s2)
+  (cons-stream (* (car-stream s1)
+		  (car-stream s2))
+	       (add-streams (scale-stream (car-stream s1) (stream-cdr s2))
+			    (mul-series (cdr-stream s1) s2))))
