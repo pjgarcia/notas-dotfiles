@@ -26,4 +26,45 @@
 ** Conclusion
    Charlar sobre los casos que hicieron y tratar de formalizar con algunos ejemplos bien armados
 
-* TODO Clase 4 5/05 Reporte de Bugs
+* Clase 4 5/05 Reporte de Bugs
+** Conexion: continuar el dibujo (arranca uno, dibuja una figura y se la pasa al proximo, con 2min de limite)
+   + que creen que nos muestra este ejercicio?
+     - seguramente vamos a trabajar en equipos
+     - entender que los problemas van a surgir, pero tenemos que recuperarnos
+     - nuestro trabajo lo va a continuar otra persona, ayudemosla
+** Concepto
+   Explicar reportes de error. Hablar con los alumnos sobre que cosas no pueden faltar en un reporte de error.
+   Anotar la estructura y contar que luego vamos a hacer los reportes con una herramienta (Mantis).
+** Practica
+   + Leer entre todos la especificacion de El Provinciano y tratar de entenderla.
+   + Armar CP sobre El Provinciano.
+** Conclusion
+   Contar los casos que hicieron y corregirlos.
+   Si llegamos con el tiempo, que los ejecuten y si hay errores que los reporten con lo que vimos.
+* Clase 5 12/05 Repasando Casos de Prueba
+  Hicieron CP de El Provinciano? Si los hicieron, revisarlos.
+  Si no, dejarles tiempo para que los hagan.
+** Concepto: casos positivos y negativos
+   CP + y CP -, que les sugieren? Escucharon algo en las clases pasadas? Que creen que son?
+** Practica
+   Dar 5 minutos para clasificar los CP que armaron. 
+   Pasar al pizarron y pegarlos donde correspondan. Discutir.
+** Concepto: clases de equivalencia, logica?
+   Si hago casos de prueba para ver info de las provincias de cada region... cuantos CP deberia armar?
+   + Salta (norte)
+   + Buenos Aires (centro, pampeana)
+   + Misiones (mesopotamia)
+   + Santa Cruz (patagonia)
+   + La Pampa (pampeana) NOOOOO (aca caigo en la clase de equivalencia de Buenos Aires)
+
+* TODO Clase 6 19/05
+** repasar clases de equivalencia y logica
+
+
+* DONE hablarle (por mail) a las 3 personas de Github@Nahual para que acepten los PR 
+  le mande mail a jplagostena
+* TODO ofrecerle a Denu pasar las asistencias
+* TODO preguntarle a Denu si estan en el grupo la mujer con numero raro y otros mas de esa clase al final
+
+* TODO hacer libro pdf pocket 
+* TODO reordenar los temas del libro acorde al itinerario de clases

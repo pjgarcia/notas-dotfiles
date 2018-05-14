@@ -1205,5 +1205,26 @@
 ;; Exercise 3.62 ;;
 ;;;;;;;;;;;;;;;;;;;
 						       
-						       
-					      
+(define (div-series s1 s2)
+  (cond ((= 0 (car-stream s2))
+	 (error "cant divide by 0"))))
+;; TODO
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.63 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; each time a new value is required from the stream, (stream-cdr),
+;; a new (sqrt-stream x) is called, wich returns the first
+;; element of the created stream 1.0 and it is passed by
+;; the various (sqrt-improve quess x) on its way up of the
+;; calling (sqrt-stream x), thus re-doing all the improvements
+;; to each element.
+
+;; In contrast, the correct implementation always improves only
+;; the last constructed element of the same stream.
+
+;; the two versions wil not differ in efficiency, since while one
+;; re-evaluates the previous calculations, the other re-do
+;; the calculations on the succesive streams it creates
+
