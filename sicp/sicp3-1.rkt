@@ -1228,3 +1228,34 @@
 ;; re-evaluates the previous calculations, the other re-do
 ;; the calculations on the succesive streams it creates
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.64 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (stream-limit s tol)
+  (let ((first (stream-car s))
+	(second (stream-car (stream-cdr s))))
+    (cond ((< (abs (- first second)) tol)
+	   second)
+	  (else
+	   (stream-limit (stream-cdr s) tol)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.65 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; #1
+(define (log-2-summands n)
+  (cons-stream
+   (/ 1 n)
+   (stream-map - (log-2-summands (+ n 1)))))
+(define log-2-stream
+  (partial-sums (log-2-summands 1)))
+
+;; #2
+(euler-transform log-2-stream)
+
+;; #3
+(accelerated-sequence euler-transform log-2-stream)
+
+
