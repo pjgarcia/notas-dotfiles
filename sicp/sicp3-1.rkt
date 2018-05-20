@@ -1321,3 +1321,13 @@
 	      (stream-cdr u)))))
     (iter doubles u)))
       
+(define pythagorean-triples
+  (stream-filter
+   (lambda (triple)
+     (let ((i (car triple))
+	   (j (cadr triple))
+	   (k (caddr triple)))
+       (= (+ (square i) (square j))
+	  (square k))))
+   (triples integers integers integers)))
+	     
