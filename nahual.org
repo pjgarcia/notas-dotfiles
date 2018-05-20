@@ -57,14 +57,36 @@
    + Santa Cruz (patagonia)
    + La Pampa (pampeana) NOOOOO (aca caigo en la clase de equivalencia de Buenos Aires)
 
-* TODO Clase 6 19/05
-** repasar clases de equivalencia y logica
-
-
-* DONE hablarle (por mail) a las 3 personas de Github@Nahual para que acepten los PR 
-  le mande mail a jplagostena
-* TODO ofrecerle a Denu pasar las asistencias
-* TODO preguntarle a Denu si estan en el grupo la mujer con numero raro y otros mas de esa clase al final
-
+* Clase 6 19/05 clases de equivalencia, ambientes, logica
+** Concepto: clase de equivalencia
+   + Wikipedia: [[https://es.wikipedia.org/wiki/Relaci%25C3%25B3n_de_equivalencia][Relacion de equivalencia]]
+   + La relacion de equivalencia R define subconjuntos disjuntos en K llamados *clases de equivalencia*
+   + Dado un elemento a perteneciente a K, el conjunto dado por /todos los elementos relacionados con a/ definen la clase:
+     [a] = {b perteneciente a K | b R a} (la clase de a son todos los b dentro de K que estan relacionados con a)
+   + en El Provinciano:
+     - en que se relacionan Tierra del Fuego y Santa Cruz?, Misiones y Entre Rios?
+     - que elementos forman parte de K?
+** Concepto: ambientes
+   Es el software y hardware donde se ejecuta una aplicacion
+   + Loca/Desarrollo :: donde los desarrolladores prueban su codigo
+   + Testing :: donde los testers probamos
+   + Producccion :: lo que ven los usuarios
+   + Sandbox :: replica de produccion (tambien probamos aca)
+** Concepto: logica
+   + Celfar :: si el valor es menor a 7 digitos y es menor a -273 el sistema emite "El valor..."
+	       (D < 7) y (T < -273) -> "El valor esta por debajo del 0 absoluto"
+   + y :: es verdadero cuando *ambos* miembros son verdaderos
+   + o :: es verdadero cuando *alguno* de sus miembros son verdaderos
+   + entonces :: si el antecedente (1ra parte) es verdadero, entonces el consecuente (2da parte) tiene que ser verdadera
+** Practica
+   Agarrar los CP de El Provinciano y compartirselos a otra persona para que los ejecute y los reporte (titulo y id, nada mas)
+   + de a 2 :: juntarse de a 2 y que intercambien los CP
+	       a medida que los vamos ejecutando, si hay que pedir mejoras del CP charlarlo en pareja
+	       reportar los errores que encuentren
+   + 4 grupos (de 3+) :: intercambiar una de las computadoras con otro grupo
+	ejecutar los CP
+	cada 10 minutos intercambiarlos
+	al final de todo charlar de que fueron las mejores que vieron y de como armar buenos CP
+	
 * TODO hacer libro pdf pocket 
 * TODO reordenar los temas del libro acorde al itinerario de clases
