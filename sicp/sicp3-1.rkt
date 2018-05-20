@@ -1258,4 +1258,21 @@
 ;; #3
 (accelerated-sequence euler-transform log-2-stream)
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.66 ;;
+;;;;;;;;;;;;;;;;;;;
 
+;; the pair (1, 100) will have (98 x 2) + 1 pairs preceding it
+;; computes the position in the
+(define (place-in-row s t)
+  (cond ((= (- t s) 0) 1)
+	(else (* (- t s) 2))))
+
+(define (place-in-upper-row n)
+  (+ 1 (* 2 n)))
+
+(define (final-place s t)
+  (cond ((= 1 s)
+	 (place-in-row s t))
+	(else
+	 (place-in-upper-row (final-place (- s 1) (- t 1))))))
