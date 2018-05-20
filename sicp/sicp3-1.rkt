@@ -1276,3 +1276,48 @@
 	 (place-in-row s t))
 	(else
 	 (place-in-upper-row (final-place (- s 1) (- t 1))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.67 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (pairs s t)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (interleave
+    (interleave (stream-map (lambda (x) (list (stream-car s) x))
+			    (stream-cdr t))
+		(stream-map (lambda (x) (list x (stream-car t)))
+			    (stream-cdr s)))
+    (pairs (stream-cdr s) (stream-cdr t)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.68 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; when we evaluate (pairs integers integers) using Louis's definition
+;; there will be an infinite loop because the interleave evaluation will
+;; cause (pairs (stream-cdr s) (stream-cdr t)) to be evlauated, which in
+;; turn will cause a new interleave to be evaluated and so on...
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.69 ;;
+;;;;;;;;;;;;;;;;;;;
+	  
+(define (triples s t u)
+  (let ((doubles (pairs s t)))
+    (define (iter st u)
+      (cons-stream 
+       (list (car (stream-car st))
+	     (cadr (stream-car st))
+	     (stream-car u))
+       (interleave
+	(stream-map (lambda (x)
+		      (list (car (stream-car st))
+			    (cadr (stream-car st))
+			    x))
+		    (stream-cdr u))
+	(iter (stream-cdr st)
+	      (stream-cdr u)))))
+    (iter doubles u)))
+      
