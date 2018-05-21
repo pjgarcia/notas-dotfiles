@@ -1331,3 +1331,59 @@
 	  (square k))))
    (triples integers integers integers)))
 	     
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.70 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (merge-weighted s1 s2 weight)
+  (cond ((stream-null? s1) s2)
+	((stream-null? s2) s1)
+	(else
+	 (let ((w1 (weight (stream-car s1)))
+	       (w2 (weight (stream-car s2))))
+	   (cond ((< w1 w2)
+		  (cons-stream (stream-car s1)
+			       (merge-weighted (stream-cdr s1) s2)))
+		 ((> w1 w2)
+		  (cons-stream (stream-car s2)
+			       (merge-weighted s1 (stream-cdr s2))))
+		 (else
+		  (cons-stream
+		   (stream-car s1)
+		   (cons-stream
+		    (stream-car s2)
+		    (merge-weighted (stream-cdr s1)
+				    (stream-cdr s2))))))))))
+
+(define (weighted-pairs s t weight)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (merge-weighted
+    (stream-map (lambda (x) (list (stream-car s) x))
+		(stream-cdr t))
+    (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
+    weight)))
+
+(weighted-pairs integers integers
+		(lambda (pair)
+		  (+ (car pair) (cadr pair))))
+
+
+(lambda (divisible-by-2-3-5 n)
+  (or (= (remainder n 2) 0)
+      (= (remainder n 3) 0)
+      (= (remainder n 5) 0)))
+	    
+(lambda (not-divisible pair)
+  (let ((i (car pair)) (j (cadr-pair)))
+    (and (not (divisible-by-2-3-5 i))
+	 (not (divisible-by-2-3-5 j)))))
+
+(stream-filter not-divisible
+	       (weighted-pairs
+		integers integers
+		(lambda (pair)
+		  (+ (* 2 (car pair))
+		     (* 3 (cadr pair))
+		     (* 5 (car pair) (cadr pair)))))
+	       
