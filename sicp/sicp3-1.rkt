@@ -1438,14 +1438,14 @@
   (+ (expt (car pair) 3)
      (expt (cadr pair) 3)))
   
-(define (same-weight s)
+(define (same-weight s weight)
   (let ((s1 (stream-first s))
 	(s2 (stream-first (stream-rest s))))
-    (if (= (ramanujan-weight s1)
-	   (ramanujan-weight s2))
-	(stream-cons (ramanujan-weight s1)
-		     (same-weight (stream-rest s)))
-	(same-weight (stream-rest s)))))
+    (if (= (weight s1)
+	   (weight s2))
+	(stream-cons (weight s1)
+		     (same-weight (stream-rest s) weight))
+	(same-weight (stream-rest s) weight))))
 
 (define (stream-take s n)
   (cond ((= 0 n) null)
@@ -1455,8 +1455,31 @@
 
 (stream-take (same-weight
 	      (weighted-pairs integers integers
-			      ramanujan-weight))
+			      ramanujan-weight)
+	      ramanujan-weight)
 	     5)
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.72 ;;
+;;;;;;;;;;;;;;;;;;;
 
+(define (same-weight2 s weight)
+  (let ((s1 (stream-first s))
+	(s2 (stream-first (stream-rest s)))
+	(s3 (stream-first (stream-rest (stream-rest s)))))
+    (if (= (weight s1)
+	   (weight s2)
+	   (weight s3))
+	(stream-cons (list (weight s1) s1 s2 s3)
+		     (same-weight2 (stream-rest s) weight))
+	(same-weight2 (stream-rest s) weight))))
 
+(define (square-weight pair)
+  (+ (square (car pair))
+     (square (cadr pair))))
+
+(stream-take (same-weight2
+	      (weighted-pairs integers integers
+			      square-weight)
+	      square-weight)
+	     5)
