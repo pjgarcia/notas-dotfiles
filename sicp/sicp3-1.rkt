@@ -1,4 +1,4 @@
-#lang racket/base
+#lang racket
 
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.1 ;;
@@ -984,6 +984,8 @@
 ;; Exercise 3.47 ;;
 ;;;;;;;;;;;;;;;;;;;
 
+(define make-mutexes 'mock)
+
 ;; a - in terms of mutexes
 (define (make-semaphore n)
   (let ((mutexes (make-mutexes n))
@@ -1022,7 +1024,8 @@
     (define (the-semaphore m)
       (cond ((eq? m 'aquire)
 	     (if (test-and-set! cells)
-		 (the-semaphore 'aquire))) ;; retry
+		 (the-semaphore 'aquire)
+		 'aquired)) ;; retry
 	    ((eq? m 'release) (clear-first! cells))))
     the-semaphore))
 
@@ -1030,7 +1033,7 @@
   (cond ((null? cells)
 	 (error "No cells to clear -- CLEAR-FIRST!"))
 	((car cells)
-	 (set-car! cells #f)
+	 (set-mcar! cells #f)
 	 "cleared!")
 	(else
 	 (clear-first! (cdr cells)))))
@@ -1038,12 +1041,14 @@
 (define (test-and-set! cells)
   (cond ((null? cells) #t)
 	((car cells) (test-and-set! (cdr cells)))
-	(else (set-car! cell #t)
+	(else (set-mcar! cells #t)
 	      #f)))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.48 ;;
 ;;;;;;;;;;;;;;;;;;;
+
+(define exchange 'mock)
 
 (define (serialized-exchange account1 account2)
   (let ((serializer1 (account1 'serializer))
@@ -1052,19 +1057,19 @@
 	(serializer1 (serializer2 exchange))
 	(serializer2 (serializer1 exchange)))
      account1
-     account2)))
+     account2))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.50 ;;
 ;;;;;;;;;;;;;;;;;;;
 
 (define (stream-map proc . argstreams)
-  (if (stream-null? (car argstreams))
-      the-empty-stream
-      (cons-stream
-       (apply proc (map stream-car argstreams))
+  (if (stream-empty? (car argstreams))
+      empty-stream
+      (stream-cons
+       (apply proc (map stream-first argstreams))
        (apply stream-map
-	      (cons proc (map stream-cdr argstreams))))))
+	      (cons proc (map stream-rest argstreams))))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.51 ;;
@@ -1072,7 +1077,7 @@
 
 ;; (define x (stream-map show (stream-enumerate-interval 0 10)))
 ;; >> 0
-;; x -> (cons 0 (delay (stream-map show (stream-cdr (cons 0 (stream-enumerate-interval 1 10))))))
+;; x -> (cons 0 (delay (stream-map show (stream-rest (cons 0 (stream-enumerate-interval 1 10))))))
 ;; (stream-ref x 5)
 ;; >> 1
 ;; >> 2
@@ -1109,7 +1114,7 @@
 
 ;; These responses would differ if we had implemented delay without using the
 ;; optimization.
-;; Each time we evaluate stream-cdr, the delay is forced to be evaluated but
+;; Each time we evaluate stream-rest, the delay is forced to be evaluated but
 ;; it remembers the value if it was called previously. 
 ;; That means that accum (in stream-map) will not be called again and modify
 ;; the sum value.
@@ -1124,31 +1129,62 @@
 ;; Exercise 3.54 ;;
 ;;;;;;;;;;;;;;;;;;;
 
+(define (integers-starting-from n)
+  (stream-cons n (integers-starting-from (+ n 1))))
+(define integers (integers-starting-from 1))
+
+
 (define (mul-streams s1 s2)
   (stream-map * s1 s2))
 
-(define factorials (cons-stream 1 (mul-streams (stream-cdr integers)
+(define factorials (stream-cons 1 (mul-streams (stream-rest integers)
 					       factorials)))
+
+;; code needed
+(define (add-streams s1 s2)
+  (stream-map + s1 s2))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.55 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define (partial-sums stream)
-  (let ((result (cons-stream (car-stream stream)
-			     (add-streams result (cdr stream)))))
-    result))
+;; (define (partial-sums stream)
+;;   (let ((result (stream-cons (stream-first stream)
+;; 			     (add-streams result (cdr stream)))))
+;;     result))
 
 ;; mejor opcion (sacada de http://community.schemewiki.org/?sicp-ex-3.55)
 (define (partial-sums s)
-  (let ((result (add-streams s (cons-stream 0 result))))
-    result))
+  (define result (add-streams s (stream-cons 0 result)))
+  result)
 
+;; code needed
+(define (merge s1 s2)
+  (cond ((stream-empty? s1) s2)
+	((stream-empty? s2) s1)
+	(else
+	 (let ((s1car (stream-first s1))
+	       (s2car (stream-first s2)))
+	   (cond ((< s1car s2car)
+		  (stream-cons s1car
+			       (merge (stream-rest s1) s2)))
+		 ((> s1car s2car)
+		  (stream-cons s2car
+			       (merge s1 (stream-rest s2))))
+		 (else
+		  (stream-cons
+		   s1car
+		   (merge (stream-rest s1)
+			  (stream-rest s2)))))))))
+
+;; code needed
+(define (scale-stream s n)
+  (stream-map (lambda (x) (* x n)) s))
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.56 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define S (cons-stream 1 (merge (scale-stream S 2)
+(define S (stream-cons 1 (merge (scale-stream S 2)
 				(merge (scale-stream S 3)
  				       (scale-stream S 5)))))
 
@@ -1174,39 +1210,39 @@
   (stream-map (lambda (a i) (/ a i)) series integers))
 
 (define exp-series
-  (cons-stream 1 (integrate-series exp-series)))
+  (stream-cons 1 (integrate-series exp-series)))
 
 (define cosine-series
-  (cons-stream 1 (stream-map (lambda (a) (* -1 a)) (integrate-series sine-series))))
+  (stream-cons 1 (stream-map (lambda (a) (* -1 a)) (integrate-series sine-series))))
 
 (define sine-series
-  (cons-stream 0 (integrate-series cosine-series)))
+  (stream-cons 0 (integrate-series cosine-series)))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.60 ;;
 ;;;;;;;;;;;;;;;;;;;
 
 (define (mul-series s1 s2)
-  (cons-stream (* (car-stream s1)
-		  (car-stream s2))
-	       (add-streams (scale-stream (car-stream s1) (stream-cdr s2))
-			    (mul-series (cdr-stream s1) s2))))
+  (stream-cons (* (stream-first s1)
+		  (stream-first s2))
+	       (add-streams (scale-stream (stream-first s1) (stream-rest s2))
+			    (mul-series (stream-rest s1) s2))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.61 ;;
 ;;;;;;;;;;;;;;;;;;;
 
 (define (invert-unit-series s)
-  (let ((x (cons-stream
-	    1 (scale-stream -1 (mul-series (stream-cdr s) x)))))
-    x))
+  (define x (stream-cons
+	     1 (scale-stream -1 (mul-series (stream-rest s) x))))
+  x)
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.62 ;;
 ;;;;;;;;;;;;;;;;;;;
 						       
 (define (div-series s1 s2)
-  (cond ((= 0 (car-stream s2))
+  (cond ((= 0 (stream-first s2))
 	 (error "cant divide by 0"))))
 ;; TODO
 
@@ -1214,7 +1250,7 @@
 ;; Exercise 3.63 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-;; each time a new value is required from the stream, (stream-cdr),
+;; each time a new value is required from the stream, (stream-rest),
 ;; a new (sqrt-stream x) is called, wich returns the first
 ;; element of the created stream 1.0 and it is passed by
 ;; the various (sqrt-improve quess x) on its way up of the
@@ -1233,12 +1269,12 @@
 ;;;;;;;;;;;;;;;;;;;
 
 (define (stream-limit s tol)
-  (let ((first (stream-car s))
-	(second (stream-car (stream-cdr s))))
-    (cond ((< (abs (- first second)) tol)
+  (let ((first (stream-first s))
+	(second (stream-first (stream-rest s))))
+    (cond ((<= (abs (- first second)) tol)
 	   second)
 	  (else
-	   (stream-limit (stream-cdr s) tol)))))
+	   (stream-limit (stream-rest s) tol)))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.65 ;;
@@ -1246,17 +1282,17 @@
 
 ;; #1
 (define (log-2-summands n)
-  (cons-stream
+  (stream-cons
    (/ 1 n)
    (stream-map - (log-2-summands (+ n 1)))))
 (define log-2-stream
   (partial-sums (log-2-summands 1)))
 
 ;; #2
-(euler-transform log-2-stream)
+;;(euler-transform log-2-stream)
 
 ;; #3
-(accelerated-sequence euler-transform log-2-stream)
+;;(accelerated-sequence euler-transform log-2-stream)
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.66 ;;
@@ -1277,19 +1313,25 @@
 	(else
 	 (place-in-upper-row (final-place (- s 1) (- t 1))))))
 
+;; code needed
+(define (interleave s1 s2)
+  (cond ((stream-empty? s1) s2)
+	(else
+	 (stream-cons (stream-first s1)
+		      (interleave s2 (stream-rest s1))))))
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.67 ;;
 ;;;;;;;;;;;;;;;;;;;
 
 (define (pairs s t)
-  (cons-stream
-   (list (stream-car s) (stream-car t))
+  (stream-cons
+   (list (stream-first s) (stream-first t))
    (interleave
-    (interleave (stream-map (lambda (x) (list (stream-car s) x))
-			    (stream-cdr t))
-		(stream-map (lambda (x) (list x (stream-car t)))
-			    (stream-cdr s)))
-    (pairs (stream-cdr s) (stream-cdr t)))))
+    (interleave (stream-map (lambda (x) (list (stream-first s) x))
+			    (stream-rest t))
+		(stream-map (lambda (x) (list x (stream-first t)))
+			    (stream-rest s)))
+    (pairs (stream-rest s) (stream-rest t)))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.68 ;;
@@ -1297,7 +1339,7 @@
 
 ;; when we evaluate (pairs integers integers) using Louis's definition
 ;; there will be an infinite loop because the interleave evaluation will
-;; cause (pairs (stream-cdr s) (stream-cdr t)) to be evlauated, which in
+;; cause (pairs (stream-rest s) (stream-rest t)) to be evlauated, which in
 ;; turn will cause a new interleave to be evaluated and so on...
 
 ;;;;;;;;;;;;;;;;;;;
@@ -1307,18 +1349,18 @@
 (define (triples s t u)
   (let ((doubles (pairs s t)))
     (define (iter st u)
-      (cons-stream 
-       (list (car (stream-car st))
-	     (cadr (stream-car st))
-	     (stream-car u))
+      (stream-cons 
+       (list (car (stream-first st))
+	     (cadr (stream-first st))
+	     (stream-first u))
        (interleave
 	(stream-map (lambda (x)
-		      (list (car (stream-car st))
-			    (cadr (stream-car st))
+		      (list (car (stream-first st))
+			    (cadr (stream-first st))
 			    x))
-		    (stream-cdr u))
-	(iter (stream-cdr st)
-	      (stream-cdr u)))))
+		    (stream-rest u))
+	(iter (stream-rest st)
+	      (stream-rest u)))))
     (iter doubles u)))
       
 (define pythagorean-triples
@@ -1336,32 +1378,33 @@
 ;;;;;;;;;;;;;;;;;;;
 
 (define (merge-weighted s1 s2 weight)
-  (cond ((stream-null? s1) s2)
-	((stream-null? s2) s1)
+  (cond ((stream-empty? s1) s2)
+	((stream-empty? s2) s1)
 	(else
-	 (let ((w1 (weight (stream-car s1)))
-	       (w2 (weight (stream-car s2))))
+	 (let ((w1 (weight (stream-first s1)))
+	       (w2 (weight (stream-first s2))))
 	   (cond ((< w1 w2)
-		  (cons-stream (stream-car s1)
-			       (merge-weighted (stream-cdr s1) s2)))
+		  (stream-cons (stream-first s1)
+			       (merge-weighted (stream-rest s1) s2 weight)))
 		 ((> w1 w2)
-		  (cons-stream (stream-car s2)
-			       (merge-weighted s1 (stream-cdr s2))))
+		  (stream-cons (stream-first s2)
+			       (merge-weighted s1 (stream-rest s2) weight)))
 		 (else
-		  (cons-stream
-		   (stream-car s1)
-		   (cons-stream
-		    (stream-car s2)
-		    (merge-weighted (stream-cdr s1)
-				    (stream-cdr s2))))))))))
+		  (stream-cons
+		   (stream-first s1)
+		   (stream-cons
+		    (stream-first s2)
+		    (merge-weighted (stream-rest s1)
+				    (stream-rest s2)
+				    weight)))))))))
 
 (define (weighted-pairs s t weight)
-  (cons-stream
-   (list (stream-car s) (stream-car t))
+  (stream-cons
+   (list (stream-first s) (stream-first t))
    (merge-weighted
-    (stream-map (lambda (x) (list (stream-car s) x))
-		(stream-cdr t))
-    (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
+    (stream-map (lambda (x) (list (stream-first s) x))
+		(stream-rest t))
+    (weighted-pairs (stream-rest s) (stream-rest t) weight)
     weight)))
 
 (weighted-pairs integers integers
@@ -1369,13 +1412,13 @@
 		  (+ (car pair) (cadr pair))))
 
 
-(lambda (divisible-by-2-3-5 n)
+(define (divisible-by-2-3-5 n)
   (or (= (remainder n 2) 0)
       (= (remainder n 3) 0)
       (= (remainder n 5) 0)))
 	    
-(lambda (not-divisible pair)
-  (let ((i (car pair)) (j (cadr-pair)))
+(define (not-divisible pair)
+  (let ((i (car pair)) (j (cadr pair)))
     (and (not (divisible-by-2-3-5 i))
 	 (not (divisible-by-2-3-5 j)))))
 
@@ -1385,5 +1428,35 @@
 		(lambda (pair)
 		  (+ (* 2 (car pair))
 		     (* 3 (cadr pair))
-		     (* 5 (car pair) (cadr pair)))))
+		     (* 5 (car pair) (cadr pair))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.71 ;;
+;;;;;;;;;;;;;;;;;;;
 	       
+(define (ramanujan-weight pair)
+  (+ (expt (car pair) 3)
+     (expt (cadr pair) 3)))
+  
+(define (same-weight s)
+  (let ((s1 (stream-first s))
+	(s2 (stream-first (stream-rest s))))
+    (if (= (ramanujan-weight s1)
+	   (ramanujan-weight s2))
+	(stream-cons (ramanujan-weight s1)
+		     (same-weight (stream-rest s)))
+	(same-weight (stream-rest s)))))
+
+(define (stream-take s n)
+  (cond ((= 0 n) null)
+	(else (cons (stream-first s)
+		    (stream-take (stream-rest s)
+				 (- n 1))))))
+
+(stream-take (same-weight
+	      (weighted-pairs integers integers
+			      ramanujan-weight))
+	     5)
+
+
+
