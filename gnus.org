@@ -20,10 +20,10 @@
 
 * Use case with Agent
   1. start *gnus* using ~M-x gnus-unplugged~
-  2. J j :: plug gnus (can download or upload information)
-  3. g :: check for new mail
-  4. J s :: fetch (save) all the articles in all groups
-  5. J j :: unplug gnus
+  2. *J j*: plug gnus (can download or upload information)
+  3. *g*: check for new mail
+  4. *J s*: fetch (save) all the articles in all groups
+  5. *J j* :: unplug gnus
   6. repeat from step 2
 
 * Initial Steps
