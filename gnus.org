@@ -20,31 +20,29 @@
 
 
 * Initial Steps
-** define mail servers
+** define mail servers (~/.gnus)
 #+BEGIN_SRC emacs-lisp
-(setq user-mail-address "pmauro@posteo.net"
-      user-full-name "pedrom")
+(setq user-mail-address "mail@provider.net"
+      user-full-name "my name")
 
 (setq gnus-select-method
-      '(nnimap "posteo.net"
-	       (nnimap-address "posteo.de")  ; it could also be imap.googlemail.com if that's your server.
+      '(nnimap "provider.net"
+	       (nnimap-address "imap_server")  ; it could also be imap.googlemail.com if that's your server.
 	       (nnimap-server-port "imaps")
 	       (nnimap-stream ssl)))
 
-(setq smtpmail-smtp-server "posteo.de"
+(setq smtpmail-smtp-server "smtp_server"
       smtpmail-smtp-service 587
       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 #+END_SRC
 ** define authorization info (~/.authinfo)
 #+BEGIN_SRC 
-machine posteo.de login pmauro@posteo.net password ******** port imaps
-machine posteo.de login pmauro@posteo.net password ******** port 587
+machine posteo.de login mail@provider.net password ******** port imaps
+machine posteo.de login mail@provider.net password ******** port 587
 #+END_SRC
 
 
-* Extras 
-** define "o" key to list all subscribed groups (even they contain zero un-read messages)
-   in ~/.gnus
+* Extras (~/.gnus)
 #+BEGIN_SRC emacs-lisp
 (defun my-gnus-group-list-subscribed-groups ()
   "List all subscribed groups with or without un-read messages"
@@ -54,12 +52,10 @@ machine posteo.de login pmauro@posteo.net password ******** port 587
 (define-key gnus-group-mode-map
   ;; list all the subscribed groups even they contain zero un-read messages
   (kbd "o") 'my-gnus-group-list-subscribed-groups)
-#+END_SRC
-** add agent support, or reading mails offline (~/.gnus)
-#+BEGIN_SRC emacs-lisp
+
+;; add agent support, for reading mails offline (and reduce lag)
 (setq gnus-agent t)
-#+END_SRC   
-** add topic support to the Group buffer, like labels (~/.gnus)
-#+BEGIN_SRC emacs-lisp 
+
+;; add topic support to the Group buffer, like labels 
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 #+END_SRC
