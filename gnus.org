@@ -1,0 +1,63 @@
+* Group Buffer
+  + o :: list all the subscribed groups even they contain zero un-read messages
+  + C-u RET :: see all the mails instead of unread ones
+  + T n :: create new topic
+  + T m :: move group to another topic
+
+* Summary Buffer
+  + / a <author> :: filter mails by author
+  + / / <subject> :: filter by subject
+  + / w :: cancel filter
+  + / N :: check new mails
+  + c :: mark mail as read (from summary or group buffer)
+	   
+* Extras
+  + R/r :: reply mail with/without quoted text
+  + S W/w :: reply ALL with/without quoted text
+  + m :: compose new mail
+  + C-x m or M-x compose-mail :: compose new mail anywhere in Emacs
+
+* Initial Steps
+** define mail servers
+#+BEGIN_SRC emacs-lisp
+(setq user-mail-address "pmauro@posteo.net"
+      user-full-name "pedrom")
+
+(setq gnus-select-method
+      '(nnimap "posteo.net"
+	       (nnimap-address "posteo.de")  ; it could also be imap.googlemail.com if that's your server.
+	       (nnimap-server-port "imaps")
+	       (nnimap-stream ssl)))
+
+(setq smtpmail-smtp-server "posteo.de"
+      smtpmail-smtp-service 587
+      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+#+END_SRC
+** define authorization info (~/.authinfo)
+#+BEGIN_SRC 
+machine posteo.de login pmauro@posteo.net password ******** port imaps
+machine posteo.de login pmauro@posteo.net password ******** port 587
+#+END_SRC
+
+
+* Extras 
+** define "o" key to list all subscribed groups (even they contain zero un-read messages)
+   in ~/.gnus
+#+BEGIN_SRC emacs-lisp
+(defun my-gnus-group-list-subscribed-groups ()
+  "List all subscribed groups with or without un-read messages"
+  (interactive)
+  (gnus-group-list-all-groups 5))
+
+(define-key gnus-group-mode-map
+  ;; list all the subscribed groups even they contain zero un-read messages
+  (kbd "o") 'my-gnus-group-list-subscribed-groups)
+#+END_SRC
+** add agent support, or reading mails offline (~/.gnus)
+#+BEGIN_SRC emacs-lisp
+(setq gnus-agent t)
+#+END_SRC   
+** add topic support to the Group buffer, like labels (~/.gnus)
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
+#+END_SRC
