@@ -3,6 +3,7 @@
   + C-u RET :: see all the mails instead of unread ones
   + T n :: create new topic
   + T m :: move group to another topic
+  + G R :: subscribe to a feed
 
 * Summary Buffer
   + / a <author> :: filter mails by author
@@ -11,11 +12,12 @@
   + / N :: check new mails
   + c :: mark mail as read (from summary or group buffer)
 	   
-* Extras
+* Various buffers
   + R/r :: reply mail with/without quoted text
   + S W/w :: reply ALL with/without quoted text
   + m :: compose new mail
   + C-x m or M-x compose-mail :: compose new mail anywhere in Emacs
+
 
 * Initial Steps
 ** define mail servers
