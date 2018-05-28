@@ -34,7 +34,6 @@
   DEADLINE: <2018-05-22 mar>
 * TODO cerrar la cuenta de A2Hosting
   DEADLINE: <2018-05-22 mar>
-* TODO abrir cuenta de Linode
 
 * NOTAS
 ** tmux                                                       :tmux:terminal:

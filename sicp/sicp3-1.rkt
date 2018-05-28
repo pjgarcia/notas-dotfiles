@@ -1483,3 +1483,33 @@
 			      square-weight)
 	      square-weight)
 	     5)
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.73 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (integral integrand initial-value dt)
+  (define int
+    (cons-stream initial-value
+		 (add-streams (scale-stream integrand dt)
+			      int)))
+  int)
+
+(define (RC r c dt)
+  (lambda (i v0)
+    (add-streams (scale-stream r i)
+		 (integral
+		  (scale-stream (/ 1 c) i) v0) dt)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.74 ;;
+;;;;;;;;;;;;;;;;;;;
+  
+(define (make-zero-crossings input-stream last-value)
+  (cons-stream
+   (sign-change-detector (stream-car input-stream) last-value)
+   (make-zero-crossings (stream-cdr input-stream)
+			(stream-car input-stream))))
+
+(define zero-crossings
+  (stream-map sign-change-detector sense-data (cons-stream 0 sense-data)))
