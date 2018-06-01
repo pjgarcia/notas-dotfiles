@@ -1513,3 +1513,32 @@
 
 (define zero-crossings
   (stream-map sign-change-detector sense-data (cons-stream 0 sense-data)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.75 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-zero-crossings2 input-stream last-avpt-value last-orig-value)
+  (let ((avpt (/ (+ (stream-car input-stream) last-orig-value) 2)))
+    (cons-stream (sign-change-detector avpt last-avpt-value)
+		 (make-zero-crossings2 (stream-cdr input-stream)
+				       avpt
+				       (stream-car input-stream)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.76 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (smooth signal)
+  (let ((avpt (/ (+ (stream-car signal)
+		    (stream-car (stream-cdr signal)))
+		 2)))
+    (cons-stream avpt
+		 (smooth (stream-cdr signal)))))
+
+(define (make-zero-crossings3 input-stream)
+  (let ((smoothed (smooth input-stream)))
+    (cons-stream (sign-change-detector (stream-car smoothed)
+				       (stream-cdr (stream-car smoothed)))
+		 (make-zero-crossings3 (stream-cdr input-stream)))))
+		 
