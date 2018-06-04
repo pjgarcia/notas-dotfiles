@@ -1490,7 +1490,7 @@
 
 (define (integral integrand initial-value dt)
   (define int
-    (cons-stream initial-value
+    (stream-cons initial-value
 		 (add-streams (scale-stream integrand dt)
 			      int)))
   int)
@@ -1505,43 +1505,60 @@
 ;; Exercise 3.74 ;;
 ;;;;;;;;;;;;;;;;;;;
   
+(define (sign-change-detector a b) 0)
+
 (define (make-zero-crossings input-stream last-value)
-  (cons-stream
-   (sign-change-detector (stream-car input-stream) last-value)
-   (make-zero-crossings (stream-cdr input-stream)
-			(stream-car input-stream))))
+  (stream-cons
+   (sign-change-detector (stream-first input-stream) last-value)
+   (make-zero-crossings (stream-rest input-stream)
+			(stream-first input-stream))))
+(define sense-data (stream-cons 0 1))
 
 (define zero-crossings
-  (stream-map sign-change-detector sense-data (cons-stream 0 sense-data)))
+  (stream-map sign-change-detector sense-data (stream-cons 0 sense-data)))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.75 ;;
 ;;;;;;;;;;;;;;;;;;;
 
 (define (make-zero-crossings2 input-stream last-avpt-value last-orig-value)
-  (let ((avpt (/ (+ (stream-car input-stream) last-orig-value) 2)))
-    (cons-stream (sign-change-detector avpt last-avpt-value)
-		 (make-zero-crossings2 (stream-cdr input-stream)
+  (let ((avpt (/ (+ (stream-first input-stream) last-orig-value) 2)))
+    (stream-cons (sign-change-detector avpt last-avpt-value)
+		 (make-zero-crossings2 (stream-rest input-stream)
 				       avpt
-				       (stream-car input-stream)))))
+				       (stream-first input-stream)))))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.76 ;;
 ;;;;;;;;;;;;;;;;;;;
 
 (define (smooth signal)
-  (let ((avpt (/ (+ (stream-car signal)
-		    (stream-car (stream-cdr signal)))
+  (let ((avpt (/ (+ (stream-first signal)
+		    (stream-first (stream-rest signal)))
 		 2)))
-    (cons-stream avpt
-		 (smooth (stream-cdr signal)))))
+    (stream-cons avpt
+		 (smooth (stream-rest signal)))))
 
 (define (make-zero-crossings3 input-stream)
   (let ((smoothed (smooth input-stream)))
-    (cons-stream (sign-change-detector (stream-car smoothed)
-				       (stream-cdr (stream-car smoothed)))
-		 (make-zero-crossings3 (stream-cdr input-stream)))))
+    (stream-cons (sign-change-detector (stream-first smoothed)
+				       (stream-rest (stream-first smoothed)))
+		 (make-zero-crossings3 (stream-rest input-stream)))))
 		 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.77 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (integral delayed-integrand initial-value dt)
+  (cons-stream initial-value
+	       (let ((integrand (force delayed-integrand)))
+		 (if (stream-null? integrand)
+		     the-empty-stream
+		     (integral (delay (stream-cdr integrand))
+			       (+ (* dt (stream-car integrand))
+				  initial-value)
+			       dt)))))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 3.78 ;;
 ;;;;;;;;;;;;;;;;;;;
