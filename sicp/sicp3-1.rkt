@@ -1542,3 +1542,31 @@
 				       (stream-cdr (stream-car smoothed)))
 		 (make-zero-crossings3 (stream-cdr input-stream)))))
 		 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.78 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (solve-2nd a b dt y0 dy0)
+  (define y (integral (delay dy) y0 dt))
+  (define dy (integral (delay ddy) dy0 dt))
+  (define ddy (add-streams (scale-stream a dy)
+			   (scale-stream b y)))
+  y)
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 3.80 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (RLC R L C dt)
+  (lambda (vc0 il0)
+    (define il (integral (delay dil) il0 dt))
+    (define vc (integral (delay dvc) vc0 dt))
+    (define dvc (scale-stream (/ (- 1) C) il))
+    (define dil (add-streams (scale-stream (/ (- R) L) il)
+			     (scale-stream (/ 1 L) vc)))
+    (stream-map (lambda (vcn iln) (cons vcn iln))
+		il vc)))
+			
+		  
+     
