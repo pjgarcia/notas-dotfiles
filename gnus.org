@@ -11,6 +11,8 @@
   + / w :: cancel filter
   + / N :: check new mails
   + c :: mark mail as read (from summary or group buffer)
+  + B DEL/backspace :: delete article (also in server, be carefull)
+  + B m :: move article
 	   
 * Various buffers
   + R/r :: reply mail with/without quoted text
