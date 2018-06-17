@@ -87,7 +87,15 @@
 	ejecutar los CP
 	cada 10 minutos intercambiarlos
 	al final de todo charlar de que fueron las mejores que vieron y de como armar buenos CP
-	
-* TODO hacer libro pdf pocket 
-* TODO reordenar los temas del libro acorde al itinerario de clases
-* TODO sacar referencias a Windows y cambiarlas por software libre (Firefox?)
+* Clase 7 2/06 ABM(C)
+  + Tipos de aplicaciones (redes sociales, e-comerce, ABM)
+  + Patrones de CP en un ABM
+  + App "Contactos"
+  + Ejercicio de "Aplica/no aplca" con respecto a ABM
+* Clase 8 9/06 Tablas de desicion y regresion
+  + Reporte de bugs en Mantis
+  + Test de regresion
+* Clase 9 16/06
+  + Tipos de datos
+  + Tabla de decision
+  + Tipos de test
