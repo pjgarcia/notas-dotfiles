@@ -1,3 +1,0 @@
-* TODO hacer libro pdf pocket 
-* TODO reordenar los temas del libro acorde al itinerario de clases
-* TODO sacar referencias a Windows y cambiarlas por software libre (Firefox?)

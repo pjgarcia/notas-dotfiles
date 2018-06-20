@@ -1,39 +1,14 @@
 #+TODO: TODO(t) IN-PROGRESS(p) WAIT(w) | DONE(d) CANCELLED(c)
 #+FILETAGS: :notas_personales:
 
+* Todos
+** TODO sacar el mail ppmauro@hotmail.com de ICBC (tambien falta Movistar y Fibertel)
+
 * MESH NETWORKING                                                      :mesh:
 ** ver que router usar y comprarlo
 ** ver en libremesh.org o altermundi los pasos basicos de instalacion
    viene con batman-adv (layer 2) y bmx7 (layer 3)
 ** ver como usar cjdns
-
-* Cosas para hacer
-** DONE cardiologo 10:30am
-   DEADLINE: <2018-01-05 vie>
-** DONE cardiologo 9:45am
-   SCHEDULED: <2018-04-19 jue>
-** DONE urologo 19:15
-   SCHEDULED: <2018-04-16 lun>
-
-
-* DONE terminar VPS de hosting A2Hosting
-* DONE organizar Openmailbox (para cerrarlo)
-  - Note taken on [2018-04-02 lun 20:39] \\
-    es una mierda y no se puede organizar
-* DONE abrir cuenta de Posteo
-  - Note taken on [2018-04-03 mar 00:25] \\
-    llamar a Visa para autorizar el pago
-* IN-PROGRESS organizacion del mail (ver que leer del mail y que de feeds)
-  + fsf, eff, debian
-  + crimethink
-  + duck duck go?
-* TODO sacar el mail ppmauro@hotmail.com de ICBC (tambien falta Movistar y Fibertel)
-* TODO vence dominio ~concider.net~ revisar A2Hosting
-  SCHEDULED: <2018-05-21 lun>
-* TODO corroborar si no hay mas info del dominio
-  DEADLINE: <2018-05-22 mar>
-* TODO cerrar la cuenta de A2Hosting
-  DEADLINE: <2018-05-22 mar>
 
 * NOTAS
 ** tmux                                                       :tmux:terminal:

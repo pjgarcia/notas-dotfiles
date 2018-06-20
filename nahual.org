@@ -1,101 +1,110 @@
+#+FILETAGS: nahual
+* Todos
+** TODO relevar lo que falta para Carrito de compras
+   SCHEDULED: <2018-06-19 Tue>
+** TODO hacer libro pdf pocket 
+** TODO reordenar los temas del libro acorde al itinerario de clases
+** TODO sacar referencias a Windows y cambiarlas por software libre (Firefox?)
+** TODO agregar mockups a las especificaciones
+   cuando comentamos el tema de mockups, agregarle ejemplos a la especificacion de la app de turno
+* Clases
+** Training From The Back Of The Room
+   VER: http://brainscience.me/
 
-* Training From The Back Of The Room
-  VER: http://brainscience.me/
+** Clase 1 7/04
+   + Introduccion a Nahual
+   + Armar entre todos definicion de "calidad"
+   + Probar Celfar V1
+   + Conclusiones
+   + Intro al ciclo de desarrollo de software
+** Clase 2 14/04
+   + Revision del ciclo de desarrollo de software
+   + Intro de casos de prueba
+   + Probar Celfar V2 y V3 (mejorando el reporte con cosas como "resultado esperado", "resultado obtenido")
+** Clase 3 21/04 Casos de Prueba
+*** Conexion: encontrar las diferencias y anotarlas (NO en la hoja de las diferencias)
+    + como hicieron para anotar las diferencias?
+    + si le paso la hoja de un grupo a otro, puede encontrar las diferencias claramente?
+    + objetivo :: importancia de la claridad al reportar algo. (lo que es claro para uno puede no serlo para otro)
+*** Concepto
+    Explicar casos de prueba. Basado en lo que vimos la clases pasadas (grafico de desarrollo de software y sus
+    actores) ubicar en que parte del ciclo aparecen los casos de prueba y a partir de ahi preguntar que entiende
+    el grupo que pueden contener (id, nombre, pasos + data, resultado esperado)
+*** Practica
+    Hacer los casos de prueba de Celfar
+*** Conclusion
+    Charlar sobre los casos que hicieron y tratar de formalizar con algunos ejemplos bien armados
 
-* Clase 1 7/04
-  + Introduccion a Nahual
-  + Armar entre todos definicion de "calidad"
-  + Probar Celfar V1
-  + Conclusiones
-  + Intro al ciclo de desarrollo de software
-* Clase 2 14/04
-  + Revision del ciclo de desarrollo de software
-  + Intro de casos de prueba
-  + Probar Celfar V2 y V3 (mejorando el reporte con cosas como "resultado esperado", "resultado obtenido")
-* Clase 3 21/04 Casos de Prueba
-** Conexion: encontrar las diferencias y anotarlas (NO en la hoja de las diferencias)
-   + como hicieron para anotar las diferencias?
-   + si le paso la hoja de un grupo a otro, puede encontrar las diferencias claramente?
-   + objetivo :: importancia de la claridad al reportar algo. (lo que es claro para uno puede no serlo para otro)
-** Concepto
-   Explicar casos de prueba. Basado en lo que vimos la clases pasadas (grafico de desarrollo de software y sus
-   actores) ubicar en que parte del ciclo aparecen los casos de prueba y a partir de ahi preguntar que entiende
-   el grupo que pueden contener (id, nombre, pasos + data, resultado esperado)
-** Practica
-   Hacer los casos de prueba de Celfar
-** Conclusion
-   Charlar sobre los casos que hicieron y tratar de formalizar con algunos ejemplos bien armados
+** Clase 4 5/05 Reporte de Bugs
+*** Conexion: continuar el dibujo (arranca uno, dibuja una figura y se la pasa al proximo, con 2min de limite)
+    + que creen que nos muestra este ejercicio?
+      - seguramente vamos a trabajar en equipos
+      - entender que los problemas van a surgir, pero tenemos que recuperarnos
+      - nuestro trabajo lo va a continuar otra persona, ayudemosla
+*** Concepto
+    Explicar reportes de error. Hablar con los alumnos sobre que cosas no pueden faltar en un reporte de error.
+    Anotar la estructura y contar que luego vamos a hacer los reportes con una herramienta (Mantis).
+*** Practica
+    + Leer entre todos la especificacion de El Provinciano y tratar de entenderla.
+    + Armar CP sobre El Provinciano.
+*** Conclusion
+    Contar los casos que hicieron y corregirlos.
+    Si llegamos con el tiempo, que los ejecuten y si hay errores que los reporten con lo que vimos.
+** Clase 5 12/05 Repasando Casos de Prueba
+   Hicieron CP de El Provinciano? Si los hicieron, revisarlos.
+   Si no, dejarles tiempo para que los hagan.
+*** Concepto: casos positivos y negativos
+    CP + y CP -, que les sugieren? Escucharon algo en las clases pasadas? Que creen que son?
+*** Practica
+    Dar 5 minutos para clasificar los CP que armaron. 
+    Pasar al pizarron y pegarlos donde correspondan. Discutir.
+*** Concepto: clases de equivalencia, logica?
+    Si hago casos de prueba para ver info de las provincias de cada region... cuantos CP deberia armar?
+    + Salta (norte)
+    + Buenos Aires (centro, pampeana)
+    + Misiones (mesopotamia)
+    + Santa Cruz (patagonia)
+    + La Pampa (pampeana) NOOOOO (aca caigo en la clase de equivalencia de Buenos Aires)
 
-* Clase 4 5/05 Reporte de Bugs
-** Conexion: continuar el dibujo (arranca uno, dibuja una figura y se la pasa al proximo, con 2min de limite)
-   + que creen que nos muestra este ejercicio?
-     - seguramente vamos a trabajar en equipos
-     - entender que los problemas van a surgir, pero tenemos que recuperarnos
-     - nuestro trabajo lo va a continuar otra persona, ayudemosla
-** Concepto
-   Explicar reportes de error. Hablar con los alumnos sobre que cosas no pueden faltar en un reporte de error.
-   Anotar la estructura y contar que luego vamos a hacer los reportes con una herramienta (Mantis).
-** Practica
-   + Leer entre todos la especificacion de El Provinciano y tratar de entenderla.
-   + Armar CP sobre El Provinciano.
-** Conclusion
-   Contar los casos que hicieron y corregirlos.
-   Si llegamos con el tiempo, que los ejecuten y si hay errores que los reporten con lo que vimos.
-* Clase 5 12/05 Repasando Casos de Prueba
-  Hicieron CP de El Provinciano? Si los hicieron, revisarlos.
-  Si no, dejarles tiempo para que los hagan.
-** Concepto: casos positivos y negativos
-   CP + y CP -, que les sugieren? Escucharon algo en las clases pasadas? Que creen que son?
-** Practica
-   Dar 5 minutos para clasificar los CP que armaron. 
-   Pasar al pizarron y pegarlos donde correspondan. Discutir.
-** Concepto: clases de equivalencia, logica?
-   Si hago casos de prueba para ver info de las provincias de cada region... cuantos CP deberia armar?
-   + Salta (norte)
-   + Buenos Aires (centro, pampeana)
-   + Misiones (mesopotamia)
-   + Santa Cruz (patagonia)
-   + La Pampa (pampeana) NOOOOO (aca caigo en la clase de equivalencia de Buenos Aires)
-
-* Clase 6 19/05 clases de equivalencia, ambientes, logica
-** Concepto: clase de equivalencia
-   + Wikipedia: [[https://es.wikipedia.org/wiki/Relaci%25C3%25B3n_de_equivalencia][Relacion de equivalencia]]
-   + La relacion de equivalencia R define subconjuntos disjuntos en K llamados *clases de equivalencia*
-   + Dado un elemento a perteneciente a K, el conjunto dado por /todos los elementos relacionados con a/ definen la clase:
-     [a] = {b perteneciente a K | b R a} (la clase de a son todos los b dentro de K que estan relacionados con a)
-   + en El Provinciano:
-     - en que se relacionan Tierra del Fuego y Santa Cruz?, Misiones y Entre Rios?
-     - que elementos forman parte de K?
-** Concepto: ambientes
-   Es el software y hardware donde se ejecuta una aplicacion
-   + Loca/Desarrollo :: donde los desarrolladores prueban su codigo
-   + Testing :: donde los testers probamos
-   + Producccion :: lo que ven los usuarios
-   + Sandbox :: replica de produccion (tambien probamos aca)
-** Concepto: logica
-   + Celfar :: si el valor es menor a 7 digitos y es menor a -273 el sistema emite "El valor..."
-	       (D < 7) y (T < -273) -> "El valor esta por debajo del 0 absoluto"
-   + y :: es verdadero cuando *ambos* miembros son verdaderos
-   + o :: es verdadero cuando *alguno* de sus miembros son verdaderos
-   + entonces :: si el antecedente (1ra parte) es verdadero, entonces el consecuente (2da parte) tiene que ser verdadera
-** Practica
-   Agarrar los CP de El Provinciano y compartirselos a otra persona para que los ejecute y los reporte (titulo y id, nada mas)
-   + de a 2 :: juntarse de a 2 y que intercambien los CP
-	       a medida que los vamos ejecutando, si hay que pedir mejoras del CP charlarlo en pareja
-	       reportar los errores que encuentren
-   + 4 grupos (de 3+) :: intercambiar una de las computadoras con otro grupo
-	ejecutar los CP
-	cada 10 minutos intercambiarlos
-	al final de todo charlar de que fueron las mejores que vieron y de como armar buenos CP
-* Clase 7 2/06 ABM(C)
-  + Tipos de aplicaciones (redes sociales, e-comerce, ABM)
-  + Patrones de CP en un ABM
-  + App "Contactos"
-  + Ejercicio de "Aplica/no aplca" con respecto a ABM
-* Clase 8 9/06 Tablas de desicion y regresion
-  + Reporte de bugs en Mantis
-  + Test de regresion
-* Clase 9 16/06
-  + Tipos de datos
-  + Tabla de decision
-  + Tipos de test
+** Clase 6 19/05 clases de equivalencia, ambientes, logica
+*** Concepto: clase de equivalencia
+    + Wikipedia: [[https://es.wikipedia.org/wiki/Relaci%25C3%25B3n_de_equivalencia][Relacion de equivalencia]]
+    + La relacion de equivalencia R define subconjuntos disjuntos en K llamados *clases de equivalencia*
+    + Dado un elemento a perteneciente a K, el conjunto dado por /todos los elementos relacionados con a/ definen la clase:
+      [a] = {b perteneciente a K | b R a} (la clase de a son todos los b dentro de K que estan relacionados con a)
+    + en El Provinciano:
+      - en que se relacionan Tierra del Fuego y Santa Cruz?, Misiones y Entre Rios?
+      - que elementos forman parte de K?
+*** Concepto: ambientes
+    Es el software y hardware donde se ejecuta una aplicacion
+    + Loca/Desarrollo :: donde los desarrolladores prueban su codigo
+    + Testing :: donde los testers probamos
+    + Producccion :: lo que ven los usuarios
+    + Sandbox :: replica de produccion (tambien probamos aca)
+*** Concepto: logica
+    + Celfar :: si el valor es menor a 7 digitos y es menor a -273 el sistema emite "El valor..."
+	       	(D < 7) y (T < -273) -> "El valor esta por debajo del 0 absoluto"
+    + y :: es verdadero cuando *ambos* miembros son verdaderos
+    + o :: es verdadero cuando *alguno* de sus miembros son verdaderos
+    + entonces :: si el antecedente (1ra parte) es verdadero, entonces el consecuente (2da parte) tiene que ser verdadera
+*** Practica
+    Agarrar los CP de El Provinciano y compartirselos a otra persona para que los ejecute y los reporte (titulo y id, nada mas)
+    + de a 2 :: juntarse de a 2 y que intercambien los CP
+	       	a medida que los vamos ejecutando, si hay que pedir mejoras del CP charlarlo en pareja
+	       	reportar los errores que encuentren
+    + 4 grupos (de 3+) :: intercambiar una de las computadoras con otro grupo
+	 ejecutar los CP
+	 cada 10 minutos intercambiarlos
+	 al final de todo charlar de que fueron las mejores que vieron y de como armar buenos CP
+** Clase 7 2/06 ABM(C)
+   + Tipos de aplicaciones (redes sociales, e-comerce, ABM)
+   + Patrones de CP en un ABM
+   + App "Contactos"
+   + Ejercicio de "Aplica/no aplca" con respecto a ABM
+** Clase 8 9/06 Tablas de desicion y regresion
+   + Reporte de bugs en Mantis
+   + Test de regresion
+** Clase 9 16/06
+   + Tipos de datos
+   + Tabla de decision
+   + Tipos de test
