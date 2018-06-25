@@ -1,12 +1,22 @@
 #+FILETAGS: nahual
+#+TODO: TODO(t) IN-PROGRESS(p) WAITING(w) | DONE(d) CANCELLED(c)
+
 * Todos
 ** TODO relevar lo que falta para Carrito de compras
-   SCHEDULED: <2018-06-19 Tue>
+   SCHEDULED: <2018-06-24 Sun>
 ** TODO hacer libro pdf pocket 
 ** TODO reordenar los temas del libro acorde al itinerario de clases
 ** TODO sacar referencias a Windows y cambiarlas por software libre (Firefox?)
 ** TODO agregar mockups a las especificaciones
    cuando comentamos el tema de mockups, agregarle ejemplos a la especificacion de la app de turno
+** TODO charla cooperativismo en Nahual
+   SCHEDULED: <2018-06-27 Wed>
+** IN-PROGRESS avisar en los grupos de Whatsapp
+   SCHEDULED: <2018-06-24 Sun>
+   + [X] charla de cooperativismo
+   + [ ] armar y compartir resumen (y screens) de BBDD
+** DONE ver los CP de Martin Ravello
+   SCHEDULED: <2018-06-24 Sun>
 * Clases
 ** Training From The Back Of The Room
    VER: http://brainscience.me/
