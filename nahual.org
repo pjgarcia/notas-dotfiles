@@ -118,3 +118,10 @@
    + Tipos de datos
    + Tabla de decision
    + Tipos de test
+
+
+* Clase "Carrito"
+  + resaltar la necesidad de organizarnos antes de arrancar a hacer los CP de esta app
+    ya que es MUY grande.
+  + que usuarios hay? (administrador y cliente)
+  + que modulos hay? (clientes, productos, compras, administracion)
