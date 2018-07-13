@@ -56,3 +56,37 @@
 		(list-of-values (operands exp) env)))
 	(else
 	 (error "Unknown expression type -- EVAL" exp))))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 4.4 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (and-clauses exp) (cdr exp))
+(define (first-exp seq) (car seq))
+(define (rest-exp seq) (cdr seq))
+(define (empty-exp? seq) (null? seq))
+(define (last-exp? seq) (null? (cdr seq)))
+
+;; (and (list? '()) (number? 2) 3) => 3
+(define (eval-and exps env)
+  (cond ((empty-exp? exps) #t)
+	(else
+	 (let ((first (eval (first-expt exps) env)))
+	   (cond ((last-exp? exps) first)
+		 (first (eval-and (rest-exp exps) env))
+		 (else #f))))))
+		      
+(define (eval-or exps env)
+  (cond ((empty-exp? exps) #f)
+	(else
+	 (let ((first (eval (first-exp exps) env)))
+	   (cond ((last-exp? exps) first)
+		 (first #t)
+		 (else
+		  (eval-or (rest-exp exps) env)))))))
+
+;; (and (list? '()) (number? 2) 3) => 3
+(if (list? '())
+    (if (number? 2)
+	(if 3
+	    3)))
