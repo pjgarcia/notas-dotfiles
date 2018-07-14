@@ -88,5 +88,28 @@
 ;; (and (list? '()) (number? 2) 3) => 3
 (if (list? '())
     (if (number? 2)
-	(if 3
-	    3)))
+	3
+	#f)
+    #f)
+
+(define (and->if exp)
+  (expand-and-clauses (and-clauses exp)))
+
+(define (expand-and-clauses clauses)
+  (cond ((empty-exp? clauses) 'false)
+	((last-exp? clauses) (first-exp clauses))
+	(else (make-if (first-exp clauses)
+		       (expand-and-clauses (rest-exp clauses))
+		       #f))))
+
+(define (or->if exp)
+  (expand-or-clauses (or-clauses exp)))
+
+(define (expand-or-clauses clauses)
+  (cond ((empty-exp? clauses) 'false)
+	((last-exp? clauses) (first-exp clauses))
+	(else (make-if (first-exp clauses)
+		       #t
+		       (expand-or-clauses (rest-exp clauses))))))
+
+
