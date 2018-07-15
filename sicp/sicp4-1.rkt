@@ -148,3 +148,48 @@
 	       (list consequent 'pred-value)
 	       alternative)))
   
+;;;;;;;;;;;;;;;;;;
+;; Exercise 4.6 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (let? exp)
+  (tagged-list? exp 'let))
+(define (let-clauses exp)
+  (cadr exp))
+(define (let-body exp)
+  (cddr exp))
+(define (let-clause-var clause)
+  (car clause))
+(define (let-clause-value clause)
+  (cadr clause))
+(define (let-first-clause clauses)
+  (car clauses))
+(define (let-rest-clauses clauses)
+  (cdr clauses))
+(define (let-last-clause clauses)
+  (null? (cdr clauses)))
+
+;; long, error-checking version
+(define (let-vars clauses)
+  (cond ((null? clauses)
+	 (error "LET clauses can't be empty -- LET->COMBINATION"
+		clauses))
+	((let-last-clause? (let-first-clause clauses))
+	 (list (let-clause-var (let-first-clause clauses))))
+	(else
+	 (cons (let-clause-var (let-first-clause clauses))
+	       (let-vars (let-rest-clauses clauses))))))
+
+;; short version, and if let-vals
+;; is given the full let expression
+(define (let-vals exp)
+  (map cadr (cadr exp)))
+;; (let ((a 1) (b 2))
+;;   (do-something a b))
+;; ((lambda (a b) (do-something a b)) 1 2)
+(define (let->combination exp)
+  (cons (make-lambda (let-vars (let-clauses exp)) (let-body exp))
+	(let-vals (let-clauses exp))))
+
+(define (eval exp env)
+  (cond ((let? exp) (eval (let->combiantion exp) env))))
