@@ -113,3 +113,38 @@
 		       (expand-or-clauses (rest-exp clauses))))))
 
 
+;;;;;;;;;;;;;;;;;;
+;; Exercise 4.5 ;;
+;;;;;;;;;;;;;;;;;;
+
+;; (cond ((assoc 'b '((a 1) (b 2))) => cadr)
+;;       (else #f))
+;; => 2
+(define (expand-clauses clauses)
+  (if (null? clauses)
+      'false
+      (let ((first (car clauses))
+	    (rest (cdr clauses)))
+	(cond ((cond-else-clause? first)
+	       (if (null? rest)
+		   (sequence->exp (cond-actions first))
+		   (error "ELSE clause isn't last -- COND->IF"
+			  clauses)))
+	      ((cond-arrow-clause? first)
+	       (make-if-let (cond-predicate first)
+			    (cond-action-arrow first)
+			    (expand-clauses rest)))
+	      (else
+	       (make-if (cond-predicate first)
+			(sequence->exp (cond-actions first))
+			(expand-clauses rest)))))))
+
+(define (cond-action-arrow clause)
+  (caddr clause))
+(define (make-if-let predicate consequent alternative)
+  '(list 'let (list (list 'pred-value predicate))
+	 (list 'if
+	       'pred-value
+	       (list consequent 'pred-value)
+	       alternative)))
+  
