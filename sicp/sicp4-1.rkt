@@ -166,7 +166,7 @@
   (car clauses))
 (define (let-rest-clauses clauses)
   (cdr clauses))
-(define (let-last-clause clauses)
+(define (let-last-clause? clauses)
   (null? (cdr clauses)))
 
 ;; long, error-checking version
@@ -193,3 +193,36 @@
 
 (define (eval exp env)
   (cond ((let? exp) (eval (let->combiantion exp) env))))
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 4.7 ;;
+;;;;;;;;;;;;;;;;;;
+
+;; (let* ((x 3)
+;;        (y (+ x 2))
+;;        (z (+ x y 5)))
+;;   (* x z))
+;; (let ((x 3))
+;;   (let ((y (+ x 2)))
+;;     (let ((z (+ x y 5)))
+;;       (* x z))))
+(define (let*->nested-lets exp)
+  (expand-let* (let-clauses exp) (let-body exp)))
+
+(define (expand-let* clauses body)
+  (cond ((let-last-clause? (let-first-clause clauses))
+	 (make-let clauses body))
+	(else
+	 (make-let (list (let-first-clause clauses))
+		   (expand-let* (let-rest-clauses clauses)
+				body)))))
+
+(define (make-let clauses body)
+  (cons 'let (cons clauses body)))
+
+;; It is sufficient to add the clause to eval whose action is:
+;; (eval (let*->nested-lets exp) env)
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 4.8 ;;
+;;;;;;;;;;;;;;;;;;
