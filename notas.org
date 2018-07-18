@@ -6,7 +6,7 @@
 
 ** DONE terminar con lecture 6B SICP
    SCHEDULED: <2018-06-24 Sun>
-** TODO ver sobre hilos (lo que hable con Claudio)
+** DONE ver sobre hilos (lo que hable con Claudio)
    SCHEDULED: <2018-06-24 Sun>
 * MESH NETWORKING                                                      :mesh:
 ** ver que router usar y comprarlo

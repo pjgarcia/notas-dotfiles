@@ -226,3 +226,42 @@
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 4.8 ;;
 ;;;;;;;;;;;;;;;;;;
+
+;; (let <var> <bindings> <body>)
+(define (let->combination exp)
+  (cond ((symbol? (cadr exp))
+	 (let->combination
+	  (make-let (let-clauses exp)
+		    (list (make-proc-definition
+			   (let-var-name exp)
+			   (let-vars (let-clauses exp))
+			   (let-body exp))
+			  (list (let-var-name exp)
+				(let-vals (let-clauses exp)))))))
+	;; normal let
+	(else (cons (make-lambda (let-vars (let-clauses exp)) (let-body exp))
+		    (let-vals (let-clauses exp))))))
+
+(define (let-var-name exp)
+  (cadr exp))
+
+(define (make-proc-definition name params body)
+  (cons 'define (cons (cons name params) body)))
+
+;; (let fib-iter ((a 1) (b 0) (count n))
+;;   (if (= count 0)
+;;       b
+;;       (fib iter (+ a b) a (- count 1))))
+
+;; (let ((a 1) (b 0) (count n))
+;;   (define (fib-iter a b count)
+;;     (if (= count 0)
+;; 	b
+;; 	(fib iter (+ a b) a (- count 1))))
+;;   (fib-iter 1 0 n))
+
+		  
+;;;;;;;;;;;;;;;;;;
+;; Exercise 4.9 ;;
+;;;;;;;;;;;;;;;;;;
+
