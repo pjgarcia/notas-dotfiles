@@ -261,7 +261,18 @@
 ;;   (fib-iter 1 0 n))
 
 		  
-;;;;;;;;;;;;;;;;;;
-;; Exercise 4.9 ;;
-;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.11 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-binding var val) (list var val))
+(define (binding-var binding) (car binding))
+(define (binding-val binding) (cadr binding))
+
+(define (make-frame variables values)
+  (cond ((null? variables) '())
+	(else (cons (make-binding (car variables)
+				  (car values))
+		    (make-frame (cdr variables)
+				(cdr values))))))
 
