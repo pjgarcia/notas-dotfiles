@@ -275,4 +275,45 @@
 				  (car values))
 		    (make-frame (cdr variables)
 				(cdr values))))))
+(define (frame-variables frame)
+  (cond ((null? frame) '())
+	(else (cons (binding-var (car frame))
+		    (frame-variables (cdr frame))))))
+(define (frame-values frame)
+  (cond ((null? frame) '())
+	(else (cons (binding-val (car frame))
+		    (frame-values (cdr frame))))))
 
+(define (add-binding-to-frame! var val frame)
+  (cons (make-binding var val) frame))
+
+(define (first-bindin frame) (car frame))
+(define (rest-bindings frame) (cdr frame))  
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.12 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (lookup-variable-value var env)
+  (let ((binding (lookup-binding-env var env)))
+    (if binding
+	(binding-var binding)
+	(error "Unbound variable" var))))
+
+(define (identity i) i)
+
+(define (lookup-binding-frame var frame)
+  (cond ((null? frame) #f)
+	((eq? var (binding-var (first-binding frame)))
+	 (first-binding frame))
+	(else
+	 (lookup-binding-frame var (rest-bindings frame)))))
+
+;; return false if not found
+(define (lookup-binding-env var env)
+  (cond ((eq? env the-empty-environment?) #f)
+	((lookup-binding-frame var (first-frame env)) => identity)
+	(else (lookup-binding-env var (enclosing-env env)))))
+
+;; review lookup-variable-value
+;; do set-variable-value! & define-variable!
