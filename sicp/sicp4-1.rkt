@@ -330,3 +330,28 @@
     (if binding
 	(set-binding-val! binding val)
 	(add-binding-to-frame! var val (first-frame env)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.13 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (eval exp env)
+  (cond (;; previous types of expressions
+	 ((make-unbound? exp)
+	  (make-unbound! (make-unbound-var exp) env)))))
+
+(define (make-unbound? exp)
+  (tagged-list? exp 'make-unbound))
+(define (make-unbound-var exp) (cadr exp))
+
+(define (make-unbound! var env)
+  (let ((frame (first-frame env)))
+    (define (unbound-rest-binding! frame)
+      (let ((first (first-binding frame))
+	    (second (first-binding (rest-bindings frame))))
+	(if (eq? var (binding-var second))
+	    (set-cdr! first (cdr second))
+	    (unbound-rest-binding! (rest-bindings frame)))))
+    (cond ((eq? var (binding-var (first-binding frame)))
+	   (set! frame (rest-bindings frame)))
+	  (else (unbound-rest-binding! frame)))))
