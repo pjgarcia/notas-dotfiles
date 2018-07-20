@@ -268,6 +268,8 @@
 (define (make-binding var val) (list var val))
 (define (binding-var binding) (car binding))
 (define (binding-val binding) (cadr binding))
+(define (set-binding-val! binding newval)
+  (set! (binding-val binding) newval))
 
 (define (make-frame variables values)
   (cond ((null? variables) '())
@@ -317,3 +319,14 @@
 
 ;; review lookup-variable-value
 ;; do set-variable-value! & define-variable!
+(define (set-variable-value! var val env)
+  (let ((binding (lookup-binding-env var env)))
+    (if binding
+	(set-binding-val! binding val)
+	(error "Unbound variable -- SET!" var))))
+
+(define (define-variable! var val env)
+  (let ((binding (lookup-binding-frame (first-frame env))))
+    (if binding
+	(set-binding-val! binding val)
+	(add-binding-to-frame! var val (first-frame env)))))
