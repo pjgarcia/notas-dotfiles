@@ -3,11 +3,11 @@
 
 * Todos
 ** TODO sacar el mail ppmauro@hotmail.com de ICBC (tambien falta Movistar y Fibertel)
-
-** DONE terminar con lecture 6B SICP
-   SCHEDULED: <2018-06-24 Sun>
-** DONE ver sobre hilos (lo que hable con Claudio)
-   SCHEDULED: <2018-06-24 Sun>
+** TODO hablar con Esteban Gonzales por automatizacion el Ruby
+** TODO levantar Semillero (Docker)
+** TODO pagar alquiler
+** TODO arreglar con Denu sobre correcciones
+** TODO arreglar como seguir y avisarle a las alumnas
 * MESH NETWORKING                                                      :mesh:
 ** ver que router usar y comprarlo
 ** ver en libremesh.org o altermundi los pasos basicos de instalacion
