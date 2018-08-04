@@ -2,13 +2,30 @@
 #+TODO: TODO(t) IN-PROGRESS(p) WAITING(w) | DONE(d) CANCELLED(c)
 
 * Todos
-** TODO hacer libro pdf pocket 
-** TODO reordenar los temas del libro acorde al itinerario de clases
-** TODO sacar referencias a Windows y cambiarlas por software libre (Firefox?)
-** TODO agregar mockups a las especificaciones
-** TODO re-ver los sitios, se les pueden poner temas de Jekyll
+
+* Retro
+** [#B] Documentacion
+   + reordenar los temas del libro acorde al itinerario de clases
+   + hacer libro pdf pocket 
+   + sacar referencias a Windows y cambiarlas por software libre (Firefox?)
+** [#B] Ejercicios
+   + re-ver las especificaciones y aclararlas
+   + agregar mockups a las especificaciones
+** Metodologia de clases
+   + *re-ver temario de clases*
+   + hacer mas ejercicios de conexion (llegamos con el tiempo?)
+   + mantener una planilla por cada turno con gente que entrega los CP
+   + insistir en la entrega de los CP una semana despues de cada app nueva
+   + manejar un formato de "subject" en el mail para facilitar filtros y categorias
+     ~[nahual-2018-h2-t4] entrega carrito~
+** Sitio de Nahual
    Se quiere rehacer el sitio. Podemos usar las GithubPages existentes, y mejorarlas.
    Podemos ponerle themes de Jekyll, ver https://pages.github.com/ y http://jekyllthemes.org/
+   + conseguir contenido que se le quiere poner
+** [#A] Semillero
+   + lograr arrancarlo para poder desarrollar
+     
+
 
 * Clases
 ** Training From The Back Of The Room
