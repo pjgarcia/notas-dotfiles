@@ -3,11 +3,13 @@
 
 * Todos
 ** TODO sacar el mail ppmauro@hotmail.com de ICBC (tambien falta Movistar y Fibertel)
-** TODO hablar con Esteban Gonzales por automatizacion el Ruby
+** DONE hablar con Esteban Gonzales por automatizacion el Ruby
 ** TODO levantar Semillero (Docker)
-** TODO pagar alquiler
-** TODO arreglar con Denu sobre correcciones
-** TODO arreglar como seguir y avisarle a las alumnas
+** TODO corregir CP de Rebeca
+** DONE arreglar con Denu sobre correcciones
+** DONE arreglar como seguir y avisarle a las alumnas
+** TODO agregar PDF del libro a la docu :pagina:
+** DONE sacar fechas de la seccion "cursos"
 * MESH NETWORKING                                                      :mesh:
 ** ver que router usar y comprarlo
 ** ver en libremesh.org o altermundi los pasos basicos de instalacion
