@@ -1,4 +1,4 @@
-#lang racket
+;;#lang racket
 
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 4.1 ;;
@@ -8,15 +8,15 @@
 (define (list-of-values-ltor exps env)
   (if (no-operands? exps)
       '()
-      (let ((first (eval (first-operand) env)))
+      (let ((first (eval (first-operand exps) env)))
 	(cons first
-	      (list-of-values (rest-operands exps) env)))))
+	      (list-of-values-ltor (rest-operands exps) env)))))
 ;; right to left
 (define (list-of-values-rtol exps env)
   (if (no-operands? exps)
       '()
-      (let ((rest (list-of-values (rest-operands exps) env)))
-	(cons (first (eval (first-operand) env))
+      (let ((rest (list-of-values-rtol (rest-operands exps) env)))
+	(cons (eval (first-operand exps) env)
 	      rest))))
 
 ;;;;;;;;;;;;;;;;;;
@@ -272,7 +272,7 @@
 (define (binding-var binding) (car binding))
 (define (binding-val binding) (cadr binding))
 (define (set-binding-val! binding newval)
-  (set-mcar! (cdr binding) newval))
+  (set-car! (cdr binding) newval))
 
 (define (make-frame1 variables values)
   (cond ((null? variables) '())
@@ -329,7 +329,7 @@
 	(error "Unbound variable -- SET!" var))))
 
 (define (define-variable1! var val env)
-  (let ((binding (lookup-binding-frame (first-frame env))))
+  (let ((binding (lookup-binding-frame var (first-frame env))))
     (if binding
 	(set-binding-val! binding val)
 	(add-binding-to-frame! var val (first-frame env)))))
@@ -353,7 +353,7 @@
       (let ((first (first-binding frame))
 	    (second (first-binding (rest-bindings frame))))
 	(if (eq? var (binding-var second))
-	    (set-mcdr! first (cdr second))
+	    (set-cdr! first (cdr second))
 	    (unbound-rest-binding! (rest-bindings frame)))))
     (cond ((eq? var (binding-var (first-binding frame)))
 	   (set! frame (rest-bindings frame)))
@@ -588,7 +588,7 @@
       (cond ((null? vars)
 	     (add-binding-to-frame! var value frame))
 	    ((eq? var (car vars))
-	     (set-mcar! vals value))
+	     (set-car! vals value))
 	    (else (scan (cdr vars) (cdr vals)))))
     (scan (frame-variables frame)
 	  (frame-values frame))))
@@ -599,7 +599,7 @@
       (cond ((null? vars)
 	     (env-loop (enclosing-environment env)))
 	    ((eq? var (car vars))
-	     (set-mcar! vals value))
+	     (set-car! vals value))
 	    (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
 	(error "Unbound variable -- SET!" var)
@@ -620,8 +620,8 @@
 (define (frame-values frame)
   (cdr frame))
 (define (add-binding-to-frame! var val frame)
-  (set-mcar! frame (cons var (car frame)))
-  (set-mcdr! frame (cons val (cdr frame))))
+  (set-car! frame (cons var (car frame)))
+  (set-cdr! frame (cons val (cdr frame))))
 
 ;; RUNNING THE EVALUATOR AS A PROGRAM
 

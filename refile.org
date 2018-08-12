@@ -1,1 +1,9 @@
 #+FILETAGS: REFILE
+* DONE leer tp social de Marcos
+  SCHEDULED: <2018-07-20 Fri>
+* DONE ver CPs de Florencia
+  SCHEDULED: <2018-07-20 Fri>
+* DONE ver lo que queria Warmi para la clase
+  SCHEDULED: <2018-07-20 Fri>
+* DONE leer el TP de Lucas
+  SCHEDULED: <2018-07-27 Fri>
