@@ -1,5 +1,3 @@
-;;#lang racket
-
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 4.1 ;;
 ;;;;;;;;;;;;;;;;;;
@@ -404,7 +402,7 @@
 
 ;; PROCEDURE ARGUMENTS
 (define (list-of-values exps env)
-  (if (no-operands? exp)
+  (if (no-operands? exps)
       '()
       (cons (eval (first-operand exps) env)
 	    (list-of-values (rest-operands exps) env))))
@@ -566,7 +564,7 @@
       (cond ((null? vars)
 	     (env-loop (enclosing-environment env)))
 	    ((eq? var (car vars))
-	     (car vars))
+	     (car vals))
 	    (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
 	(error "Unbound variable" var)
@@ -639,12 +637,20 @@
 
 (define (primitive-implementation proc) (cadr proc))
 
+(define (my-map f elts)
+  (cond ((null? elts) '())
+	(else
+	 (cons (f (car elts))
+	       (my-map f (cdr elts))))))
+
 (define primitive-procedures
   (list (list 'car car)
 	(list 'cdr cdr)
 	(list 'cons cons)
 	(list 'null? null?)
 	(list 'square (lambda (x) (* x x)))
+	(list 'map my-map)
+	(list '+ +)
 	(list 'first car)))
 
 (define (primitive-procedure-names)
@@ -684,3 +690,22 @@
       (display object)))
 
 (define the-global-environment (setup-environment))
+
+;; (define (map f elts)
+;;   (cond ((null? elts) null)
+;; 	(else
+;; 	 (cons (f (car elts))
+;; 	       (map f (cdr elts))))))
+		  
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.14 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; Louis's map fails because when the mapping function is
+;; applied internally by map, it is a function constructed
+;; by the interpreter, and the underlying apply conflicts
+;; with the "type" (procedure or primitive) tag put there
+
+;; in other words, the underlying application of a procedure
+;; constructed in the interpreter (one level above) generates
+;; an error
