@@ -175,7 +175,7 @@
   (cond ((null? clauses)
 	 (error "LET clauses can't be empty -- LET->COMBINATION"
 		clauses))
-	((let-last-clause? (let-first-clause clauses))
+	((let-last-clause? clauses)
 	 (list (let-clause-var (let-first-clause clauses))))
 	(else
 	 (cons (let-clause-var (let-first-clause clauses))
@@ -190,7 +190,7 @@
 ;; ((lambda (a b) (do-something a b)) 1 2)
 (define (let->combination1 exp)
   (cons (make-lambda (let-vars (let-clauses exp)) (let-body exp))
-	(let-vals (let-clauses exp))))
+	(let-vals exp)))
 
 (define (eval2 exp env)
   (cond ((let? exp) (eval (let->combination1 exp) env))))
@@ -377,6 +377,7 @@
 	((begin? exp)
 	 (eval-sequence (begin-actions exp) env))
 	((cond? exp) (eval (cond->if exp) env))
+	((let? exp) (eval (let->combination1 exp) env))
 	((application? exp)
 	 (apply (eval (operator exp) env)
 		(list-of-values (operands exp) env)))
@@ -554,7 +555,8 @@
   (tagged-list? p 'procedure))
 
 (define (procedure-parameters p) (cadr p))
-(define (procedure-body p) (caddr p))
+(define (procedure-body p)
+  (scan-out-defines (caddr p)))
 (define (procedure-environment p) (cadddr p))
 
 ;; operations on environments
@@ -709,3 +711,56 @@
 ;; in other words, the underlying application of a procedure
 ;; constructed in the interpreter (one level above) generates
 ;; an error
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.16 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (lookup-variable-value var env)
+  (define (env-loop env)
+    (define (scan vars vals)
+      (cond ((null? vars)
+	     (env-loop (enclosing-environment env)))
+	    ((eq? var (car vars))
+	     (let ((desired-value (car vals)))
+	       (if (eq? '*unassigned* desired-value)
+		   (error "Using not-yet-assigned variable" var)
+		   desired-value)))
+	    (else (scan (cdr vars) (cdr vals)))))
+    (if (eq? env the-empty-environment)
+	(error "Unbound variable" var)
+	(let ((frame (first-frame env)))
+	  (scan (frame-variables frame)
+		(frame-values frame)))))
+  (env-loop env))
+
+
+(define (extract-vars-and-vals body)
+  (let ((defines
+	  (filter (lambda (e) (and (list? e) (eq? (car e) 'define)))
+		  body)))
+    (map (lambda (def-clause)
+	   (cons (cadr def-clause) (caddr def-clause)))
+	 defines)))
+
+(define (extract-non-defines body)
+  (filter (lambda (e) (or (not (list? e)) (not (eq? (car e) 'define))))
+	  body))
+
+(define (unassigned-clause data)
+  (list (car data) (quote (quote *unassigned*))))
+(define (var-set data)
+  (list 'set! (car data) (cdr data)))
+
+(define (scan-out-defines body)
+  (let ((vars-and-vals
+	 (extract-vars-and-vals body))
+	(non-defines
+	 (extract-non-defines body)))
+    (if (> (length vars-and-vals) 0)
+	(list (make-let (map unassigned-clause vars-and-vals)
+			(append (map var-set vars-and-vals)
+				non-defines)))
+	body)))
+
+    
