@@ -763,4 +763,13 @@
 				non-defines)))
 	body)))
 
-    
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.18 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; this procedure wont work if internal definitions are scanned
+;; out as shown, because (stream-map f y) will evaluate y and
+;; raise an error (because of it being initialized to *unassigned*)
+
+;; the scan-out-defines method will work fine
+
