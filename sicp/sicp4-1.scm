@@ -773,3 +773,14 @@
 
 ;; the scan-out-defines method will work fine
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.19 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; I support the viewpoint of Ben because I find it to be the most
+;; strightforward way to evaluate such an expression. Maybe
+;; the programmer wants exactly that behavior and, if the interpeter
+;; re-orders the expressions in a way that changes the meaning of
+;; the program, it is hard to debug.
+
+
