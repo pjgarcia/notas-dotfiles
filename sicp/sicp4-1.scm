@@ -818,3 +818,31 @@ the same way.
 			 (let-clauses exp))
 		    (let-body exp))))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.21 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; a.
+((lambda (n)
+   ((lambda (fibo)
+      (fibo fibo n))
+    (lambda (fb k)
+      (cond ((= k 0) 0)
+	    ((= k 1) 1)
+	    (else
+	     (+ (fb fb (- k 1))
+		(fb fb (- k 2))))))))
+ 5)
+
+;; b.
+(define (f x)
+  ((lambda (even? odd?)
+     (even? even? odd? x))
+   (lambda (ev? od? n)
+     (if (= n 0)
+	 #t
+	 (od? ev? od? (- n 1))))
+   (lambda (ev? od? n)
+     (if (= n 0)
+	 #f
+	 (ev? ev? od? (- n 1))))))
