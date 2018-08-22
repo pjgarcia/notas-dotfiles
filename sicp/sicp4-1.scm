@@ -764,6 +764,13 @@
 	body)))
 
 ;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.17 ;;
+;;;;;;;;;;;;;;;;;;;
+
+in a correct program, both environment structures will work
+the same way.
+
+;;;;;;;;;;;;;;;;;;;
 ;; Exercise 4.18 ;;
 ;;;;;;;;;;;;;;;;;;;
 
@@ -783,4 +790,31 @@
 ;; re-orders the expressions in a way that changes the meaning of
 ;; the program, it is hard to debug.
 
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.20 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; (letrec ((a 1)
+;;     	    (b 2))
+;;   (+ a b))
+;; (let ((a '*unassigned*)
+;;       (b '*unassigned*))
+;;   (set! a 1)
+;;   (set! b 2)
+;;   (+ a b))
+  
+;; a.
+(define (letrec->let exp)
+  (define (variable-creation clause)
+    (list (let-clause-var clause)
+	  (quote (quote *unassigned*))))
+  (define (variable-assignation clause)
+    (list 'set!
+	  (let-clause-var clause)
+	  (let-clause-value clause)))
+  (make-let (map variable-creation (let-clauses exp))
+	    (append (map variable-assignation
+			 (let-clauses exp))
+		    (let-body exp))))
 
