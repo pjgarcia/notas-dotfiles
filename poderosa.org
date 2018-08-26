@@ -1,0 +1,19 @@
+* WhatsApp
+  + como abrirlo
+** chats
+   + borrar mensajes enviados
+   + privacidad
+** estados
+   + publicar un estado de "texto"
+   + publicar un estado de "imagen"
+     - nueva imagen
+     - nuevo video
+     - de la galeria
+   + privacidad (quien puede ver la publicacion del estado?)
+     - mis contactos :: todos los contactos
+     - mis contactos exepto... :: todos menos algunos
+     - solo compartir con... :: algunos contactos
+   + borrar estados publicados
+** llamadas
+   + hacer llamadas
+   + hay costos? necesitamos internet?
