@@ -968,8 +968,14 @@
 ;; + original version will call the wrapper "execution procedure"
 ;; which will call the first execution procedure and after that, the second.
 ;; + alyssa's version will analyze if the sequence has one or more
-;; elements, call the first, and then recursively call itself to, in the end, analyze the second item in the sequence.
+;; elements, call the first, and then recursively call itself to, in
+;; the end, analyze the second item in the sequence.
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 4.24 ;;
 ;;;;;;;;;;;;;;;;;;;
+
+;; TEST PROCEDURE: (fact 200000)
+;; normal eval: 5+ seconds
+;; analyzed eval: 2+ seconds
+
