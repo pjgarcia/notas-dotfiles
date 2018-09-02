@@ -1,8 +1,9 @@
 * WhatsApp
+  + que es
   + como abrirlo
 ** chats
    + borrar mensajes enviados
-   + privacidad
+   + privacidad (enviado/visto)
 ** estados
    + publicar un estado de "texto"
    + publicar un estado de "imagen"
@@ -14,6 +15,7 @@
      - mis contactos exepto... :: todos menos algunos
      - solo compartir con... :: algunos contactos
    + borrar estados publicados
+   + responder a un estado     
 ** llamadas
    + hacer llamadas
    + hay costos? necesitamos internet?
