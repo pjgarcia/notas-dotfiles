@@ -72,10 +72,39 @@
 	 (eval-sequence
 	  (procedure-body procedure)
 	  (extend-environment (procedure-parameters procedure)
-			      (list-of-delayed-args arguments env)
+			      ;;(list-of-delayed-args arguments env)
+			      (list-of-arguments
+			       arguments
+			       (procedure-parameters-with-info procedure)
+			       env)
 			      (procedure-environment procedure))))
 	(else (error
 	       "Unknown procedure type -- APPLY" procedure))))
+
+(define (procedure-parameters-with-info procedure)
+  (cadr procedure))
+
+(define (procedure-parameters procedure)
+  (map extract-parameter (cadr procedure)))
+
+(define (extract-parameter parameter-with-info)
+  (if (list? parameter-with-info)
+      (car parameter-with-info)
+      parameter-with-info))
+
+(define (lazy-param? param)
+  (and (list? param)
+       (or (eq? 'lazy (cadr param))
+	   (eq? 'lazy-memo (cadr param)))))
+
+(define (list-of-arguments exps params env)
+  (if (no-operands? exps)
+      '()
+      (cons
+       (if (lazy-param? (car params))
+	   (delay-it (first-operand exps) env)
+	   (actual-value (first-operand exps) env))
+       (list-of-arguments (cdr exps) (cdr params) env))))
 
 ;; Representing Thunks
 (define (force-it obj) ;; with memoization
@@ -134,7 +163,8 @@
 ;; SEQUENCES
 (define (eval-sequence exps env)
   (cond ((last-exp? exps) (eval (first-exp exps) env))
-	(else (eval (first-exp exps) env)
+	;;(else (eval (first-exp exps) env)
+	(else (actual-value (first-exp exps) env)
 	      (eval-sequence (rest-exps exps) env))))
 
 ;; ASSIGNMENTS AND DEFINITIONS
@@ -271,7 +301,7 @@
 (define (compound-procedure? p)
   (tagged-list? p 'procedure))
 
-(define (procedure-parameters p) (cadr p))
+;;(define (procedure-parameters p) (cadr p))
 ;; (define (procedure-body p)
 ;;   (scan-out-defines (caddr p)))
 (define (procedure-body p) (caddr p))
@@ -447,3 +477,29 @@
 ;; 1 (with memo)
 ;; 2 (without memo)
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.30 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; a)
+;; Ben is right about the behavior of for-each because, internally,
+;; it evaluates the items because of the "if".
+;; The "proc" argument is evaluated because it is the operator of
+;; an application.
+
+;; b)
+;; original eval-sequence:
+;; (p1 1) => (1 2)
+;; (p2 1) => 1
+
+;; changed eval-sequence:
+;; (p1 1) => (1 2)
+;; (p2 1) => (1 2)
+
+;; c)
+;; the changes does not affect the behavior of the example in a)
+;; because the sequence of expressions of the body were formed only
+;; by an if, and because of that, the "items" arg  was evaluated.
+;; The alternative part of the if (a sequence) was already evaluated
+;; because the first element in the sequence was an application, making
+;; the call to actual-value already.
