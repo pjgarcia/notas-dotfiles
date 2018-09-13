@@ -94,21 +94,30 @@
 
 (define (lazy-param? param)
   (and (list? param)
-       (or (eq? 'lazy (cadr param))
-	   (eq? 'lazy-memo (cadr param)))))
+       (eq? 'lazy (cadr param))))
+
+(define (lazy-memo-param? param)
+  (and (list? param)
+       (eq? 'lazy-memo (cadr param))))
 
 (define (list-of-arguments exps params env)
   (if (no-operands? exps)
       '()
       (cons
-       (if (lazy-param? (car params))
-	   (delay-it (first-operand exps) env)
-	   (actual-value (first-operand exps) env))
+       (cond ((lazy-param? (car params))
+	      (delay-it (first-operand exps) env))
+	     ((lazy-memo-param? (car params))
+	      (memo-delay-it (first-operand exps) env))
+	     (else
+	      (actual-value (first-operand exps) env)))
        (list-of-arguments (cdr exps) (cdr params) env))))
 
 ;; Representing Thunks
 (define (force-it obj) ;; with memoization
   (cond ((thunk? obj)
+	 (actual-value (thunk-exp obj)
+		       (thunk-env obj)))
+	((memo-thunk? obj)
 	 (let ((result (actual-value
 			(thunk-exp obj)
 			(thunk-env obj))))
@@ -120,17 +129,17 @@
 	 (thunk-value obj))
 	(else obj)))
 
-(define (force-it obj) ;; without memoization
-  (if (thunk? obj)
-      (actual-value (thunk-exp obj)
-		    (thunk-env obj))
-      obj))
-
 (define (delay-it exp env)
   (list 'thunk exp env))
 
+(define (memo-delay-it exp env)
+  (list 'memo-thunk exp env))
+
 (define (thunk? obj)
   (tagged-list? obj 'thunk))
+
+(define (memo-thunk? obj)
+  (tagged-list? obj 'memo-thunk))
 
 (define (thunk-exp thunk) (cadr thunk))
 (define (thunk-env thunk) (caddr thunk))
@@ -163,8 +172,8 @@
 ;; SEQUENCES
 (define (eval-sequence exps env)
   (cond ((last-exp? exps) (eval (first-exp exps) env))
-	;;(else (eval (first-exp exps) env)
-	(else (actual-value (first-exp exps) env)
+	(else (eval (first-exp exps) env)
+	;;(else (actual-value (first-exp exps) env)
 	      (eval-sequence (rest-exps exps) env))))
 
 ;; ASSIGNMENTS AND DEFINITIONS
@@ -503,3 +512,4 @@
 ;; The alternative part of the if (a sequence) was already evaluated
 ;; because the first element in the sequence was an application, making
 ;; the call to actual-value already.
+
