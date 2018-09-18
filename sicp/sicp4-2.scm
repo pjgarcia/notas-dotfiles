@@ -36,6 +36,11 @@
 (define (eval exp env)
   (cond ((self-evaluating? exp) exp)
 	((variable? exp) (lookup-variable-value exp env))
+	;; for excercise 4.33
+	((quoted-list? exp)
+	 (eval (quoted-list->lazy-quoted-list
+		(text-of-quotation exp))
+	       env))
 	((quoted? exp) (text-of-quotation exp))
 	((assignment? exp) (eval-assignment exp env))
 	((definition? exp) (eval-definition exp env))
@@ -72,52 +77,14 @@
 	 (eval-sequence
 	  (procedure-body procedure)
 	  (extend-environment (procedure-parameters procedure)
-			      ;;(list-of-delayed-args arguments env)
-			      (list-of-arguments
-			       arguments
-			       (procedure-parameters-with-info procedure)
-			       env)
+			      (list-of-delayed-args arguments env)
 			      (procedure-environment procedure))))
 	(else (error
 	       "Unknown procedure type -- APPLY" procedure))))
 
-(define (procedure-parameters-with-info procedure)
-  (cadr procedure))
-
-(define (procedure-parameters procedure)
-  (map extract-parameter (cadr procedure)))
-
-(define (extract-parameter parameter-with-info)
-  (if (list? parameter-with-info)
-      (car parameter-with-info)
-      parameter-with-info))
-
-(define (lazy-param? param)
-  (and (list? param)
-       (eq? 'lazy (cadr param))))
-
-(define (lazy-memo-param? param)
-  (and (list? param)
-       (eq? 'lazy-memo (cadr param))))
-
-(define (list-of-arguments exps params env)
-  (if (no-operands? exps)
-      '()
-      (cons
-       (cond ((lazy-param? (car params))
-	      (delay-it (first-operand exps) env))
-	     ((lazy-memo-param? (car params))
-	      (memo-delay-it (first-operand exps) env))
-	     (else
-	      (actual-value (first-operand exps) env)))
-       (list-of-arguments (cdr exps) (cdr params) env))))
-
 ;; Representing Thunks
 (define (force-it obj) ;; with memoization
   (cond ((thunk? obj)
-	 (actual-value (thunk-exp obj)
-		       (thunk-env obj)))
-	((memo-thunk? obj)
 	 (let ((result (actual-value
 			(thunk-exp obj)
 			(thunk-env obj))))
@@ -132,14 +99,8 @@
 (define (delay-it exp env)
   (list 'thunk exp env))
 
-(define (memo-delay-it exp env)
-  (list 'memo-thunk exp env))
-
 (define (thunk? obj)
   (tagged-list? obj 'thunk))
-
-(define (memo-thunk? obj)
-  (tagged-list? obj 'memo-thunk))
 
 (define (thunk-exp thunk) (cadr thunk))
 (define (thunk-env thunk) (caddr thunk))
@@ -200,6 +161,24 @@
 
 (define (quoted? exp)
   (tagged-list? exp 'quote))
+(define (quoted-list? exp)
+  (and (tagged-list? exp 'quote)
+       (list? (text-of-quotation exp))))
+(define (quoted-list->lazy-quoted-list list-items)
+  ;; (define (make-lazy-list items)
+  ;;   (if (null? items)
+  ;; 	'()
+  ;; 	(list 'cons (car items)
+  ;; 	      (make-lazy-list (cdr items)))))
+  ;; (list 'quote (make-lazy-list list-items)))
+  (if (null? list-items)
+      '()      
+      (list
+       'cons
+       (list 'quote (car list-items))
+       (quoted-list->lazy-quoted-list (cdr list-items)))))
+	
+
 (define (text-of-quotation exp) (cadr exp))
 
 (define (tagged-list? exp tag)
@@ -310,7 +289,7 @@
 (define (compound-procedure? p)
   (tagged-list? p 'procedure))
 
-;;(define (procedure-parameters p) (cadr p))
+(define (procedure-parameters p) (cadr p))
 ;; (define (procedure-body p)
 ;;   (scan-out-defines (caddr p)))
 (define (procedure-body p) (caddr p))
@@ -444,12 +423,16 @@
   (newline) (display string) (newline))
 
 (define (user-print object)
-  (if (compound-procedure? object)
-      (display (list 'compound-procedure
-		     (procedure-parameters object)
-		     (procedure-body object)
-		     '<procedure-env>))
-      (display object)))
+  (cond
+   ;; for excercise 4.34
+   ((lazy-list? object)
+    (display "[lazy list]"))
+   ((compound-procedure? object)
+    (display (list 'compound-procedure
+		   (procedure-parameters object)
+		   (procedure-body object)
+		   '<procedure-env>)))
+   (else (display object))))
 
 (define the-global-environment (setup-environment))
 
@@ -512,4 +495,119 @@
 ;; The alternative part of the if (a sequence) was already evaluated
 ;; because the first element in the sequence was an application, making
 ;; the call to actual-value already.
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.31 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; APPLY - with lazy or lazy-memo annotations on arguments
+;; (define (apply procedure arguments env)
+;;   (cond ((primitive-procedure? procedure)
+;; 	 (apply-primitive-procedure
+;; 	  procedure
+;; 	  (list-of-arg-values arguments env)))
+;; 	((compound-procedure? procedure)
+;; 	 (eval-sequence
+;; 	  (procedure-body procedure)
+;; 	  (extend-environment (procedure-parameters procedure)
+;; 			      ;;(list-of-delayed-args arguments env)
+;; 			      (list-of-arguments
+;; 			       arguments
+;; 			       (procedure-parameters-with-info procedure)
+;; 			       env)
+;; 			      (procedure-environment procedure))))
+;; 	(else (error
+;; 	       "Unknown procedure type -- APPLY" procedure))))
+
+;; (define (procedure-parameters-with-info procedure)
+;;   (cadr procedure))
+
+;; (define (procedure-parameters procedure)
+;;   (map extract-parameter (cadr procedure)))
+
+;; (define (extract-parameter parameter-with-info)
+;;   (if (list? parameter-with-info)
+;;       (car parameter-with-info)
+;;       parameter-with-info))
+
+;; (define (lazy-param? param)
+;;   (and (list? param)
+;;        (eq? 'lazy (cadr param))))
+
+;; (define (lazy-memo-param? param)
+;;   (and (list? param)
+;;        (eq? 'lazy-memo (cadr param))))
+
+;; (define (list-of-arguments exps params env)
+;;   (if (no-operands? exps)
+;;       '()
+;;       (cons
+;;        (cond ((lazy-param? (car params))
+;; 	      (delay-it (first-operand exps) env))
+;; 	     ((lazy-memo-param? (car params))
+;; 	      (memo-delay-it (first-operand exps) env))
+;; 	     (else
+;; 	      (actual-value (first-operand exps) env)))
+;;        (list-of-arguments (cdr exps) (cdr params) env))))
+
+;; (define (memo-delay-it exp env)
+;;   (list 'memo-thunk exp env))
+
+;; (define (memo-thunk? obj)
+;;   (tagged-list? obj 'memo-thunk))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.33 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (quoted-list? exp)
+  (and (tagged-list? exp 'quote)
+       (list? (text-of-quotation exp))))
+(define (quoted-list->lazy-quoted-list list-items)
+  ;; (define (make-lazy-list items)
+  ;;   (if (null? items)
+  ;; 	'()
+  ;; 	(list 'cons (car items)
+  ;; 	      (make-lazy-list (cdr items)))))
+  ;; (list 'quote (make-lazy-list list-items)))
+  (if (null? list-items)
+      '()      
+      (list
+       'cons
+       (list 'quote (car list-items))
+       (quoted-list->lazy-quoted-list (cdr list-items)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.34 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (lazy-list? object)
+  (and (compound-procedure? object)
+       (list? (car (procedure-body object)))
+       (eq? 2 (length (car (procedure-body object))))
+       (eq? (cadar (procedure-body object))
+	    'lazy-list)))
+
+;; (define (cons a b) (lambda (m) 'lazy-list (m a b)))
+
+;;;;;;;;;;;;;;;;;;;;
+;; Excercise 4.35 ;;
+;;;;;;;;;;;;;;;;;;;;
+
+(define (an-integer-between low high)
+  (require (< low high))
+  (amb low (an-integer-between (+ low 1) high)))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.37 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; this version is more efficient because the possibilities are
+;; generated from i and j, and from them the value of k is computed,
+;; with the requirement that it is not greater than the max value
+;; and that is an integer.
+;; The computation of the square root might be heavy con computation, though.
+
+;; The code in excercise 4.35 does some unnecessary iterations with k
+;; because it might start from an upper bound, like i + j.
 
