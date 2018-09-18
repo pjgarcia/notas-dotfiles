@@ -611,3 +611,158 @@
 ;; The code in excercise 4.35 does some unnecessary iterations with k
 ;; because it might start from an upper bound, like i + j.
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.38 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (multiple-dwelling)
+  (let ((baker (amb 1 2 3 4 5))
+	(cooper (amb 1 2 3 4 5))
+	(fletcher (amb 1 2 3 4 5))
+	(miller (amb 1 2 3 4 5))
+	(smith (amb 1 2 3 4 5)))
+    (require
+     (distinct?
+      (list baker cooper fletcher miller smith)))
+    (require (not (= baker 5)))
+    (require (not (= cooper 1)))
+    (require (not (= fletcher 5)))
+    (require (not (= fletcher 1)))
+    (require (> miller cooper))
+    ;;(require (not (= (abs (- smith fletcher)) 1)))
+    (require (not (= (abs (- fletcher cooper)) 1)))
+    (list (list 'baker baker)
+	  (list 'cooper cooper)
+	  (list 'fletcher fletcher)
+	  (list 'miller miller)
+	  (list 'smith smith))))
+
+;; TODO: implement the evaluator and answer how many solutions
+;; there are.
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.40 ;;
+;;;;;;;;;;;;;;;;;;;
+	     
+(define (multiple-dwelling2)
+  (let ((baker (amb 1 2 3 4 5)))
+    (require (not (= baker 5)))
+    
+    (let ((cooper (amb 1 2 3 4 5)))
+      (require (not (= cooper 1)))
+
+      (let ((miller (amb 1 2 3 4 5)))
+	(require (> miller cooper))	
+      
+	   
+	(let ((fletcher (amb 1 2 3 4 5)))
+	  (require (not (= fletcher 5)))
+	  (require (not (= fletcher 1)))
+	  (let ((smith (amb 1 2 3 4 5)))
+	    
+	    (require
+	     (distinct?
+	      (list baker cooper fletcher miller smith)))
+	    
+	    (require (not (= (abs (- smith fletcher)) 1)))
+	    (require (not (= (abs (- fletcher cooper)) 1)))
+	    (list (list 'baker baker)
+		  (list 'cooper cooper)
+		  (list 'fletcher fletcher)
+		  (list 'miller miller)
+		  (list 'smith smith))))))))
+
+(define (multiple-dwelling3)
+  (let ((baker (amb 1 2 3 4))
+	(cooper (amb 2 3 4))
+	(fletcher (amb 2 3 4))
+	(miller (amb 1 2 3 4 5))
+	(smith (amb 1 2 3 4 5)))
+    (require
+     (distinct?
+      (list baker cooper fletcher miller smith)))
+    (require (> miller cooper))
+    (require (not (= (abs (- smith fletcher)) 1)))
+    (require (not (= (abs (- fletcher cooper)) 1)))
+    (list (list 'baker baker)
+	  (list 'cooper cooper)
+	  (list 'fletcher fletcher)
+	  (list 'miller miller)
+	  (list 'smith smith))))
+
+
+;;;;;;;;;;;;;;;;;;;;
+;; Excercise 4.41 ;;
+;;;;;;;;;;;;;;;;;;;;n
+
+(define (combinations . lists)
+  (define (iter lists combined)
+    (if (null? lists)
+	combined
+	(iter (cdr lists)
+	      (combine (car lists)
+		       combined))))
+  (cond ((null? lists) '())
+	((null? (cdr lists)) (car lists))
+	(else
+	 (iter (cdr lists)
+	       (map list (car lists))))))
+
+(define (combine new combined)
+  (flatten
+   (map (lambda (combination)
+	  (map (lambda (item)
+		 (cons item combination))
+	       new))
+	combined)))
+
+(define (flatten l)
+  (if (null? l)
+      '()
+      (append (car l) (flatten (cdr l)))))
+		
+(define (distinct? l)
+  (cond ((null? l) #t)
+	((member (car l) (cdr l)) #f)
+	(else
+	 (distinct? (cdr l)))))
+
+(define (nth n l)
+  (if (= n 0)
+      (car l)
+      (nth (- n 1) (cdr l))))
+
+(define (multiple-dwelling4)
+  (define floors (list 1 2 3 4 5))
+
+  (define (baker-floor comb)
+    (not (eq? 5 (nth 0 comb))))
+  (define (cooper-floor comb)
+    (not (eq? 1 (nth 1 comb))))
+  (define (fletcher-floor comb)
+    (and (not (eq? 1 (nth 2 comb)))
+	 (not (eq? 5 (nth 2 comb)))))
+  (define (miller-higher-than-cooper comb)
+    (> (nth 3 comb) (nth 1 comb)))
+  (define (smith-fletcher-adj comb)
+    (let ((smith (nth 4 comb))
+	  (fletcher (nth 2 comb)))
+      (> (abs (- smith fletcher))
+	 1)))
+  (define (fletcher-cooper-adj comb)
+    (let ((cooper (nth 1 comb))
+	  (fletcher (nth 2 comb)))
+      (> (abs (- cooper fletcher))
+	 1)))
+
+  (let ((one-for-room
+	 (filter distinct?
+		 (combinations floors floors floors floors floors))))    
+    (let ((bf (filter baker-floor one-for-room)))
+      (let ((cf (filter cooper-floor bf)))
+	(let ((ff (filter fletcher-floor cf)))
+	  (let ((mhtc (filter miller-higher-than-cooper ff)))
+	    (let ((sfa (filter smith-fletcher-adj mhtc)))
+	      (let ((fca (filter fletcher-cooper-adj sfa)))
+		fca))))))))
+
