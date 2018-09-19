@@ -766,3 +766,42 @@
 	      (let ((fca (filter fletcher-cooper-adj sfa)))
 		fca))))))))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.42 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (liars)
+  
+  (define (betty-statement betty kitty)
+    (statement betty 2 kitty 3))
+  (define (ethel-statement ethel joan)
+    (statement ethel 1 joan 2))
+  (define (joan-statement joan ethel)
+    (statement joan 3 ethel 5))
+  (define (kitty-statement kitty mary)
+    (statement kitty 2 mary 4))
+  (define (mary-statement mary betty)
+    (statement mary 4 1 betty))
+  (define (statement girl1 pos1 girl2 pos2)
+    (or (and (= pos1 girl1) (not (= pos2 girl2)))
+	(and (not (= pos1 girl1)) (= pos2 girl2))))
+
+  (let ((betty (amb 1 2 3 4 5))
+	(ethel (amb 1 2 3 4 5))
+	(joan (amb 1 2 3 4 5))
+	(kitty (amb 1 2 3 4 5))
+	(mary (amb 1 2 3 4 5)))
+    (require
+     (distinct?
+      (list betty ethel joan kitty mary)))
+    (require (betty-statement betty kitty))
+    (require (ethel-statement ethel joan))
+    (require (joan-statement joan ethel))
+    (require (kitty-statement kitty mary))
+    (require (mary-statement mary betty))
+
+    (list (list 'betty betty)
+	  (list 'ethel ethel)
+	  (list 'joan joan)
+	  (list 'kitty kitty)
+	  (list 'mary mary))))
