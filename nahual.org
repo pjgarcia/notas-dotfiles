@@ -3,6 +3,14 @@
 
 * Todos
 
+** DONE CP de Catalina Manggia
+   SCHEDULED: <2018-09-25 Tue>
+** TODO CP de Juan Matias Pineda
+   SCHEDULED: <2018-09-25 Tue>
+** DONE CP de Viviana Perez
+   SCHEDULED: <2018-09-25 Tue>
+** TODO armar manual de Drive para La Poderosa
+   SCHEDULED: <2018-09-25 Tue>
 * Retro
 ** [#B] Documentacion
    + reordenar los temas del libro acorde al itinerario de clases
