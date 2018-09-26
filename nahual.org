@@ -5,7 +5,7 @@
 
 ** DONE CP de Catalina Manggia
    SCHEDULED: <2018-09-25 Tue>
-** TODO CP de Juan Matias Pineda
+** DONE CP de Juan Matias Pineda
    SCHEDULED: <2018-09-25 Tue>
 ** DONE CP de Viviana Perez
    SCHEDULED: <2018-09-25 Tue>
