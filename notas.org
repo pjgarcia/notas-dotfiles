@@ -39,4 +39,3 @@
    - tmux info :: lists out every session, window, pane, its pid, etc. 
    - tmux source-file ~/.tmux.conf :: reloads the current tmux configuration (based on a default tmux config)
 
-** [[file:notas-linux.org][COMANDOS GNU/LINUX]]                                              :comandos:

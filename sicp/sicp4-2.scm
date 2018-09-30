@@ -805,3 +805,89 @@
 	  (list 'joan joan)
 	  (list 'kitty kitty)
 	  (list 'mary mary))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.43 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; 1 Mary Ann Moore 
+;; 2 Gabrielle
+;; 3 Lorna
+;; 4 Rosalind
+;; 5 Melissa
+
+;; Mr. Moore 1
+;; Colonel Downing 2 3 4
+;; Mr. Hall 2 3
+;; Sir Barnacle Hood 1 3 4 5
+;; Dr. Parker 3 4
+
+(define (liars)  
+  (let ((moore (amb 1))
+	(downing (amb 2 3 4))
+	(hall (amb 2 3))
+	(hood (amb 5))
+	(parker (amb 3 4)))
+    (require
+     (distinct?
+      (list moore downing hall hood parker)))
+    (require (kitty-statement kitty mary))
+    (require (mary-statement mary betty))
+
+    (list (list 'moore moore)
+	  (list 'downing downing)
+	  (list 'hall hall)
+	  (list 'hood hood)
+	  (list 'parker parker))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 4.44 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define empty-board null)
+
+(define (list-up-to n)
+  (if (< n 0)
+      '()
+      (cons n (list-up-to (- n 1)))))
+
+(define (nondeterministic-queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+	(list empty-board)
+	(let ((smaller-board (nondeterministic-queens
+			      (- board-size 1)))
+	      (new-queen (apply amb (list-up-to k))))
+	  (require (safe? k (cons new-queen smaller-board)))
+	  (cons new-queen smaller-board)))))
+	      
+(define (safe? k board)
+  (and (not (safe-horizontally? board))
+       (not (in-diagonals? board))))
+
+(define (safe-horizontally? board)
+  (let ((first-queen (car board))
+	(queens-in-same-row
+	 (filter (lambda (queen)
+		   (= queen first-queen))
+		 board)))
+    (null? queens-in-same-row)))
+
+(define (safe-diagonally? board)
+  (define (safe-diagonal-up? row queens)
+    (cond ((< row 0) #t)
+	  ((null? queens) #t)
+	  ((= row (car queens)) #f)
+	  (else
+	   (safe-diagonal-up? (- row 1)
+			      (cdr queens)))))
+  (define (safe-diagonal-down? row queens)
+    (cond ((= row (length board)) #t)
+	  ((null? queens) #t)
+	  ((= row (car queens)) #f)
+	  (else
+	   (safe-diagonal-down? (+ row 1)
+				(cdr queens)))))
+  (and (safe-diagonal-up? (car board) board)
+       (safe-diagonal-down? (car board) board)))
+
