@@ -1,3 +1,6 @@
 #+FILETAGS: REFILE
 * TODO agregar al grupo a Ernesto Hernandez
   SCHEDULED: <2018-10-06 Sat>
+* TODO agregar preguntas de Denu al Kahoot
+  SCHEDULED: <2018-10-06 Sat>
+
