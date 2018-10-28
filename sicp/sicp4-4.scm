@@ -60,5 +60,9 @@
 (meeting-time (Hacker Alyssa P) (Wednesday ?time))
 
 ;;;;;;;;;;;;;;;;;;;
-;; Exercise 4.60 ;;
+;; Exercise 4.61 ;;
 ;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ATENCION! TODA LA PARTE DE NON-DETERMINISTIC Y LOGIC PROGRAMMING LA PASE DE LARGO :( ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
