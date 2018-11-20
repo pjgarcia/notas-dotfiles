@@ -72,3 +72,44 @@
  (assign product (op *) (reg product) (reg b))
  (goto expt-loop)
  expt-done)
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 5.5 ;;
+;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 5.6 ;;
+;;;;;;;;;;;;;;;;;;
+
+;; (restore continue) & (save continue) after afterfib-n-1
+
+;;;;;;;;;;;;;;;;;;
+;; Exercise 5.8 ;;
+;;;;;;;;;;;;;;;;;;
+
+;; the value of register a will be 3
+(define (extract-labels text receive)
+  (if (null? text)
+      (receive '() '())
+      (extract-labels (cdr text)
+		      (lambda (inst labels)
+			(let ((next-inst (car text)))
+			  (if (symbol? next-inst)
+			      (let ((val
+				     (assoc next-inst labels)))
+				(if val
+				    (error "Duplicated labels -- ASSEMBLE" next-inst)
+				    (receive
+					insts
+					(cons (make-label-entry next-inst insts)))))
+			      (receive
+				  (cons (make-instruction next-inst)
+					insts)
+				  labels)))))))
+
+
+
+				  
+			  
+					
+				     
