@@ -395,3 +395,95 @@
      (goto (label test-b))
      gcd-done)))
      
+;;;;;;;;;;;;;;;;;;
+;; Exercise 5.9 ;;
+;;;;;;;;;;;;;;;;;;
+
+(define (make-operation-exp2 exp machine labels operations)
+  (let ((op (lookup-prim (operation-exp-op exp) operations))
+	(aprocs
+	 (map (lambda (e)
+		(if (label-exp? e)
+		    (error "Bad operand exp -- ASSEMBLE" e)
+		    (make-primitive-exp e machine labels)))
+	      (operation-exp-operands exp))))
+    (lambda ()
+      (apply op (map (lambda (p) (p)) aprocs)))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 5.11 ;;
+;;;;;;;;;;;;;;;;;;;
+
+;; b.
+(define (make-stack2)
+  (let ((s '()))
+    (define (push x reg)
+      (set! s (cons (cons reg x) s)))
+    (define (pop reg)
+      (cond ((null? s)
+	     (error "Empty stack -- POP"))
+	    ((not (eq? reg (caar s)))
+	     (error "Wrong register -- POP"))
+	    (else
+	     (let ((top (car s)))
+	       (set! s (cdr s))
+	       top))))
+    (define (initialize)
+      (set s '())
+      'done)
+    (define (dispatch message)
+      (cond ((eq? message 'push) push)
+	    ((eq? message 'pop) (pop))
+	    ((eq? message 'initialize) (initialize))
+	    (else (error "Unknown request -- STACK"
+			 message))))
+    dispatch))
+
+(define (pop2 stack reg)
+  ((stack 'pop) reg))
+
+(define (push2 stack value reg)
+  ((stack 'push) value reg))
+
+(define (make-save2 inst machine stack pc)
+  (let ((reg (get-register machine
+			   (stack-inst-reg-name inst))))
+    (lambda ()
+      (push stack (get-contents reg) (stack-inst-reg-name inst))
+      (advance-pc pc))))
+
+(define (make-restore2 inst machine stack pc)
+  (let ((reg (get-register machine
+			   (stack-inst-reg-name inst))))
+    (lambda ()
+      (set-contents! reg (pop stack (stack-inst-reg-name inst)))
+      (advance-pc pc))))
+
+;; c.
+(define (make-stack2)
+  (let ((s '()))
+    (define (push x reg)
+      (let ((reg-stack (assoc reg s)))
+	(if (null? reg-stack)
+	    (set! s (cons (list reg (list x)) s))
+	    (set-cdr! reg-stack (cons x (cdr reg-stack))))))
+    (define (pop reg)
+      (let ((reg-stack (assoc reg s)))
+	(cond ((null? reg-stack)
+	       (error "Empty stack -- POP"))
+	      (else
+	       (let ((top (car (cdr reg-stack))))
+		 (set-cdr! reg-stack (cdr (cdr reg-stack)))
+		 top)))))
+    (define (initialize)
+      (set s '())
+      'done)
+    (define (dispatch message)
+      (cond ((eq? message 'push) push)
+	    ((eq? message 'pop) (pop))
+	    ((eq? message 'initialize) (initialize))
+	    (else (error "Unknown request -- STACK"
+			 message))))
+    dispatch))
+
+
