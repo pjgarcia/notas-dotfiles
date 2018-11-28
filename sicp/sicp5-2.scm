@@ -125,6 +125,10 @@
 	  (if assign-record
 	      (set-cdr! assign-record (cons place (cdr assign-record)))
 	      (set! assign-records (cons (list reg place) assign-records)))))
+      (define (install-register reg-name)
+	(if (assoc reg-name register-table)
+	    'already-defined
+	    (allocate-register reg-name)))
       (define (dispatch message)
 	(cond ((eq? message 'start)
 	       (set-contents! pc the-instructions-sequence)
@@ -145,6 +149,7 @@
 	      ((eq? message 'stacked-registers) stacked-registers)
 	      ((eq? message 'assigned-records) assign-records)
 	      ((eq? message 'operations) the-ops)
+	      ((eq? message 'install-register) install-register)
 	      (else (error "Unknown request -- MACHINE" message))))
       dispatch)))
 
@@ -179,8 +184,15 @@
 	(ops (machine 'operations)))
     (for-each
      (lambda (inst)
+       ;; for Exercise 5.13
+       (let ((instruction-registers
+	      (get-instruction-registers inst)))
+	 (for-each (lambda (instr-reg)
+		     ((machine 'install-register) instr-reg))
+		   instruction-registers))
        ;; for Exercise 5.12
        (save-machine-data (instruction-text inst) machine)
+       
        (set-instruction-execution-proc!
 	inst
 	(make-execution-procedure
@@ -200,6 +212,24 @@
   ;; save assigns
   (if (eq? (car inst) 'assign)
       ((machine 'store-assign) (cadr inst) (cddr inst))))
+
+(define (get-instruction-registers inst)
+  (let ((type (car inst)))
+    (cond ((or (eq? type 'save) (eq? type 'restore))
+	   (list (cadr inst)))
+	  ((eq? type 'assign)
+	   (append (list (cadr inst))
+		   (extract-registers (cddr inst))))
+	  ((eq? type 'test)
+	   (extract-registers (cddr inst)))
+	  ((eq? type 'goto)
+	   (extract-registers (cdr inst)))
+	  (else '()))))
+
+(define (extract-registers l)
+  (map (lambda (e) (cadr e))
+       (filter (lambda (e) (eq? (car e) 'reg)) l)))
+
 
 (define (make-instruction text)
   (cons text '()))
@@ -532,7 +562,8 @@
 ;; done in the assembler implementation 
 (define fib-machine
   (make-machine
-   '(continue n val)
+   ;;'(continue n val)
+   '()
    (list (list '< <) (list '- -) (list '+ +))
    '((assign continue (label fib-done))
      fib-loop
