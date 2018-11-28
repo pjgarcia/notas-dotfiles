@@ -84,7 +84,11 @@
   (let ((pc (make-register 'pc))
 	(flag (make-register 'flag))
 	(stack (make-stack))
-	(the-instructions-sequence '()))
+	(the-instructions-sequence '())
+	(raw-instructions '())
+	(entry-points '())
+	(stacked-registers '())
+	(assign-records '()))
     (let ((the-ops
 	   (list (list 'initialize-stack
 		       (lambda () (stack 'initialize)))))
@@ -109,6 +113,18 @@
 	      (begin
 		((instruction-execution-proc (car insts)))
 		(execute)))))
+      ;; for Exercise 5.12
+      (define (store-instruction inst)
+	(set! raw-instructions (cons inst raw-instructions)))
+      (define (store-entry-point reg)
+	(set! entry-points (cons reg entry-points)))
+      (define (store-stack-register reg)
+	(set! stacked-registers (cons reg stacked-registers)))
+      (define (store-assign reg place)
+	(let ((assign-record (assoc reg assign-records)))
+	  (if assign-record
+	      (set-cdr! assign-record (cons place (cdr assign-record)))
+	      (set! assign-records (cons (list reg place) assign-records)))))
       (define (dispatch message)
 	(cond ((eq? message 'start)
 	       (set-contents! pc the-instructions-sequence)
@@ -120,6 +136,14 @@
 	      ((eq? message 'install-operations)
 	       (lambda (ops) (set! the-ops (append the-ops ops))))
 	      ((eq? message 'stack) stack)
+	      ((eq? message 'store-instruction) store-instruction)
+	      ((eq? message 'store-entry-point) store-entry-point)
+	      ((eq? message 'store-stack-register) store-stack-register)
+	      ((eq? message 'store-assign) store-assign)
+	      ((eq? message 'stored-instructions) raw-instructions)
+	      ((eq? message 'entry-points) entry-points)
+	      ((eq? message 'stacked-registers) stacked-registers)
+	      ((eq? message 'assigned-records) assign-records)
 	      ((eq? message 'operations) the-ops)
 	      (else (error "Unknown request -- MACHINE" message))))
       dispatch)))
@@ -155,12 +179,27 @@
 	(ops (machine 'operations)))
     (for-each
      (lambda (inst)
+       ;; for Exercise 5.12
+       (save-machine-data (instruction-text inst) machine)
        (set-instruction-execution-proc!
 	inst
 	(make-execution-procedure
 	 (instruction-text inst) labels machine
 	 pc flag stack ops)))
      insts)))
+
+(define (save-machine-data inst machine)
+  ;; save instruction
+  ((machine 'store-instruction) inst)
+  ;; save entry point
+  (if (and (eq? (car inst) 'goto) (eq? (caadr inst) 'reg))
+      ((machine 'store-entry-point) (cadadr inst)))
+  ;; save pushed or pulled registers
+  (if (or (eq? (car inst) 'save) (eq? (car inst) 'restore))
+      ((machine 'store-stack-register) (cadr inst)))
+  ;; save assigns
+  (if (eq? (car inst) 'assign)
+      ((machine 'store-assign) (cadr inst) (cddr inst))))
 
 (define (make-instruction text)
   (cons text '()))
@@ -486,4 +525,41 @@
 			 message))))
     dispatch))
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 5.12 ;;
+;;;;;;;;;;;;;;;;;;;
 
+;; done in the assembler implementation 
+(define fib-machine
+  (make-machine
+   '(continue n val)
+   (list (list '< <) (list '- -) (list '+ +))
+   '((assign continue (label fib-done))
+     fib-loop
+     (test (op <) (reg n) (const 2))
+     (branch (label immediate-answer))
+     ;; set up to compute Fib(n-1)
+     (save continue)
+     (assign continue (label afterfib-n-1))
+     (save n)
+     (assign n (op -) (reg n) (const 1))
+     (goto (label fib-loop))
+     afterfib-n-1
+     (restore n)
+     (restore continue)
+     ;; set up to compute Fib(n-2)
+     (assign n (op -) (reg n) (const 2))
+     (save continue)
+     (assign continue (label afterfib-n-2))
+     (save val)
+     (goto (label fib-loop))
+     afterfib-n-2
+     (assign n (reg val))
+     (restore val)
+     (restore continue)
+     (assign val (op +) (reg val) (reg n))
+     (goto (reg continue))
+     immediate-answer
+     (assign val (reg n))
+     (goto (reg continue))
+     fib-done)))
