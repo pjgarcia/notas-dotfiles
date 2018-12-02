@@ -91,6 +91,7 @@
 	(instruction-count 0)
 	(tracing #f)
 	(stacked-registers '())
+	(labels '())
 	(assign-records '()))
     (let ((the-ops
 	   (list (list 'initialize-stack
@@ -119,12 +120,22 @@
 	      (begin
 		;; for 5.16
 		(if tracing
-		    (begin (newline)
-			   (display (list "> " (instruction-text (car insts))))))
+		    (trace (car insts) labels))
 		((instruction-execution-proc (car insts)))
 		;; for 5.15
 		(set! instruction-count (+ instruction-count 1))
 		(execute)))))
+      (define (trace inst labels)
+	(let ((instruction-labels
+	       (filter (lambda (label)
+			 (and (not (null? (label-instructions label)))
+			      (eq? (car (label-instructions label)) inst)))
+		       labels)))
+	  (newline)
+	  (display
+	   (append
+	    (map (lambda (l) (label-name l)) instruction-labels)
+	    (list " > " (instruction-text inst))))))
       ;; for Exercise 5.12
       (define (store-instruction inst)
 	(set! raw-instructions (cons inst raw-instructions)))
@@ -141,6 +152,8 @@
 	(if (assoc reg-name register-table)
 	    'already-defined
 	    (allocate-register reg-name)))
+      (define (track-labels l)
+	(set! labels l))
       (define (dispatch message)
 	(cond ((eq? message 'start)
 	       (set-contents! pc the-instructions-sequence)
@@ -173,6 +186,7 @@
 	      ((eq? message 'trace-off)
 	       (set! tracing #f)
 	       'stopped-tracing)
+	      ((eq? message 'track-labels) track-labels)
 	      (else (error "Unknown request -- MACHINE" message))))
       dispatch)))
 
@@ -184,6 +198,7 @@
   (extract-labels controller-text
 		  (lambda (insts labels)
 		    (update-insts! insts labels machine)
+		    ((machine 'track-labels) labels)
 		    insts)))
 
 (define (extract-labels text receive)
@@ -269,6 +284,10 @@
 
 (define (make-label-entry label-name insts)
   (cons label-name insts))
+
+(define (label-name label) (car label))
+
+(define (label-instructions label) (cdr label))
 
 (define (lookup-label labels label-name)
   (let ((val (assoc label-name labels)))
