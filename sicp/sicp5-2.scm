@@ -36,7 +36,8 @@
 ;; The Stack ;;
 ;;;;;;;;;;;;;;;
 
-(define (make-stack)
+;; se reemplaza despues para la seccion 5.2.4
+(define (make-stack-old)
   (let ((s '()))
     (define (push x)
       (set! s (cons x s)))
@@ -87,11 +88,16 @@
 	(the-instructions-sequence '())
 	(raw-instructions '())
 	(entry-points '())
+	(instruction-count 0)
+	(tracing #f)
 	(stacked-registers '())
 	(assign-records '()))
     (let ((the-ops
 	   (list (list 'initialize-stack
-		       (lambda () (stack 'initialize)))))
+		       (lambda () (stack 'initialize)))
+		 ;; para la seccion 5.2.4
+		 (list 'print-stack-statistics
+		       (lambda () (stack 'print-statistics)))))
 	  (register-table
 	   (list (list 'pc pc) (list 'flag flag))))
       (define (allocate-register name)
@@ -111,7 +117,13 @@
 	  (if (null? insts)
 	      'done
 	      (begin
+		;; for 5.16
+		(if tracing
+		    (begin (newline)
+			   (display (list "> " (instruction-text (car insts))))))
 		((instruction-execution-proc (car insts)))
+		;; for 5.15
+		(set! instruction-count (+ instruction-count 1))
 		(execute)))))
       ;; for Exercise 5.12
       (define (store-instruction inst)
@@ -150,6 +162,17 @@
 	      ((eq? message 'assigned-records) assign-records)
 	      ((eq? message 'operations) the-ops)
 	      ((eq? message 'install-register) install-register)
+	      ;; for Exercise 5.15
+	      ((eq? message 'instruction-count) instruction-count)
+	      ((eq? message 'reset-instruction-count)
+	       (set! instruction-count 0))
+	      ;; for Exercise 5.16
+	      ((eq? message 'trace-on)
+	       (set! tracing #t)
+	       'now-tracing)
+	      ((eq? message 'trace-off)
+	       (set! tracing #f)
+	       'stopped-tracing)
 	      (else (error "Unknown request -- MACHINE" message))))
       dispatch)))
 
@@ -186,7 +209,7 @@
      (lambda (inst)
        ;; for Exercise 5.13
        (let ((instruction-registers
-	      (get-instruction-registers inst)))
+	      (get-instruction-registers (instruction-text inst))))
 	 (for-each (lambda (instr-reg)
 		     ((machine 'install-register) instr-reg))
 		   instruction-registers))
@@ -213,6 +236,7 @@
   (if (eq? (car inst) 'assign)
       ((machine 'store-assign) (cadr inst) (cddr inst))))
 
+;; (assign continue (label fact-done))
 (define (get-instruction-registers inst)
   (let ((type (car inst)))
     (cond ((or (eq? type 'save) (eq? type 'restore))
@@ -450,19 +474,6 @@
 	(cadr val)
 	(error "Unknown operation -- ASSEMBLE" symbol))))
 
-;; definir el ejemplo de gcd-machine y probarlo :)
-(define gcd-machine
-  (make-machine
-   '(a b t)
-   (list (list 'rem remainder) (list '= =))
-   '(test-b
-     (test (op =) (reg b) (const 0))
-     (branch (label gcd-done))
-     (assign t (op rem) (reg a) (reg b))
-     (assign a (reg b))
-     (assign b (reg t))
-     (goto (label test-b))
-     gcd-done)))
      
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 5.9 ;;
@@ -529,7 +540,7 @@
       (advance-pc pc))))
 
 ;; c.
-(define (make-stack2)
+(define (make-stack3)
   (let ((s '()))
     (define (push x reg)
       (let ((reg-stack (assoc reg s)))
@@ -560,6 +571,88 @@
 ;;;;;;;;;;;;;;;;;;;
 
 ;; done in the assembler implementation 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 5.2.4 Monitoring Machine Performance ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (make-stack)
+  (let ((s '())
+	(number-pushes 0)
+	(max-depth 0)
+	(current-depth 0))
+    (define (push x)
+      (set! s (cons x s))
+      (set! number-pushes (+ number-pushes 1))
+      (set! current-depth (+ current-depth 1))
+      (set! max-depth (max max-depth current-depth)))
+    (define (pop)
+      (if (null? s)
+	  (error "Empty stack -- POP")
+	  (let ((top (car s)))
+	    (set! s (cdr s))
+	    (set! current-depth (- current-depth 1))
+	    top)))
+    (define (initialize)
+      (set! s '())
+      (set! number-pushes 0)
+      (set! max-depth 0)
+      (set! current-depth 0)
+      'done)
+    (define (print-statistics)
+      (newline)
+      (display (list 'total-pushes '= number-pushes
+		     'max-depth '= max-depth)))
+    (define (dispatch message)
+      (cond ((eq? message 'push) push)
+	    ((eq? message 'pop) (pop))
+	    ((eq? message 'initialize) (initialize))
+	    ((eq? message 'print-statistics)
+	     (print-statistics))
+	    (else (error "Unknown request -- STACK"
+			 message))))
+    dispatch))
+
+
+(define fact-machine
+  (make-machine
+   '()
+   (list (list '= =)
+	 (list '- -)
+	 (list '* *))
+   '((assign continue (label fact-done))
+     fact-loop
+     (test (op =) (reg n) (const 1))
+     (branch (label base-case))
+     (save continue)
+     (save n)
+     (assign n (op -) (reg n) (const 1))
+     (assign continue (label after-fact))
+     (goto (label fact-loop))
+     after-fact
+     (restore n)
+     (restore continue)
+     (assign val (op *) (reg n) (reg val))
+     (goto (reg continue))
+     base-case
+     (assign val (const 1))
+     (goto (reg continue))
+     fact-done)))
+	    
+(define gcd-machine
+  (make-machine
+   ;;'(a b t)
+   '()
+   (list (list 'rem remainder) (list '= =))
+   '(test-b
+     (test (op =) (reg b) (const 0))
+     (branch (label gcd-done))
+     (assign t (op rem) (reg a) (reg b))
+     (assign a (reg b))
+     (assign b (reg t))
+     (goto (label test-b))
+     gcd-done)))
+
 (define fib-machine
   (make-machine
    ;;'(continue n val)
@@ -594,3 +687,22 @@
      (assign val (reg n))
      (goto (reg continue))
      fib-done)))
+
+(define (fact-statistics rounds)
+  (for-each (lambda (n)
+	      (set-register-contents! fact-machine 'n n)
+	      ((fact-machine 'stack) 'initialize)
+	      (fact-machine 'reset-instruction-count)
+	      (fact-machine 'start)
+	      ((fact-machine 'stack) 'print-statistics)
+	      (display (list 'n '= n 'val '= (get-register-contents fact-machine 'val)))
+	      (display (fact-machine 'instruction-count)))
+	    rounds))
+
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 5.14 ;;
+;;;;;;;;;;;;;;;;;;;
+	      
+;; TP(n) = 2 * n - 2
+;; MD(n) = 2 * n - 2
+
