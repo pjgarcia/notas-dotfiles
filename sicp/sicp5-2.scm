@@ -106,6 +106,7 @@
 	(tracing #f)
 	(stacked-registers '())
 	(labels '())
+	(breakpoints '())
 	(assign-records '()))
     (let ((the-ops
 	   (list (list 'initialize-stack
@@ -132,13 +133,18 @@
 	  (if (null? insts)
 	      'done
 	      (begin
-		;; for 5.16
-		(if tracing
-		    (trace (car insts) labels))
-		((instruction-execution-proc (car insts)))
-		;; for 5.15
-		(set! instruction-count (+ instruction-count 1))
-		(execute)))))
+		;; for 5.19
+		(let ((bp (assoc (instruction-number (car insts)) breakpoints)))
+		  (if bp
+		      (begin (display-breakpoint bp)
+			     'break)
+		      (begin (execute-instr (car insts))
+			     (execute))))))))
+      (define (execute-instr instr)
+	;; for 5.16
+	(if tracing (trace instr labels))
+	((instruction-execution-proc instr))
+	(set! instruction-count (+ instruction-count 1)))
       (define (trace inst labels)
 	(let ((instruction-labels
 	       (filter (lambda (label)
@@ -150,6 +156,25 @@
 	   (append
 	    (map (lambda (l) (label-name l)) instruction-labels)
 	    (list " > " (instruction-text inst))))))
+      ;; for 5.19
+      (define (set-breakpoint label n)
+	(set! breakpoints (cons (make-breakpoint label n) breakpoints)))
+      (define (cancel-breakpoint label n)
+	(set! breakpoints
+	      (filter (lambda (bp)
+			(and (not (eq? (breakpoint-label bp) label))
+			     (not (eq? (breakpoint-index bp) n))))
+		      breakpoints)))
+      (define (cancel-all-breakpoints)
+	(set! breakpoints '()))
+      (define (proceed)
+	(let ((insts (get-contents pc)))
+	  (execute-instr (car insts))
+	  (execute)))
+      (define (display-breakpoint bp)
+	(newline)
+	(display (list (breakpoint-label bp)
+		       (breakpoint-offset bp))))
       ;; for Exercise 5.12
       (define (store-instruction inst)
 	(set! raw-instructions (cons inst raw-instructions)))
@@ -209,13 +234,20 @@
 	      ((eq? message 'trace-on-register) trace-on-register)
 	      ((eq? message 'trace-off-register) trace-off-register)
 	      ((eq? message 'track-labels) track-labels)
+	      ;; for Exercise 5.19
+	      ((eq? message 'set-breakpoint) set-breakpoint)
+	      ((eq? message 'cancel-breakpoint) cancel-breakpoint)
+	      ((eq? message 'cancel-all-breakpoints)
+	       (cancel-all-breakpoints))
+	      ((eq? message 'proceed) (proceed))
 	      (else (error "Unknown request -- MACHINE" message))))
       dispatch)))
+
 
 ;;;;;;;;;;;;;;;;;;;
 ;; The Assembler ;;
 ;;;;;;;;;;;;;;;;;;;
-	      
+
 (define (assemble controller-text machine)
   (extract-labels controller-text
 		  (lambda (insts labels)
@@ -243,7 +275,7 @@
 	(stack (machine 'stack))
 	(ops (machine 'operations)))
     (for-each
-     (lambda (inst)
+     (lambda (inst number)
        ;; for Exercise 5.13
        (let ((instruction-registers
 	      (get-instruction-registers (instruction-text inst))))
@@ -252,13 +284,21 @@
 		   instruction-registers))
        ;; for Exercise 5.12
        (save-machine-data (instruction-text inst) machine)
-       
+       ;; for Exercise 5.19
+       (set-instruction-number! inst number)
        (set-instruction-execution-proc!
 	inst
 	(make-execution-procedure
 	 (instruction-text inst) labels machine
 	 pc flag stack ops)))
-     insts)))
+     insts
+     (make-number-list (length insts)))))
+
+(define (make-number-list length)
+  (define (recur n l)
+    (cond ((eq? l 0) '())
+	  (else (cons n (recur (+ n 1) (- l 1))))))
+  (recur 1 length))
 
 (define (save-machine-data inst machine)
   ;; save instruction
@@ -293,16 +333,22 @@
 
 
 (define (make-instruction text)
-  (cons text '()))
+  (cons 0 (cons text '())))
 
 (define (instruction-text inst)
-  (car inst))
+  (cadr inst))
 
 (define (instruction-execution-proc inst)
-  (cdr inst))
+  (cddr inst))
 
 (define (set-instruction-execution-proc! inst proc)
-  (set-cdr! inst proc))
+  (set-cdr! (cdr inst) proc))
+
+(define (set-instruction-number! inst number)
+  (set-car! inst number))
+
+(define (instruction-number inst)
+  (car inst))
 
 (define (make-label-entry label-name insts)
   (cons label-name insts))
@@ -425,7 +471,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Other instructions ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-	 
+
 (define (make-save inst machine stack pc)
   (let ((reg (get-register machine
 			   (stack-inst-reg-name inst))))
@@ -515,7 +561,7 @@
 	(cadr val)
 	(error "Unknown operation -- ASSEMBLE" symbol))))
 
-     
+
 ;;;;;;;;;;;;;;;;;;
 ;; Exercise 5.9 ;;
 ;;;;;;;;;;;;;;;;;;
@@ -679,7 +725,7 @@
      (assign val (const 1))
      (goto (reg continue))
      fact-done)))
-	    
+
 (define gcd-machine
   (make-machine
    ;;'(a b t)
@@ -743,7 +789,31 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Exercise 5.14 ;;
 ;;;;;;;;;;;;;;;;;;;
-	      
+
 ;; TP(n) = 2 * n - 2
 ;; MD(n) = 2 * n - 2
 
+;;;;;;;;;;;;;;;;;;;
+;; Exercise 5.19 ;;
+;;;;;;;;;;;;;;;;;;;
+
+(define (make-breakpoint label n)
+  (list n label))
+
+(define (breakpoint-label bp)
+  (cadr bp))
+
+(define (breakpoint-offset bp)
+  (car bp))
+
+(define (set-breakpoint machine label index)
+  ((machine 'set-breakpoint) label index))
+
+(define (cancel-breakpoint machine label index)
+  ((machine 'cancel-breakpoint) label index))
+
+(define (cancel-all-breakpoints machine)
+  (machine 'cancell-all-breakpoints))
+
+(define (proceed-machine machine)
+  (machine 's
