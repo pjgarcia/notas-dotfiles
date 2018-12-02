@@ -17,11 +17,25 @@
 ;;;;;;;;;;;;;;;
 
 (define (make-register name)
-  (let ((contents '*unassigned*))
+  (let ((contents '*unassigned*)
+	(tracing #f))
+    (define (trace old new)
+      (if tracing
+	  (begin
+	    (newline)
+	    (display (list name ':
+			   'old old
+			   'new new)))))
     (define (dispatch message)
       (cond ((eq? message 'get) contents)
 	    ((eq? message 'set)
-	     (lambda (value) (set! contents value)))
+	     (lambda (value)
+	       (trace contents value)
+	       (set! contents value)))
+	    ((eq? message 'trace-on)
+	     (set! tracing #t))
+	    ((eq? message 'trace-off)
+	     (set! tracing #f))
 	    (else
 	     (error "Unknown request -- REGISTER" message))))
     dispatch))
@@ -154,6 +168,12 @@
 	    (allocate-register reg-name)))
       (define (track-labels l)
 	(set! labels l))
+      (define (trace-on-register reg-name)
+	(let ((reg (lookup-register reg-name)))
+	  (reg 'trace-on)))
+      (define (trace-off-register reg-name)
+	(let ((reg (lookup-register reg-name)))
+	  (reg 'trace-off)))
       (define (dispatch message)
 	(cond ((eq? message 'start)
 	       (set-contents! pc the-instructions-sequence)
@@ -186,6 +206,8 @@
 	      ((eq? message 'trace-off)
 	       (set! tracing #f)
 	       'stopped-tracing)
+	      ((eq? message 'trace-on-register) trace-on-register)
+	      ((eq? message 'trace-off-register) trace-off-register)
 	      ((eq? message 'track-labels) track-labels)
 	      (else (error "Unknown request -- MACHINE" message))))
       dispatch)))
