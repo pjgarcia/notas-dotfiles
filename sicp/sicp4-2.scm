@@ -844,7 +844,7 @@
 ;; Exercise 4.44 ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(define empty-board null)
+(define empty-board '())
 
 (define (list-up-to n)
   (if (< n 0)
@@ -859,7 +859,8 @@
 			      (- board-size 1)))
 	      (new-queen (apply amb (list-up-to k))))
 	  (require (safe? k (cons new-queen smaller-board)))
-	  (cons new-queen smaller-board)))))
+	  (cons new-queen smaller-board))))
+  2)
 	      
 (define (safe? k board)
   (and (not (safe-horizontally? board))

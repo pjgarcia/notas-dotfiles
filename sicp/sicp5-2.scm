@@ -500,6 +500,8 @@
 	    (advance-pc pc)))
 	(error "Bad PERFORM instruction -- ASSEMBLE" inst))))
 
+(define (perform-action inst) (cdr inst))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Execution procedures for subexpressions ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -816,4 +818,4 @@
   (machine 'cancell-all-breakpoints))
 
 (define (proceed-machine machine)
-  (machine 's
+  (machine 'proceed))
