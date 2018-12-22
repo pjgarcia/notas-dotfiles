@@ -20,15 +20,21 @@
 	(list 'lambda? lambda?)
 	(list 'begin? begin?)
 	(list 'application? application?)
+	;; evaluating simple expressions
 	(list 'lookup-variable-value lookup-variable-value)
 	(list 'text-of-quotation text-of-quotation)
+	(list 'lambda-parameters lambda-parameters)
+	(list 'lambda-body lambda-body)
+	(list 'make-procedure make-procedure)
 	;; evaluating procedure applications
 	(list 'operands operands)
 	(list 'operator operator)
 	(list 'empty-arglist empty-arglist)
 	(list 'no-operands? no-operands?)
+	(list 'first-operand first-operand)
 	(list 'last-operand? last-operand?)
 	(list 'adjoin-arg adjoin-arg)
+	(list 'rest-operands rest-operands)
 	;; procedure application
 	(list 'primitive-procedure? primitive-procedure?)
 	(list 'compound-procedure? compound-procedure?)
@@ -51,6 +57,9 @@
 	(list 'assignment-variable assignment-variable)
 	(list 'assignment-value assignment-value)
 	(list 'set-variable-value! set-variable-value!)
+	(list 'definition-variable definition-variable)
+	(list 'definition-value definition-value)
+	(list 'define-variable! define-variable!)
 	;; running the evaluator
 	(list 'prompt-for-input prompt-for-input)
 	(list 'read read)
