@@ -80,6 +80,16 @@
     (perform (op announce-output) (const ";;; EC-Eval value: "))
     (perform (op user-print) (reg val))
     (goto (label read-eval-print-loop))
+    unknown-expression-type
+    (assign val (const unknown-expression-type-error))
+    (goto (label signal-error))
+    unknown-procedure-type
+    (restore continue) ;; clean up stack (from apply-dispatch)
+    (assign val (const unknown-expression-type-error))
+    (goto (label signal-error))
+    signal-error
+    (perform (op user-print) (reg val))
+    (goto (label read-eval-print-loop))
     ;; entire machine controller
     eval-dispatch
     (test (op self-evaluating?) (reg exp))
@@ -232,7 +242,6 @@
     (perform (op set-variable-value!) (reg unev) (reg val) (reg env))
     (assign val (const ok))
     (goto (reg continue))
-    ;; TODO falta ev-definition
     ev-definition
     (assign unev (op definition-variable) (reg exp))
     (save unev)
