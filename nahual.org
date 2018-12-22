@@ -9,5 +9,5 @@
    SCHEDULED: <2018-09-25 Tue>
 ** DONE CP de Viviana Perez
    SCHEDULED: <2018-09-25 Tue>
-** TODO armar manual de Drive para La Poderosa
+** DONE armar manual de Drive para La Poderosa
    SCHEDULED: <2018-09-25 Tue>
