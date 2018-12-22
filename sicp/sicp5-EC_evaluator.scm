@@ -165,7 +165,7 @@
     (goto (label eval-dispatch))
     ev-appl-accum-last-arg
     (restore argl)
-    (assign argl (op adjoin-arg (reg val) (reg argl)))
+    (assign argl (op adjoin-arg) (reg val) (reg argl))
     (restore proc)
     (goto (label apply-dispatch))
     ;; procedure aplication
