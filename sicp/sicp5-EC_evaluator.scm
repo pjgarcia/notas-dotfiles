@@ -233,6 +233,21 @@
     (assign val (const ok))
     (goto (reg continue))
     ;; TODO falta ev-definition
+    ev-definition
+    (assign unev (op definition-variable) (reg exp))
+    (save unev)
+    (assign exp (op definition-value) (reg exp))
+    (save env)
+    (save continue)
+    (assign continue (label ev-definition-1))
+    (goto (label eval-dispatch)) ;; evaluate the definition value
+    ev-definition-1
+    (restore continue)
+    (restore env)
+    (restore unev)
+    (perform (op define-variable!) (reg unev) (reg val) (reg env))
+    (assign val (const ok))
+    (goto (reg continue))
     ))
 
 (define eceval
