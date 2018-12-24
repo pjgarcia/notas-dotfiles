@@ -546,6 +546,7 @@
 		(make-primitive-exp e machine labels))
 	      (operation-exp-operands exp))))
     (lambda ()
+      ;; TODO: el apply de aca tiene la redefinicion del 4
       (apply op (map (lambda (p) (p)) aprocs)))))
 
 (define (operation-exp? exp)
