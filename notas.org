@@ -3,13 +3,9 @@
 
 * Todos
 ** TODO sacar el mail ppmauro@hotmail.com de ICBC (tambien falta Movistar y Fibertel)
-** DONE hablar con Esteban Gonzales por automatizacion el Ruby
 ** TODO levantar Semillero (Docker)
-** DONE corregir CP de Rebeca
-** DONE arreglar con Denu sobre correcciones
-** DONE arreglar como seguir y avisarle a las alumnas
-** DONE agregar PDF del libro a la docu				     :pagina:
-** DONE sacar fechas de la seccion "cursos"
+** TODO ir a San Lorenzo 371 feria "A cultivar que se acaba el mundo"
+   SCHEDULED: <2018-12-29 sáb>
 * MESH NETWORKING                                                      :mesh:
 ** ver que router usar y comprarlo
 ** ver en libremesh.org o altermundi los pasos basicos de instalacion
