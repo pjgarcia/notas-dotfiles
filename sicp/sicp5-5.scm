@@ -224,3 +224,58 @@
 		    (code-to-get-rest-args (cdr operand-codes))))))
 
 ;; Applying procedures
+(define (compile-procedure-call target linkage)
+  (let ((primitive-branch (make-label 'primitive-branch))
+	(compiled-branch (make-label 'compiled-branch))
+	(after-call (make-label 'after-call)))
+    (let ((compiled-linkage
+	   (if (eq? linkage 'next) after-call linkage)))
+      (apend-instruction-sequences
+       (make-instruction-sequence '(proc) '()
+				  ,((test (op primitive-procedure?) (reg proc))
+				    (branch (label ,primitive-branch))))
+       (parallel-instruction-sequences
+	(append-instruction-sequences
+	 compiled-branch
+	 (compile-proc-appl target compiled-linkage))
+	(append-instruction-sequences
+	 primitive-branch
+	 (end-with-linkage linkage
+			   (make-instruction-sequence
+			    '(proc argl) (list target)
+			    `((assign ,target
+				      (op apply-primitive-procedure)
+				      (reg proc)
+				      (reg argl)))))))
+       after-call))))
+
+;; Applying compiled procedures
+(define (compile-proc-appl target linkage)
+  (cond ((and (eq? target 'val) (not (eq? linkage 'return)))
+	 (make-instruction-sequence
+	  '(proc) all-regs
+	  `((assign continue (label ,linkage))
+	    (assign val (op compiled-procedure-entry) (reg proc))
+	    (goto (reg val)))))
+	((and (not (eq? target 'val))
+	      (not (eq? linkage 'return)))
+	 (let ((proc-return (make-label 'proc-return)))
+	   (make-instruction-sequence
+	    '(proc) all-regs
+	    `((assign continue (label ,proc-return))
+	      (assign val (op compiled-procedure-entry) (reg proc))
+	      (goto (reg val))
+	      ,proc-return
+	      (assign ,target (reg val))
+	      (goto (label ,linkage))))))
+	((and (eq? target 'val) (eq? linkage 'return))
+	 (make-instruction-sequence
+	  '(proc continue) all-regs
+	  `((assign val (op compiled-procedure-entry) (reg proc))
+	    (goto (reg val)))))
+	((and (not (eq? target 'val)) (eq? linkage 'return))
+	 (error "return linkage, target not val -- COMPILE" target))))
+
+(define all-tags '(env proc val argl continue))
+
+;; Combining Instruction Sequences
