@@ -172,6 +172,15 @@
 		(reg argl)
 		(reg env))))
      (compile-sequence (lambda-body exp) 'val 'return))))
+	
+
+(define (make-compiled-procedure entry env)
+  (list 'compiled-procedure entry env))
+(define (compiled-procedure? proc)
+  (tagged-list? proc 'compiled-procedure))
+(define (compiled-procedure-entry c-proc) (cadr c-proc))
+(define (compiled-procedure-env c-proc) (caddr c-proc))
+
 
 ;; Compiling Combinations
 (define (compile-application exp target linkage)
@@ -213,15 +222,5 @@
 	(preserving '(env)
 		    code-for-next-arg
 		    (code-to-get-rest-args (cdr operand-codes))))))
-		     
 
-	
-		     
-	
-
-(define (make-compiled-procedure entry env)
-  (list 'compiled-procedure entry env))
-(define (compiled-procedure? proc)
-  (tagged-list? proc 'compiled-procedure))
-(define (compiled-procedure-entry c-proc) (cadr c-proc))
-(define (compiled-procedure-env c-proc) (caddr c-proc))
+;; Applying procedures
