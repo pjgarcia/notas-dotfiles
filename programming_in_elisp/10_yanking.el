@@ -1,0 +1,5 @@
+(setq flowers (list 'roses 'violet 'amapola 'other))
+(car flowers)
+(car (nthcdr 1 flowers))
+(car (nthcdr 2 flowers))
+(car (nthcdr 3 flowers))
