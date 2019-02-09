@@ -38,3 +38,20 @@
  
 
 (global-set-key "\C-c=" 'count-words-example)
+
+(defun count-punctuation-marks (beggining end)
+  "Counts the number of punctuation marks in a region.
+Period, comma, semicolon, colon, exclamation mark and
+question mark."
+  (interactive "r")
+  (save-excursion
+    (goto-char beggining)
+    (let ((count 0))
+      (while (re-search-forward "[,.;:!?]" end t)
+	(setq count (1+ count)))
+      (cond ((zerop count)
+	     (message "The region does NOT have punctuation marks."))
+	    ((= count 1)
+	     (message "The region has 1 punctuation mark."))
+	    (t
+	     (message "The region has %d punctuation marks." count))))))
