@@ -1,6 +1,6 @@
 (insert-rectangle '("first" "second" "third"))
 
-(defvar graph-symbol "*" "String used as a symbol in graph.")
+(defvar graph-symbol "*" "String used as a symthirdbol in graph.")
 (defvar graph-blank " " "String used as a blank in graph.")
 
 
@@ -15,8 +15,6 @@
       (setq column (cons graph-blank column))
       (setq spaces (1- spaces)))
     column))
-
-(column-of-graph 4 3)
 
 (defun graph-body-print (numbers-list)
   "Print a bar graph of the NUMBERS-LIST.
@@ -40,4 +38,37 @@ The numbers-list consist of the y-axis values."
 (graph-body-print '(1 2 3))
 
 
+(defun recursive-print (columns height symbol-width)
+  (unless (null columns)
+    (let ((from-position (point)))
+      (insert-rectangle
+       (column-of-graph height (car columns)))
+      (goto-char from-position)
+      (forward-char symbol-width)
+      (sit-for 0)
+      (recursive-print (cdr columns)
+		       height
+		       symbol-width))))
+
+(defun recursive-graph-body-print (numbers-list)
+  (let ((height (apply 'max numbers-list))
+	(symbol-width (length graph-symbol)))
+    (recursive-print numbers-list height symbol-width)
+    (forward-line height)
+    (insert "\n")))
+
+(recursive-graph-body-print '(1 2 3))
+
+
+(defun line-graph-body-print (numbers-list)
+  (let ((height (apply 'max numbers-list)))
+    (insert "\n")
+    (dolist (number numbers-list)
+      (dotimes (n number)
+	(insert graph-symbol))
+      (dotimes (n (- height number))
+	(insert graph-blank))
+      (insert "\n"))))
+
+(line-graph-body-print '(5 2 3))
 
