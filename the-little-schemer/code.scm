@@ -14,6 +14,13 @@
 	   (lat? (cdr l)))
 	  (else #f))))
 
+(define member?
+  (lambda (a lat)
+    (cond ((null? lat) #f)
+	  (else
+	   (or ((equal? (car lat) a) #f)	       
+	       (member? a (cdr lat)))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 3. Cons the Magnificent ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -390,9 +397,187 @@
 	   (rember2 s (cdr l)))
 	  (else
 	   (cons (car l)
-		 (rember2 s (cdr l)))))))))
+		 (rember2 s (cdr l)))))))
 
 
 ;;;;;;;;;;;;;;;;
 ;; 6. Shadows ;;
 ;;;;;;;;;;;;;;;;
+
+(define numbered?
+  (lambda (aexp)
+    (cond ((atom? aexp) (number? aexp))
+	  (else
+	   (and (numbered? (car aexp))
+		(numbered? (car (cdr (cdr aexp)))))))))
+
+(define value
+  (lambda (nexp)
+    (cond
+     ((atom? nexp) nexp)
+     ((eq? (operator nexp) '+)
+      (o+ (1st-sub-exp nexp) (2nd-sub-exp nexp)))
+     ((eq? (operator nexp) '*)
+      (x (1st-sub-exp nexp) (2nd-sub-exp nexp)))
+     (else
+      (expt (1st-sub-exp nexp) (2nd-sub-exp nexp))))))
+
+(define 1st-sub-exp
+  (lambda (aexp)
+    (car (cdr aexp))))
+
+(define 2nd-sub-exp
+  (lambda (aexp)
+    (car (cdr (cdr aexp)))))
+
+(define operator
+  (lambda (aexp)
+    (car aexp)))
+
+
+(define sero?
+  (lambda (n)
+    (null? n)))
+
+(define edd1
+  (lambda (n)
+    (cons '() n)))
+
+(define zub1
+  (lambda (n)
+    (cdr n)))
+
+(define oo+
+  (lambda (n m)
+    (cond
+     ((sero? m) n)
+     (else
+      (edd1 (oo+ n (zub1 m)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 7. Friends and Relations ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	   
+(define set?
+  (lambda (lat)
+    (cond
+     ((null? lat) #t)
+     (else
+      (cond
+       ((zero? (occur (car lat) (cdr lat)))
+	(set? (cdr lat)))
+       (else #f))))))
+
+(define set?
+  (lambda (lat)
+    (cond
+     ((null? lat) #t)
+     ((member? (car lat) (cdr lat)) #f)
+     (else
+      (set? (cdr lat))))))
+
+(define makeset1
+  (lambda (lat)
+    (cond ((null? lat) '())
+	  ((member? (car lat) (cdr lat))
+	   (makeset (cdr lat)))
+	  (else
+	   (cons (car lat)
+		 (makeset (cdr lat)))))))
+
+(define makeset
+  (lambda (lat)
+    (cond ((null? lat) '())
+	  (else
+	   (cons (car lat)
+		 (rember (car lat)
+			 (makeset (cdr lat))))))))
+
+(define subset?
+  (lambda (set1 set2)
+    (cond ((null? set1) #t)
+	  (else (and (member? (car set1) set2)
+		     (subset? (cdr set1) set2))))))
+
+(define eqset?
+  (lambda (set1 set2)
+    (and (subset? set1 set2)
+	 (subset? set2 set1))))
+
+(define intersetct?
+  (lambda (set1 set2)
+    (cond ((null? set1) #f)
+	  (else
+	   (or (member? (car set1) set2)
+	       (intersect? (cdr set1) set2))))))
+
+(define intersect
+  (lambda (set1 set2)
+    (cond ((null? set1) '())
+	  ((member? (car set1) set2)
+	   (cons (car set1)
+		 (intersect (cdr set1) set2)))
+	  (else
+	   (intersect (cdr set1) set2)))))
+
+(define union
+  (lambda (set1 set2)
+    (cond ((null? set1) set2)
+	  ((member? (car set1) set2)
+	   (union (cdr set1) set2))
+	  (else
+	   (cons (car set1)
+		 (union (cdr set1) set2))))))
+
+(define intersectall
+  (lambda (l-set)
+    (cond
+     ((null? (cdr l-set)) (car l-set))
+     (else
+      (intersect (car l-set)
+		 (intersectall (cdr l-set)))))))
+
+(define a-pair?
+  (lambda (x)
+    (cond ((atom? x) #f)
+	  ((or (null? x)
+	       (null? (cdr x))) #f)
+	  (else
+	   (null? (cdr (cdr x)))))))
+
+(define first
+  (lambda (x)
+    (car x)))
+
+(define second
+  (lambda (x)
+    (car (cdr x))))
+
+(define build
+  (lambda (s1 s2)
+    (cons s1 (cons s2 '()))))
+
+(define third
+  (lambda (x)
+    (car (cdr (cdr x)))))
+
+(define fun?
+  (lambda (rel)
+    (set? (firsts rel))))
+
+(define revrel
+  (lambda (rel)
+    (cond
+     ((null? rel) '())
+     (else
+      (cons (build (second (car rel))
+		   (first (car rel)))
+	    (revrel (cdr rel)))))))
+
+(define fullfun?
+  (lambda (fun)
+    (fun? (revrel fun)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 8. Lambda the Ultimate ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
