@@ -576,8 +576,176 @@
 
 (define fullfun?
   (lambda (fun)
-    (fun? (revrel fun)))))
+    (fun? (revrel fun))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 8. Lambda the Ultimate ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define rember-f
+  (lambda (test?)
+    (lambda (a l)
+      (cond ((null? l) '())
+	    ((test? a (car l))
+	     (cdr l))
+	    (else
+	     (cons (car l)
+		   ((rember-f test?) a (cdr l))))))))
+
+(define insertL-f
+  (lambda (test?)
+    (lambda (new old l)
+      (cond ((null? l) '())
+	    ((test? (car l) old)
+	     (cons new
+		   (cons old (cdr l))))
+	    (else
+	     (cons (car l)
+		   ((insertL-f test?) new old (cdr l))))))))
+
+(define insertR-f
+  (lambda (test?)
+    (lambda (new old l)
+      (cond ((null? l) '())
+	    ((test? (car l) old)
+	     (cons old
+		   (cons new (cdr l))))
+	    (else
+	     (cons (car l)
+		   ((insertR-f test?) new old (cdr l))))))))
+
+(define insert-g
+  (lambda (test? arrange)
+    (lambda (new old l)
+      (cond ((null? l) '())
+	    ((test? (car l) old)
+	     (arrange new old (cdr l)))
+	    (else
+	     (cons (car l)
+		   ((insert-g test? arrange) new old (cdr l))))))))
+
+(define seqL
+  (lambda (new old l)
+    (cons new (cons old l))))
+
+(define seqR
+  (lambda (new old l)
+    (cons old (cons new l))))
+
+(define insertL (insert-g eq? seqL))
+
+(define seqS
+  (lambda (new old l)
+    (cons new l)))
+
+(define subs (insert-g eq? seqS))
+
+(define atom-to-function
+  (lambda (x)
+    (cond ((eq? x '+) o+)
+	  ((eq? x 'x) x)
+	  (else ^))))
+
+(define value
+  (lambda (nexp)
+    (cond ((atom? nexp) nexp)
+	  (else
+	   ((atom-to-function (operator nexp))
+	    (value (first nexp))
+	    (value (second nexp)))))))
+
+(define multiremberT
+  (lambda (test? lat)
+    (cond ((null? lat) '())
+	  ((test? (car lat))
+	   (multirember test? (CDR LAT)))
+	  (cons (car lat)
+		(multiremberT test? (cdr lat))))))
+
+(define multiinsertLR
+  (lambda (new oldL oldR lat)
+    (cond ((null? lat) '())
+	  ((eq? oldL oldR) lat)
+	  ((eq? (car lat) oldL)
+	   (cons new
+		 (cons oldL
+		       (multiinsertLR new oldL oldR (cdr lat)))))
+	  ((eq? (car lat) oldR)
+	   (cons oldR
+		 (cons new
+		       (multiinsertLR new oldL oldR (cdr lat)))))
+	  (else
+	   (cons (car lat)
+		 (multiinsertLR new oldL oldR (cdr lat)))))))
+
+(define multiinsertLR&co
+  (lambda (new oldL oldR lat col)
+    (cond ((null? lat) (col '() 0 0))
+	  ((eq? oldL oldR) (col lat 0 0))
+	  ((eq? (car lat) oldL)
+	   (multiinsertLR&co new oldL oldR (cdr lat)
+			  (lambda (newlat insertionsL insertionsR)
+			    (col (cons new (cons oldL newlat))
+				 (add1 insertionsL)
+				 insertionsR))))
+	  ((eq? (car lat) oldR)
+	   (multiinsertLR&co new oldL oldR (cdr lat)
+			  (lambda (newlat insertionsL insertionsR)
+			    (col (cons oldR (cons new newlat))
+				 insertionsL
+				 (add1 insertionsR)))))
+	  (else
+	   (multiinsertLR&co new oldL oldR (cdr lat)
+			  (lambda (newlat insertionsL insertionsR)
+			    (col (cons (car lat) newlat)
+				 insertionsL
+				 insertionsR)))))))
+
+(define even?
+  (lambda (n)
+    (= (x (/ n 2) 2) n)))
+
+(define evens-only*
+  (lambda (l)
+    (cond ((null? l) '())
+	  ((atom? (car l))
+	   (cond ((even? (car l))
+		  (cons (car l)
+			(evens-only* (cdr l))))
+		 (else
+		  (evens-only* (cdr l)))))
+	  (else
+	   (cons
+	    (evens-only* (car l))
+	    (evens-only* (cdr l)))))))
+
+(define evens-only*&co
+  (lambda (l col)
+    (cond ((null? l) (col '() 1 0))
+	  ((atom? (car l))
+	   (cond ((even? (car l))
+		  (evens-only*&co (cdr l)
+				  (lambda (evens even-prod odd-sum)
+				    (col (cons (car l) evens)
+					 (x even-prod (car l))
+					 odd-sum))))
+		 (else
+		  (evens-only*&co (cdr l)
+				  (lambda (evens even-prod odd-sum)
+				    (col evens
+					 even-prod
+					 (o+ odd-sum (car l))))))))
+	  (else
+	   (evens-only*&co (cdr l)
+			   (lambda (evens even-prod odd-sum)
+			     (evens-only*&co
+			      (car l)
+			      (lambda (e ep os)
+				(col (cons e evens)
+				     (x ep even-prod)
+				     (o+ os odd-sum))))))))))
+						       
+						       
+					     
+
+					 
