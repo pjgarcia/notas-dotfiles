@@ -744,8 +744,76 @@
 				(col (cons e evens)
 				     (x ep even-prod)
 				     (o+ os odd-sum))))))))))
-						       
-						       
-					     
 
-					 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 9. ...and Again, and Again, and Again,... ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+						       
+(define looking
+  (lambda (a lat)
+    (keep-looking a (pick 1 lat) lat)))
+
+(define keep-looking
+  (lambda (a b lat)
+    (cond ((number? b)
+	   (keep-looking a (pick b lat) lat))
+	  (else
+	   (eq? a b)))))
+
+
+(define eternity
+  (lambda (x)
+    (eternity x)))
+
+((lambda (length)
+   (lambda (l)
+     (cond
+      ((null? l) 0)
+      (else
+       (add1 (length (cdr l)))))))
+ eternity)
+
+((lambda (length)
+   (lambda (l)
+     (cond
+      ((null? l) 0)
+      (else
+       (add1 (length (cdr l)))))))
+ ((lambda (length)
+    (lambda (l)
+      (cond
+       ((null? l) 0)
+       (else
+	(add1 (length (cdr l)))))))
+  eternity))
+
+((lambda (length)
+   (lambda (l)
+     (cond
+      ((null? l) 0)
+      (else
+       (add1 (length (cdr l)))))))
+ ((lambda (length)
+    (lambda (l)
+      (cond
+       ((null? l) 0)
+       (else
+	(add1 (length (cdr l)))))))
+  ((lambda (length)
+     (lambda (l)
+       (cond
+	((null? l) 0)
+	(else
+	 (add1 (length (cdr l)))))))
+   eternity)))
+
+((lambda (mk-length)
+   (mk-length
+    (mk-length eternity)))
+ (lambda (length)
+   (lambda (l)
+     (cond
+      ((null? l) 0)
+      (else
+       (add1 (length (cdr l))))))))
+
