@@ -1,6 +1,0 @@
-
-* COMPUTADORA "Taurinus X200" (Core 2 Duo 2.26 GHz, 4GB + 240SSD)
-  + Libiquity :: $624 2 semanas de demora aprox. [[https://shop.libiquity.com/product/taurinus-x200][libiquity]]
-  + Minifree :: E408 + E45 (shipping ups) [[https://minifree.org/product/libreboot-x200/?attribute_storage-and-ram=4GiB+RAM+and+240GB+SSD][minifree]] $567    
-  + Vikings :: E330 + E184 (shipping ups VER) [[https://store.vikings.net/x200-ryf-certfied][vikings]] $630
-  + Technoetical :: E478 + E30 (shipping) $620 NO-STOCK [[https://tehnoetic.com/laptops/tet-x200s][technoetical]]
