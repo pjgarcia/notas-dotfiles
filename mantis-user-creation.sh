@@ -1,19 +1,16 @@
 #!/bin/bash
 
-#####################################################################################################
-# Script para generar usuarios de alumnes en Mantis						    #
-# Para usarlo hay que:										    #
-# 1- copiar la lista de mails de una planilla (la de asistencias por ejemplo)			    #
-# 2- guardarla en un archivo de nombre mantis-user-creation-emails.txt al mismo nivel que el script #
-# 3- darle permisos de ejecucion, con chmod +x <nombre_del_script>				    #
-# 4- ejecutarlo, con ./<nombre_del_script>							    #
-# 												    #
-# Los usuarios se crean con los siguientes datos:						    #
-# - mail: mail											    #
-# - username: username del mail (lo que esta antes del arroba)					    #
-# - password: "cambiame"									    #
-# - nombre: username										    #
-#####################################################################################################
+# Script para generar usuarios de alumnes en Mantis						    
+# Para usarlo hay que:										    
+# 1- copiar la lista de mails de una planilla (la de asistencias por ejemplo), y guardarla en un archivo 
+# 2- darle permisos de ejecucion, con chmod +x <nombre_del_script>				    
+# 3- ejecutarlo, con ./<nombre_del_script> <archivo_de_mails>
+
+# Los usuarios se crean con los siguientes datos:						    
+# - mail: mail											    
+# - username: username del mail (lo que esta antes del arroba)					    
+# - password: "cambiame"									    
+# - nombre: username					
 
 generate_cookie_string() {
     # el manual de uuidgen dice que el uuid generado puede ser considerado unico
