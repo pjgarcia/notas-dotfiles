@@ -48,6 +48,15 @@ create_user_in_db() {
 }
 
 
-for email in $(cat mantis-user-creation-emails.txt) ; do
-    create_user_in_db $email
-done
+if [ $1 -a -e $1 ]; then
+    emails_file=$1
+    for email in $(cat $emails_file) ; do
+	create_user_in_db $email
+    done    
+else
+    echo "Buuuuuuuuuu..."
+    echo "No me pasaste un archivo del cual sacar los mails de los users a crear."
+    echo "Copialos de una lista (por ejemplo la de asistencias) en un archivo"
+    echo "y ejecuta el script con la ruta a ese archivo como argumento"
+    echo "./<script> <archivo_de_mails>"
+fi
