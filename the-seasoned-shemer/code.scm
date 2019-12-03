@@ -159,3 +159,48 @@
 		       (cons (car tup) rev-pre))))))))
     (lambda (tup)
       (S tup (quote ())))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 13. Hop, Skip and Jump ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define intersect
+  (lambda (set1 set2)
+    (letrec
+	((I (lambda (set1)
+	      (cond
+	       ((null? set1) (quote ()))
+	       ((M? (car set1) set2)
+		(cons (car set1)
+		      (I (cdr set1)
+			 set2)))
+	       (else
+		(I (cdr set1)
+		   set2)))))
+	 (M? (lambda (a lat)
+	       (cond
+		((null? lat) #f)
+		((eq? (car lat) a) #t)
+		(else
+		 (M? a (cdr lat)))))))
+      (I set1))))
+
+(define instersectall
+  (lambda (lset)
+    (letrec
+	((I (lambda (lset)
+	      (cond
+	       ((null? (cdr lset))
+		(car lset))
+	       (else
+		(intersect
+		 (car lset)
+		 (I (cdr lset))))))))
+      (cond
+       ((null? lset) (quote ()))
+       (else (I lset))))))
+	 
+
+	       
+
+     
