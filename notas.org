@@ -2,6 +2,10 @@
 #+FILETAGS: :notas_personales:
 
 * MESH NETWORKING                                                      :mesh:
+** OpenWRT
+   En [[https://openwrt.org/docs/guide-quick-start/walkthrough_wifi][walkthrough_wifi]] dice "feel free to scan through the settings; they're pretty *interesting if you want to learn more about how OpwnWRT works.*
+
+
 ** Libro: [[file:~/Downloads/The%20community%20network%20manual%20-%20how%20to%20build%20the%20internet%20yourself.pdf][The community network manual]]
 ** ver que router usar y comprarlo
 ** ver en libremesh.org o altermundi los pasos basicos de instalacion
@@ -29,4 +33,8 @@
    - tmux list-commands :: lists out every tmux command and its arguments
    - tmux info :: lists out every session, window, pane, its pid, etc. 
    - tmux source-file ~/.tmux.conf :: reloads the current tmux configuration (based on a default tmux config)
+
+
+
+
 

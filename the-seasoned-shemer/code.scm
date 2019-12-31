@@ -164,43 +164,60 @@
 ;; 13. Hop, Skip and Jump ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define intersect
-  (lambda (set1 set2)
-    (letrec
-	((I (lambda (set1)
-	      (cond
-	       ((null? set1) (quote ()))
-	       ((M? (car set1) set2)
-		(cons (car set1)
-		      (I (cdr set1)
-			 set2)))
-	       (else
-		(I (cdr set1)
-		   set2)))))
-	 (M? (lambda (a lat)
-	       (cond
-		((null? lat) #f)
-		((eq? (car lat) a) #t)
-		(else
-		 (M? a (cdr lat)))))))
-      (I set1))))
-
 (define instersectall
   (lambda (lset)
+    (letcc hop
+	   (letrec
+	       ((A (lambda (lset)
+		     (cond
+		      ((null? (car lset))
+		       (hop (quote ())))
+		      ((null? (cdr lset))
+		       (car lset))
+		      (else
+		       (I (car lset)
+			  (A (cdr lset)))))))
+		(I (lambda (s1 s2)
+		     (letrec
+			 ((M? (lambda (s)
+				(cond				  
+				 ((null? s) (quote ()))
+				 ((member? (car s))
+				  (cons (car s)
+					(I (cdr s))))
+				 (else
+				  (I (cdr s)))))))
+		       (cond
+			((null? s2) (hop (quote ())))
+			(else (M? s))))))
+		(cond
+		 ((null? lset) (quote ()))
+		 (else (A lset))))))))
+  
+
+(define rember
+  (lambda (a lat)
     (letrec
-	((I (lambda (lset)
+	((R (lambda (lat)
 	      (cond
-	       ((null? (cdr lset))
-		(car lset))
+	       ((null? lat) (quote ()))
+	       ((eq? a (car lat))
+		(cdr lat))
 	       (else
-		(intersect
-		 (car lset)
-		 (I (cdr lset))))))))
-      (cond
-       ((null? lset) (quote ()))
-       (else (I lset))))))
-	 
-
-	       
-
-     
+		(cons (car lat)
+		      (R (cdr lat))))))))
+      (R lat))))
+		      
+(define rember-upto-last
+  (lambda (a lat)
+    (letcc skip
+	   (letrec
+	       ((R (lambda (lat)
+		     (cond
+		      ((null? lat) (quote ()))
+		      ((eq? a (car lat))
+		       (skip (R (cdr lat))))
+		      (else
+		       (cons (car lat)
+			     (R (cdr lat))))))))
+	     (R lat)))))
