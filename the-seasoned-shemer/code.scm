@@ -221,3 +221,45 @@
 		       (cons (car lat)
 			     (R (cdr lat))))))))
 	     (R lat)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 14. Let There Be Names ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define leftmost
+  (lambda (l)
+    (cond
+     ((null? l) (quote ()))
+     ((atom? (car l)) (car l))
+     (else
+      (let ((a (leftmost (car l))))
+	(cond
+	 ((atom? a) a)
+	 (else
+	  (leftmost (cdr l)))))))))
+
+(define rember1*
+  (lambda (a l)
+    (letrec
+	((R (lambda (l)
+	      (cond
+	       ((null? l) (quote ()))
+	       ((atom? (car l))
+		(cond
+		 ((eq? (car l) a)
+		  (cdr l))
+		 (else
+		  (cons (car l)
+			(R (cdr l))))))
+	       (else
+		(let ((av (R (car l))))
+		  (cond
+		   ((eqlist? av (car l))
+		    (cons (car l)
+			  (R (cdr l))))
+		   (else
+		    (cons av
+			  (cdr l)))))))))
+      (R l))))
+
+  
