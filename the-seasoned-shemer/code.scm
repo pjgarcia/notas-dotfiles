@@ -260,6 +260,40 @@
 		   (else
 		    (cons av
 			  (cdr l)))))))))
-      (R l))))
+      (R l)))))
 
-  
+(define depth*
+  (lambda (l)
+    (cond
+     ((null? l) 1)
+     ((atom? (car l))
+      (depth* (cdr l)))
+     (else
+      (max (add 1 (depth* (car l)))
+	   (depth* (cdr l)))))))
+
+
+(define scramble
+  (letrec
+      ((S (lambda (tup rev-pre)
+	    (cond
+	     ((null? tup) (quote ()))
+	     (else
+	      (let ((a (cons (car tup) rev-pre)))
+	      (cons (pick (car tup) a)
+		    (S (cdr tup) a))))))))
+    (lambda (tup)
+      (S tup (quote ())))))
+
+(define leftmost
+  (lambda (l)
+    (letcc skip
+	   (letrec ((lm (lambda (l) 
+			  (cond
+			   ((null? l) (quote ()))
+			   ((atom? (car l)) (skip (car l)))
+			   (else
+			    (let ()
+			      (lm (car l))
+			      (lm (cdr l))))))))
+	     (lm l)))))
