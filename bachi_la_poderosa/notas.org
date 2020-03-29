@@ -1,0 +1,6 @@
+#+TODO: TODO(t) IN-PROGRESS(p) WAIT(w) | DONE(d) CANCELLED(c)
+#+FILETAGS: :bachi:
+
+* Tasks
+** DONE todo de prueba
+   CLOSED: [2020-03-29 dom 02:40] SCHEDULED: <2020-03-29 dom>

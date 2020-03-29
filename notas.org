@@ -1,5 +1,5 @@
 #+TODO: TODO(t) IN-PROGRESS(p) WAIT(w) | DONE(d) CANCELLED(c)
-#+FILETAGS: :notas_personales:
+#+FILETAGS: :personal:
 
 * MESH NETWORKING                                                      :mesh:
 ** OpenWRT
@@ -38,3 +38,8 @@
 
 
 
+* Tasks
+** DONE todo de prueba personal
+   CLOSED: [2020-03-29 dom 02:40] SCHEDULED: <2020-03-29 dom>
+** TODO [#B] ver como encriptar notas personales
+   SCHEDULED: <2020-03-29 dom>
