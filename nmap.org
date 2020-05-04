@@ -1,0 +1,50 @@
+#+PROPERTY: header-args    :results value verbatim
+* Chapter 3. Host Discovery ("Ping Scanning")
+  
+  #+begin_src bash
+  nmap scanme.nmap.org 192.168.0.0/8 10.0.0,1,3-7.0-255 --exclude insecure.org
+  #+end_src
+  
+  Resuelve la IP a la que ~scanme.nmap.org~ apunta.
+  Le pega al rango 192.0.0.0 - 192.255.255.255, que son 2^24 IPs.
+  Le pega a 10.0.[0,1,3,4,5,6,7].[0-255].
+  Excluye del scan a la IP resuelta por insecure.org (puede ser un rango).
+  
+  Para resolver *dominios a IPs* se puede usar el comando ~host~, especificando los tipos de query.
+  #+begin_src bash
+    host -t ns target.com
+    host -t a target.com
+    host -t aaaa target.com
+    host -t mx target.com
+    host -t soa target.com
+  #+end_src
+
+  Usando ~traceroute~ y "reverse-DNS" permiten obtener dominios a partir de IPs.
+  A veces en necesario checkear que la IP a escanear realmente pertenezca a quien queremos, y no a alguien mas.
+  Tambien se puede usar ~whois~.
+  #+begin_src bash
+  nmap -PN -T4 --traceroute www.target.com
+  whois 207.171.166.49
+  #+end_src
+
+  Para obtener data de ruteo directamente de un router, de los que usan [[https://en.wikipedia.org/wiki/Border_Gateway_Protocol][BGP]] para ruter trafico por los [[https://en.wikipedia.org/wiki/Autonomous_system_(Internet)][AS]].
+  #+begin_src bash
+  telnet route-views.routeviews.org
+  #+end_src
+
+  El flag ~--dns-servers <server1>, <server2>...~ permite especificar las IPs de otros servidores de DNS para usarlos en los reverse DNS queries.
+  
+  Para listar las IPs a escanear, y tambien hacerles reverse DNS queries para saber sus nombres.
+  #+begin_src bash
+  nmap fi.uba.ar/28 -sL
+  #+end_src
+
+  La mejora manera para saber que esta haciendo Nmap es usar ~--packet-tracke~.
+
+  Para hacer SOLO Host Discovery, y evitar escaneo de puertos, usar ~-sn~ (o ~-sP~ que es la version vieja del flag).
+  Para redes locales, Nmap hace discovery con querys ARP.
+  Para redes de afuera, hace echo ICMP (ping) y TCP SYN.
+
+
+  
+
