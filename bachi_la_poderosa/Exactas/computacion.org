@@ -1,0 +1,98 @@
+* 1er año
+** Educación tecnológica
+*** Procesos y tecnologías de control automático
+    La automatización en contextos de trabajo y en la vida
+    cotidiana. La automatización en las grandes ciudades.
+
+*** Las computadoras como sistemas de adquisición, procesamiento, control, simulación y comunicación de información. 
+    Tecnología y vida cotidiana. Barreras de acceso. Tecnologías
+    inclusivas.
+
+    Desarrollar el espíritu crítico en relación con el desarrollo tecnológico.
+
+* 2do año
+** Educación tecnológica
+
+*** Procesos y Tecnologías de las Telecomunicaciones
+    Medios de transmisión: la transmisión a través de cables
+    conductores de electricidad. Internet y los nuevos paradigmas
+    comunicacionales.
+
+*** Procesos y tecnologías de las telecomunicaciones
+    Medios de transmisión: la transmisión a través de cables
+    conductores de electricidad; la transmisión inalámbrica; la
+    transmisión a través de fibras ópticas.
+
+    + Identificar las diferencias entre transportar información y transmitir información.
+    + Analizar comparativamente la transmisión de información mediante diferentes medios.
+    + Caracterizar la transmisión de información inalámbrica.
+
+*** El proceso de creación de tecnologías: el proceso de diseño
+    Conocer y aplicar herramientas informáticas para buscar
+    información, organizarla, modelizarla y compartirla durante la
+    resolución de problemas de diseño, valorando la importancia de
+    documentar los procesos de trabajo y los resultados obtenidos.
+    Buscar y seleccionar información.
+
+*** Tendencias actuales en diseño
+    Analizar casos que permitan comprender conceptos propios de los
+    actuales paradigmas del diseño (diseño de sistemas, *diseño de
+    interfaces entre las personas y el medio*, ergonomía,
+    sustentabilidad ambiental, *obsolescencia programada*, entre
+    otros).
+
+
+
+* 3er año
+** Tecnologías de la Información
+*** Hardware y Software
+    Arquitecturas de computación y sistemas. Partes y
+    funciones. Diferenciación entre las funciones del hardware y del
+    software.
+
+    + Identificación de las funciones principales presentes en una
+      computadora.
+    + Análisis de diferentes tipos de computadoras para reconocer
+      aspectos comunes y también particulares de cada una de ellas.
+    + *Diferenciación entre software libre, software abierto y
+      software propietario.*
+
+*** Introducción al pensamiento computacional
+    Metodología de resolución de problemas computacionales.
+    
+    + Trabajo colaborativo en forma de proyecto.
+    + Identificación de aquellas problemáticas susceptibles de ser
+      resueltas aplicando estrategias y técnicas computacionales
+
+* 4to año
+** Tecnologías de la información
+*** Internet y web.
+    Introducción a las redes digitales de información. Internet como
+    red de redes. La web como sistema hipermedia de información
+    distribuida.
+
+*** Planificacion de proyectos de producción audiovisual
+    Realizar un proyecto de producción audiovisual digital en sus las
+    diferentes etapas: diseño del guion, asignación de roles,
+    selección de herramientas, producción y postproducción.
+
+*** Internet y web
+    Comprender los aspectos que hacen a la seguridad de las
+    aplicaciones y la criptografía en la web.
+
+*** Introducción a la seguridad de las aplicaciones y criptografía en la web
+    + Comprender las vulnerabilidades de las aplicaciones web.
+    + Analizar aspectos de las aplicaciones seguras, según
+      publicaciones vigentes de métodos de intrusión o hacking.
+    + Relacionar vulnerabilidades con mecanismos seguros de
+      autenticación, autorización, uso de claves y transferencia
+      segura de datos.
+
+
+
+* Documentos PDF
+  + marzo - abril :: https://www.buenosaires.gob.ar/sites/gcaba/files/contenidos_priorizados.pdf
+  + Mayo - Junio :: https://www.buenosaires.gob.ar/sites/gcaba/files/contenidos_priorizados_mayo_junio_secundaria_final.pdf
+  + Julio - Septiembre :: https://www.buenosaires.gob.ar/sites/gcaba/files/contenidos_priorizados_julio_septiembre_secundaria_f.pdf
+
+

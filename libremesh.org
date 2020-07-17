@@ -1,0 +1,47 @@
+* VLAN
+  VLAN es un mecanismo para partir lógicamente un switch.
+
+  Por ejemplo, en un switch de 4 puertos ehternet, podríamos querer
+  tener el puerto 1 y 2 separados del 3 y 4. En ese caso, el switch no
+  pasa paquetes de un grupo a otro, sino que depnde de un router para
+  que lo rutee.  *Esto es, porque ahora esos dos grupos forman dos LAN
+  distintas.*
+
+  A ese switch se le pueden unir otros, posiblemente con la misma
+  configuración. *Lógicamente* es como si los dispositivos en los
+  puertos 1 y 2 de cada switch estuvieran *en un mismo switch*.
+
+  Los dispositivos conectados a una misma VLAN pertenecen al mismo
+  *dominio de difusion.*
+
+** TODO VLANs en Libre Mesh
+   
+* Routers, modo de operación, estructura de la red
+  Las antenas operan en 3 modos. 
+  1) Access Point (AP) o master
+  2) Station (STA) o client
+  3) Ad-Hoc o Mesh
+
+** TODO Routers, modo de operación, estructura de la red
+   Hay un grupo de nodos que forman una red de tipo "mesh". Esos nodos
+   rutean el trafico para que las usuarias de la red (que no
+   necesariamente están bajo el mismo nodo) puedan comunicarse.
+
+   Tambien estan los nodos "cliente". Esos son los dispositivos de las
+   personas, que *se conectan a los nodos mesh* así como en una red
+   hogareña tradicional, los dispositivos se conectan al Modem WIFI.
+
+* TODO 802.11s vs ad-hoc
+  En lime-example aparecen 2 cosas relacionadas con "mesh". 
+  Son compatibles?
+  En un nodo con lime están presentes las 2?
+
+* Relacion entre radio/antena, AP, modo
+  Una radio puede tener varios modos al mismo tiempo. Por ejemplo, ser
+  mesh y AP. Ver la sección "valid interface combinations".
+  #+begin_src bash
+  iw phy phy0 info
+  #+end_src
+
+** TODO una radio puede tener varios AP?
+   Al parecer sí.
