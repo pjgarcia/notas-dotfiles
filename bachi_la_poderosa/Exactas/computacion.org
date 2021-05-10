@@ -1,98 +1,219 @@
-* 1er año
-** Educación tecnológica
-*** Procesos y tecnologías de control automático
-    La automatización en contextos de trabajo y en la vida
-    cotidiana. La automatización en las grandes ciudades.
+* Contenidos a priorizar 
+** 1er año
+*** Educación tecnológica
+**** Procesos y tecnologías de control automático
+     La automatización en contextos de trabajo y en la vida
+     cotidiana. La automatización en las grandes ciudades.
 
-*** Las computadoras como sistemas de adquisición, procesamiento, control, simulación y comunicación de información. 
-    Tecnología y vida cotidiana. Barreras de acceso. Tecnologías
-    inclusivas.
+**** Las computadoras como sistemas de adquisición, procesamiento, control, simulación y comunicación de información. :primero:holis:
+     Tecnología y vida cotidiana. Barreras de acceso. Tecnologías
+     inclusivas.
 
-    Desarrollar el espíritu crítico en relación con el desarrollo tecnológico.
+     Desarrollar el espíritu crítico en relación con el desarrollo tecnológico.
 
-* 2do año
-** Educación tecnológica
+** 2do año
+*** Educación tecnológica
 
-*** Procesos y Tecnologías de las Telecomunicaciones
-    Medios de transmisión: la transmisión a través de cables
-    conductores de electricidad. Internet y los nuevos paradigmas
-    comunicacionales.
+**** Procesos y Tecnologías de las Telecomunicaciones
+     Medios de transmisión: la transmisión a través de cables
+     conductores de electricidad. Internet y los nuevos paradigmas
+     comunicacionales.
 
-*** Procesos y tecnologías de las telecomunicaciones
-    Medios de transmisión: la transmisión a través de cables
-    conductores de electricidad; la transmisión inalámbrica; la
-    transmisión a través de fibras ópticas.
+**** Procesos y tecnologías de las telecomunicaciones
+     Medios de transmisión: la transmisión a través de cables
+     conductores de electricidad; la transmisión inalámbrica; la
+     transmisión a través de fibras ópticas.
 
-    + Identificar las diferencias entre transportar información y transmitir información.
-    + Analizar comparativamente la transmisión de información mediante diferentes medios.
-    + Caracterizar la transmisión de información inalámbrica.
+     + Identificar las diferencias entre transportar información y transmitir información.
+     + Analizar comparativamente la transmisión de información mediante diferentes medios.
+     + Caracterizar la transmisión de información inalámbrica.
 
-*** El proceso de creación de tecnologías: el proceso de diseño
-    Conocer y aplicar herramientas informáticas para buscar
-    información, organizarla, modelizarla y compartirla durante la
-    resolución de problemas de diseño, valorando la importancia de
-    documentar los procesos de trabajo y los resultados obtenidos.
-    Buscar y seleccionar información.
+**** El proceso de creación de tecnologías: el proceso de diseño
+     Conocer y aplicar herramientas informáticas para buscar
+     información, organizarla, modelizarla y compartirla durante la
+     resolución de problemas de diseño, valorando la importancia de
+     documentar los procesos de trabajo y los resultados obtenidos.
+     Buscar y seleccionar información.
 
-*** Tendencias actuales en diseño
-    Analizar casos que permitan comprender conceptos propios de los
-    actuales paradigmas del diseño (diseño de sistemas, *diseño de
-    interfaces entre las personas y el medio*, ergonomía,
-    sustentabilidad ambiental, *obsolescencia programada*, entre
-    otros).
+**** Tendencias actuales en diseño
+     Analizar casos que permitan comprender conceptos propios de los
+     actuales paradigmas del diseño (diseño de sistemas, *diseño de
+     interfaces entre las personas y el medio*, ergonomía,
+     sustentabilidad ambiental, *obsolescencia programada*, entre
+     otros).
 
 
 
-* 3er año
-** Tecnologías de la Información
-*** Hardware y Software
-    Arquitecturas de computación y sistemas. Partes y
-    funciones. Diferenciación entre las funciones del hardware y del
-    software.
+** 3er año
+*** Tecnologías de la Información
+**** Hardware y Software                                            :primero:
+     Arquitecturas de computación y sistemas. Partes y
+     funciones. Diferenciación entre las funciones del hardware y del
+     software.
 
-    + Identificación de las funciones principales presentes en una
-      computadora.
-    + Análisis de diferentes tipos de computadoras para reconocer
-      aspectos comunes y también particulares de cada una de ellas.
-    + *Diferenciación entre software libre, software abierto y
-      software propietario.*
+     + Identificación de las funciones principales presentes en una
+       computadora.
+     + Análisis de diferentes tipos de computadoras para reconocer
+       aspectos comunes y también particulares de cada una de ellas.
+     + *Diferenciación entre software libre, software abierto y
+       software propietario.*
 
-*** Introducción al pensamiento computacional
-    Metodología de resolución de problemas computacionales.
+**** Introducción al pensamiento computacional
+     Metodología de resolución de problemas computacionales.
     
-    + Trabajo colaborativo en forma de proyecto.
-    + Identificación de aquellas problemáticas susceptibles de ser
-      resueltas aplicando estrategias y técnicas computacionales
+     + Trabajo colaborativo en forma de proyecto.
+     + Identificación de aquellas problemáticas susceptibles de ser
+       resueltas aplicando estrategias y técnicas computacionales
 
-* 4to año
-** Tecnologías de la información
-*** Internet y web.
-    Introducción a las redes digitales de información. Internet como
-    red de redes. La web como sistema hipermedia de información
-    distribuida.
+** 4to año
+*** Tecnologías de la información
+**** Internet y web.                                                :segundo:
+     Introducción a las redes digitales de información. Internet como
+     red de redes. La web como sistema hipermedia de información
+     distribuida.
 
-*** Planificacion de proyectos de producción audiovisual
-    Realizar un proyecto de producción audiovisual digital en sus las
-    diferentes etapas: diseño del guion, asignación de roles,
-    selección de herramientas, producción y postproducción.
+**** Internet y web                                                 :segundo:
+     Comprender los aspectos que hacen a la seguridad de las
+     aplicaciones y la criptografía en la web.
 
-*** Internet y web
-    Comprender los aspectos que hacen a la seguridad de las
-    aplicaciones y la criptografía en la web.
+**** Introducción a la seguridad de las aplicaciones y criptografía en la web :segundo:
+     + Comprender las vulnerabilidades de las aplicaciones web.
+     + Analizar aspectos de las aplicaciones seguras, según
+       publicaciones vigentes de métodos de intrusión o hacking.
+     + Relacionar vulnerabilidades con mecanismos seguros de
+       autenticación, autorización, uso de claves y transferencia
+       segura de datos.
 
-*** Introducción a la seguridad de las aplicaciones y criptografía en la web
-    + Comprender las vulnerabilidades de las aplicaciones web.
-    + Analizar aspectos de las aplicaciones seguras, según
-      publicaciones vigentes de métodos de intrusión o hacking.
-    + Relacionar vulnerabilidades con mecanismos seguros de
-      autenticación, autorización, uso de claves y transferencia
-      segura de datos.
+**** Procesamiento de texto, audio y video digital.                 :tercero:
+     Técnicas y herramientas de edición de textos, video y audio.
+     + Editar video: edición por corte, sincronizando pistas de audio y
+       video, titulados, transiciones y efectos visuales y sonoros.
 
-
+**** Planificación de proyectos de producción audiovisual.          :tercero:
+     Realizar un proyecto de producción audiovisual digital en sus las
+     diferentes etapas: diseño del guion, asignación de roles,
+     selección de herramientas, producción y postproducción.
 
 * Documentos PDF
   + marzo - abril :: https://www.buenosaires.gob.ar/sites/gcaba/files/contenidos_priorizados.pdf
   + Mayo - Junio :: https://www.buenosaires.gob.ar/sites/gcaba/files/contenidos_priorizados_mayo_junio_secundaria_final.pdf
   + Julio - Septiembre :: https://www.buenosaires.gob.ar/sites/gcaba/files/contenidos_priorizados_julio_septiembre_secundaria_f.pdf
 
+* Reunión Sábado - Planificación de Clase
+** 1. Datos generales de la materia
+   + EDUCADOR/X :: Aro y Pedro
+   + ÁREA :: Ciencias Exactas
+   + ASIGNATURA :: Computacion
+   + UNIDAD O SECUENCIA :: Diferenciación entre las funciones del hardware y del
+    software.
 
+** 2. Encuadre de la clase
+   + FECHA :: 01/08/2020
+   + CONTENIDO :: Tema que se abordará en ésa clase.  
+     Diferenciación entre software libre, software abierto y software propietario
+   + OBJETIVOS :: ¿Qué deben realizar lxs educandxs en ésa clase?
+     Conversar sobre software cotidiano libre, abierto o propiertario.
+   + PROPÓSITOS :: ¿Qué pretende le educadorx que lxs educandxs o el grupo logren en ésa clase?
+     Conocer los beneficios del software libre, y los peligros del propietario.
+
+** 3. Desarrollo de la clase.
+   + INICIO :: ¿Cómo empieza la clase? ¿Qué actividades se desarrollan
+     para introducir el contenido o la actividad central de la clase?     
+     ¿Cuánto tiempo nos tomarán estas actividades?  Preguntas para
+     reflexionar: ¿Hay tareas o elementos de antes de la clase a tener
+     en cuenta? ¿Tengo en cuenta el sistema mundo de mi educandxs al
+     introducir el contenido o la actividad central? ¿Qué preguntas
+     realizo y con qué intención?
+     
+     La clase empieza con una *charla* para identificar cosas que
+     sabemos como están hechas (comidas, porque tenemos la receta de
+     cocina), y cosas que no (la receta de una coca cola, la
+     política?).  Tomara 10-20 minutos.  Se tiene cuenta su sistema en
+     la medida de que, las cosa que salen de la charla, deberían ser
+     de su vida cotidiana.     
+       
+   + DESARROLLO :: ¿Cuál es la actividad central para construir el
+     contenido de la clase? ¿Cuánto tiempo nos tomarán esta actividad?
+     Preguntas para reflexionar: ¿La actividad tiene un producto o
+     resultado? ¿Cuál es el paso a paso para llegar a él? ¿Éste producto
+     es de utilidad para el proceso educativo de le educandx?
+
+     [[https://audio-video.gnu.org/video/rms-education-es-high-sub.en.ogv][Video de Richard Stallman sobre el software libre y la educación]]
+     (6 minutos).  El resultado de ver el video es dar algunos
+     conceptos básicos sobre software libre, y su relación con la
+     educación. 
+
+     También, el video podría habilitar una discución:
+     + Los peligros del software privativo (no conocer qué hace una
+       aplicación, dependencia).
+     + La relación con la economía (cómo lucrar con algo que es libre).
+     + Seguridad informática.
+     + Por qué defender el software libre aunque yo no sepa programar?  
+       (por qué defender la libertad de expresión si yo no tengo nada que
+       decir?)
+
+     La utilidad para les educandes pasa por refrescar el valor de las
+     soluciones abiertas, y saber que existen en el software.  Sirve
+     también para poder generar alerta por las soluciones propietarias
+     que se usan cotidianamente (whatsapp, facebook, etc).
+     
+   + CIERRE :: ¿Qué elementos conceptuales, teóricos o prácticos
+     construimos en la clase? ¿A qué conclusiones llegamos? ¿Cuánto
+     tiempo nos tomará registrar las conclusiones?  Preguntas para
+     reflexionar: ¿Cómo se retroalimenta la actividad central? ¿Qué
+     devoluciones puede hacer el grupo al trabajo realizado? ¿Cómo se
+     registran esos saberes? ¿Cómo confirmo que se aprehendieron los
+     elementos desarrollados?
+     
+     Software Libre.  20 minutos.  La devolución puede dar información
+     de si sirve el video. Si la charla en el medio es suficientemente
+     larga y profunda. También sobre la relevancia de esos temas en el
+     día a día.
+     
+   + RECURSOS: ¿Qué recursos, materiales, objetos, espacios se
+     requerirán para desarrollar la clase?
+     Computadora y video.
+
+** 4. Por fuera del espacio aúlico.
+   TAREAS: ¿Qué actividades se deben desarrollar en casa para
+   reforzar, poner a prueba o concluir lo realizado en ésta clase?
+   ¿Por qué deben realizarla? ¿Cuánto tiempo puede tomarles?
+   
+   OBSERVACIONES DEL GRUPO: ¿En qué momentos de la clase se avanzó con
+   facilidad? ¿Qué dificultades grupales se encontraron en las
+   actividades? ¿Hubo participación activa de todxs lxs miembros del
+   grupo? ¿Qué elementos del contenido de la clase no se desarrollaron
+   o deben profundizarse? ¿Se cumplieron los objetivos y propósitos?
+   ¿Qué debo proponer la próxima clase para tramitar las dificultades
+   o lograr lo que no se alcanzó en ésta clase?
+   
+   OBSERVACIONES INDIVIDUALES: ¿Qué educandx tuvo dificultades
+   notables? ¿Cómo acompañar a éstx educandx? ¿Qué educandx tuvo
+   facilidades notables? ¿Cómo potenciar a éste educandx para
+   favorecer al grupo y a sí mismx?
+
+* Nueva Planificación
+** Computadoras, Hardware y Software
+*** Clase 1 - Computadoras
+** Privacidad
+** Produccion Multimedia
+
+* Planificacion Aro
+
+** Introducción 01-04
+   https://drive.google.com/drive/folders/0Bx7US5BJxev3S01PUGMwUDRJMGM
+
+** Word 05-11
+   https://drive.google.com/drive/folders/0Bx7US5BJxev3YXktSmVOeE93TW8
+
+** Excel 12-15
+   https://drive.google.com/drive/folders/0Bx7US5BJxev3M1NBNm5xRXZUVkE
+
+** Internet 16-20
+   https://drive.google.com/drive/folders/0Bx7US5BJxev3WnpYM3h3U0RXcEE
+
+
+
+
++ automatizacion de tareas
++ tecnologia en la vida cotidiana

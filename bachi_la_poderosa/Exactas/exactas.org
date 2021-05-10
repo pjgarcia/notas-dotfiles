@@ -1,0 +1,39 @@
+* DONE ¿Qué contenidos se abordan en el área? ¿cómo se organizan (progresión)? CRITERIOS Y OBJETIVOS
+  https://docs.google.com/spreadsheets/d/10_ZvvUDh2Yaj3Y2sMDlLzZGF9Iu3ZLCZ2rDQHCKI3Ag/edit#gid=1231442684
+
+ + Logica (capi 1)
+    - resolucion de sudoku
+  + Aritmetica (capis 2, 3, 4)
+    - herramientas graficas: diagrama de arbol, recta numerica) (capi 2)
+    - orden (capi 2)
+    - combinaciones (capi 2)
+    - porcentaje (capi 3)
+    - potencias (capi 4)
+    - sistemas numericos (posicional, aditivo) OPCIONAL (capi 5)
+  + Álgebra (capi 7)
+    - expresiones algebraicas
+    - ecuaciones
+
+
+* DONE ¿Qué pregunta construye el eje problematizador de estos contenidos?
+  https://es.slideshare.net/bladimirvmarin/plan-de-area-de-matemticas-2015
+
+  1. ¿cómo la manipulación de objetos didácticos como ayuda lúdica, nos permite entender el mundo a través de los números?
+  2. ¿cómo el análisis gráfico nos abre las puertas a profundizar en la solución de problemas cotidianos valiéndose de herramientas de la lógica matemática?
+  3. ¿cómo el conocimiento de los números naturales con su operaciones, la lógica y el análisis de datos, nos ayuda a interpretar diferentes situaciones del diario vivir?
+  4. ¿cómo el aplicar las operaciones y problemas con los números naturales, además de la interpretación de datos, nos abren las puertas al conocimiento de ecuaciones y la argumentación lógica?
+  5. ¿cómo el aplicar las operaciones con expresiones algebraicas, además del análisis de datos, nos dan una visión más general de la matemática y nos adentra en un mundo lleno de herramiéntas matemáticas útiles para la vida?
+
+
+* TODO ¿Qué objetivos/propósitos educacionales se tratan de alcanzar?
+  Como todavía no modificamos las actividades, los objetivos siguen siendo los mismos que estan en la planilla.
+TODO ¿Qué experiencias educacionales se pueden lograr con estos objetivos? ¿Cómo se organizan esas experiencias (secuencia didáctica)?
+  En este docu estan todas las actividades. Repasarlas y anotar los ajustes para hacer.
+  https://docs.google.com/document/d/1N1vl1c24VyRleDbFc7nL-Tm_5LLUAEwNCiSAmc4bh-k/edit#  
+
+* DONE ¿Dónde vemos falencias en términos de progresiones y secuencias?
+  En DIAGRAMA DE ARBOL, RECTA NUMERICA los objetivos no quedaron claros. Trabajarlos con más tranquilidad y claridad.
+  El tema de NOTACION CIENTÍFICA podemos sacarlo para darle más tiempo a prepararnos para ECUACIONES.
+  En ECUACIONES se debería trabajar antes, con bastante tranquilidad, en:
+  + expresiones algebraicas y sus terminos (agrupar con parentesis las multiplicaciones)
+  + hacerle operaciones a las ecuaciones y ver cómo cambian (para entender cómo conviene operarlas para eliminar términos)

@@ -1,0 +1,8 @@
+
+* Donaciones de plata
+  
+  | Nombre  | Monto |
+  |---------+-------|
+  | Cecilia |   400 |
+  | Pedro   |  5000 |
+  |         |       |

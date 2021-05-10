@@ -1,0 +1,34 @@
+;; This buffer is for text that is not saved, and for Lisp evaluation.
+;; To create a file, visit it with C-x C-f and enter text in its buffer.
+
+(/ (expt 27 5) 60 24 365)
+(/ (expt 10 5) 60 24)
+
+| Valenzuela Roque Anibal (lo pasó Dalma)  | VALENZUELA WILSON (sobrino de Dalma) | 48799444 | lo anotaron pero no tuvo respuesta                                                  |
+| Valenzuela Roque Anibal (lo pasó Dalma)  | VALENZUELA RENZO (sobrino de Dalma)  | 52444369 | lo anotaron pero no tuvo respuesta                                                  |
+| Noelia Zoplas (hermana de Cintia Zoplas) | Sofía purizaga                       | 47202958 | la anotaron pero no tuvo respuesta                                                  |
+| Carmen Rosa Mayta Casas                  | Alexander Machaca                    | 49436609 | tiene bloqueada la computadora y el cargador se le rompió, no pudo hacer el reclamo |
+| Jacobo Gil                               | Nicol Agostina Gil                   | 49525102 | Recibió la computadora pero el cargador estaba roto                                 |
+| Erisema Melgar Chacon                    | Adriano Leon Melgar                  | 95761624 | mando la solicitud y no le llego nada                                               |
+| Cinthia Salazar                          | Lautaro Esteban Beleizan             | 52701653 | le robaron el cargador                                                              |
+| Loida Ortega                             | Ortega Romina                        | 46705349 | la anotaron pero no tuvo respuesta                                                  |
+| Loida Ortega                             | Ortega Johana                        | 47870445 | la anotaron pero no tuvo respuesta                                                  |
+| Mirtha Franco                            | Matias Efrain González Franco        | 94673915 | lo anotaron pero no tuvo respuesta                                                  |
+| Mirtha Franco                            | Marfil Madai González Franco         | 94658039 | está en reparación pero no tuvo novedades                                           |
+| Antonia Ramona Mareco                    | Deborah Solange Quiñonez             | 45133228 | tuvo problemas para hacer la inscripción                                            |
+
+
+| Valenzuela Roque Anibal (lo pasó Dalma)  | VALENZUELA WILSON (sobrino de Dalma) |
+| Valenzuela Roque Anibal (lo pasó Dalma)  | VALENZUELA RENZO (sobrino de Dalma)  |
+| Noelia Zoplas (hermana de Cintia Zoplas) | Sofía purizaga                       |
+| Carmen Rosa Mayta Casas                  | Alexander Machaca                    |
+| Jacobo Gil                               | Nicol Agostina Gil                   |
+| Erisema Melgar Chacon                    | Adriano Leon Melgar                  |
+| Cinthia Salazar                          | Lautaro Esteban Beleizan             |
+| Loida Ortega                             | Ortega Romina                        |
+| Loida Ortega                             | Ortega Johana                        |
+| Mirtha Franco                            | Matias Efrain González Franco        |
+| Mirtha Franco                            | Marfil Madai González Franco         |
+| Antonia Ramona Mareco                    | Deborah Solange Quiñonez             |
+
+
