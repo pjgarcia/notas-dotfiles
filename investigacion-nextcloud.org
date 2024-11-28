@@ -1,9 +1,0 @@
-
-* Aumentar la memoria de los procesos PHP
-  poner 512M de RAM en [[file:/etc/php/7.2/apache2/php.ini::memory_limit = 128M][php.ini]]
-* Aumentar el timeout para bajar Apps
-  poner 5 minutos en [[file:/sudo:root@linux:/var/www/nextcloud/lib/private/Http/Client/Client.php::RequestOptions::TIMEOUT => 300,][Client.php]]
-* Bajar el Hub Bundle
-* Habilitar dominio desde donde se sirve
-  Poner el ~hostname~ del servidor en [[file:/sudo:root@linux:/var/www/nextcloud/config/config.php::1 => 'linux'][config.php]]
-  
