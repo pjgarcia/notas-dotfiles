@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: react-use-state
+# key: rus
+# group: react
+# --
+
+const [$1, ${1:$(concat "set" (capitalize yas-text))}] = useState($0);

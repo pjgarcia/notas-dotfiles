@@ -1,0 +1,4 @@
+# key: h
+# name: heading
+# --
+<Heading variant="h$1"${2: className="${3:some_class}"}>$0</Heading>

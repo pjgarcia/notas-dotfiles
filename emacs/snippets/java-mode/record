@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: record
+# key: rec
+# --
+public record ${1:`(file-name-base (or (buffer-file-name)
+                                       (buffer-name)))`}(
+  $2
+) {$0}

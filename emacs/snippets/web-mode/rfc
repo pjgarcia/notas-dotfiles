@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: React functional component
+# key: rfc
+# --
+const ${1:componentName} = (${2:props}) => {
+
+  $0
+  
+  return (
+    <React.Fragment>
+        
+    </React.Fragment>
+  );
+};

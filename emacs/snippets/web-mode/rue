@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: react use effect
+# key: rue
+# --
+
+useEffect(() => {
+             $0
+});

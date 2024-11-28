@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: heading
+# key: h
+# --
+<h$1 className="eva-3-h$1">
+     $0
+</h$1>

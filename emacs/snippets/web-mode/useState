@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: useState
+# key: rus
+# --
+
+const [${1:state}, ${1:$(capitalize yas-text)}] = useState(${2:initialState});$0
